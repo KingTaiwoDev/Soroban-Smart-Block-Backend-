@@ -257,6 +257,9 @@ model Contract {
   totalProperties Int @map("total_properties") @default(0)
   vulnerabilities Json? @map("vulnerabilities")
 
+  provenance Json? @map("provenance")
+  trustLevel String? @default("unverified") @map("trust_level") @db.VarChar(32)
+
   createdAt DateTime @map("created_at") @default(now())
   updatedAt DateTime @map("updated_at") @updatedAt
 
@@ -305,6 +308,9 @@ model ContractNetwork {
 
   deployedAtLedger Int? @map("deployed_at_ledger")
 
+  provenance Json? @map("provenance")
+  trustLevel String? @default("unverified") @map("trust_level") @db.VarChar(32)
+
   createdAt DateTime @map("created_at") @default(now())
   updatedAt DateTime @map("updated_at") @updatedAt
 
@@ -333,6 +339,8 @@ model ContractAbiSubmission {
   reviewedBy    String?   @map("reviewed_by")
   reviewedAt    DateTime? @map("reviewed_at")
   publishedAt   DateTime? @map("published_at")
+  provenance    Json?     @map("provenance")
+  trustLevel    String    @default("community") @map("trust_level") @db.VarChar(32)
   createdAt     DateTime  @map("created_at") @default(now())
   updatedAt     DateTime  @map("updated_at") @updatedAt
 
@@ -532,6 +540,23 @@ model RateLimitOverride {
 
   @@unique([identifier, endpoint])
   @@map("_rate_limit_overrides")
+}
+
+/// Custom enterprise rate-limit tier configuration per organisation (Issue #1283).
+model EnterpriseTierConfig {
+  id               String   @map("id") @id @default(cuid())
+  orgId            String   @unique @map("org_id") @db.VarChar(128)
+  maxPerMinute     Int      @map("max_per_minute")
+  maxBurst         Int      @map("max_burst")
+  windowMs         Int      @default(60000) @map("window_ms")
+  label            String   @map("label") @db.VarChar(128)
+  featureFlags     String[] @default([]) @map("feature_flags")
+  graceDegradation String   @default("fallback") @map("grace_degradation") @db.VarChar(32)
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@index([orgId])
+  @@map("_enterprise_tier_configs")
 }
 
 // Bidirectional mapping: classic Stellar asset ↔ SAC contract address

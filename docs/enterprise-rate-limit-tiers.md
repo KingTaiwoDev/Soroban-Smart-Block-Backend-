@@ -34,68 +34,88 @@ This feature adds:
 
 ---
 
+---
+
 ## Data Model
 
-Enterprise tiers are stored in the **existing `RateLimitOverride` Prisma model** (table `_rate_limit_overrides`) to avoid a new migration. The mapping is:
+Enterprise tiers are stored in the **dedicated `EnterpriseTierConfig` Prisma model** (table `_enterprise_tier_configs`, added in migration `20261019000000_enterprise_tier_configs` for Issue #1283), with typed Prisma access across all admin operations.
 
-| DB column    | Meaning for enterprise tiers                                     |
-| ------------ | ---------------------------------------------------------------- |
-| `identifier` | `ent:<orgId>` — e.g. `ent:org_acme`                              |
-| `endpoint`   | JSON blob: `{ maxBurst, label, featureFlags, graceDegradation }` |
-| `max`        | `maxPerMinute`                                                   |
-| `windowMs`   | Rolling window in ms (default 60 000)                            |
+### Prisma Schema (`_enterprise_tier_configs`)
 
-### `EnterpriseTierConfig` shape
+```prisma
+model EnterpriseTierConfig {
+  id               String   @id @default(cuid()) @map("id")
+  orgId            String   @unique @map("org_id") @db.VarChar(128)
+  maxPerMinute     Int      @map("max_per_minute")
+  maxBurst         Int      @map("max_burst")
+  windowMs         Int      @default(60000) @map("window_ms")
+  label            String   @map("label") @db.VarChar(128)
+  featureFlags     String[] @default([]) @map("feature_flags")
+  graceDegradation String   @default("fallback") @map("grace_degradation") @db.VarChar(32)
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
 
-```typescript
-interface EnterpriseTierConfig {
-  maxPerMinute: number; // sustained req/min ceiling
-  maxBurst: number; // token-bucket burst capacity
-  windowMs: number; // rolling window (ms)
-  label: string; // shown in X-RateLimit-Policy header
-  featureFlags: string[]; // required flags for this tier
-  graceDegradation: 'drop' | 'queue' | 'fallback';
+  @@index([orgId])
+  @@map("_enterprise_tier_configs")
 }
 ```
 
-### In-memory cache
+| DB column           | Type         | Constraints          | Description                                                      |
+| ------------------- | ------------ | -------------------- | ---------------------------------------------------------------- |
+| `id`                | `TEXT`       | Primary key (cuid)   | Unique configuration record ID                                   |
+| `org_id`            | `VARCHAR`    | Unique, Indexed      | Organisation identifier (e.g. `org_acme`)                        |
+| `max_per_minute`    | `INTEGER`    | > 0                  | Sustained request ceiling per 60-second window                   |
+| `max_burst`         | `INTEGER`    | > 0                  | Instantaneous token-bucket burst capacity                        |
+| `window_ms`         | `INTEGER`    | Default `60000`      | Rolling window in milliseconds                                   |
+| `label`             | `VARCHAR`    | 1–128 chars          | Human-readable tier label shown in `X-RateLimit-Policy`          |
+| `feature_flags`     | `TEXT[]`     | Default `{}`         | Enabled feature flags scoped to this organisation                |
+| `grace_degradation` | `VARCHAR`    | Default `'fallback'` | Degradation strategy: `'drop'` \| `'queue'` \| `'fallback'`      |
+| `created_at`        | `TIMESTAMPTZ`| Default `NOW()`      | Record creation timestamp                                        |
+| `updated_at`        | `TIMESTAMPTZ`| Auto-updated         | Last modification timestamp                                      |
 
-`enterpriseTierCache.ts` maintains a `Map<orgId, { config, expiresAt }>` with a 5-minute TTL. Entries are lazily evicted on the next read after expiry. The admin API calls `clearEnterpriseTierCache(orgId)` on every mutating operation so the next request picks up the fresh value within milliseconds.
+### Safe Defaults & Data Migration
 
----
-
-## Architecture & Trade-offs
-
-### Why reuse `RateLimitOverride` instead of a new model?
-
-**Pro**: Zero new migrations required. The table is already provisioned on all environments.  
-**Con**: The `endpoint` column is repurposed as a JSON blob for enterprise metadata, which is semantically awkward. A future migration could add a dedicated `EnterpriseTierConfig` model and backfill the rows.
-
-### Why an in-process Map rather than Redis for the cache?
-
-**Pro**: No Redis dependency for cache reads — the enforcement path has zero network hops.  
-**Con**: Each pod has its own cache. After an admin update, pods that have not yet had their cache TTL expire will continue applying the old config for up to 5 minutes. The `clearEnterpriseTierCache` call only affects the pod that handled the admin request.
-
-**Mitigation**: The 5-minute TTL is short enough for most SLAs. For instant propagation, operators can issue a rolling restart or use the `DELETE` + `POST` endpoint in sequence to force a re-fetch.
-
-### Why enforce in the middleware layer rather than in the token bucket?
-
-The existing `checkTokenBucket` function (Redis Lua script) is not extended because:
-
-1. Extending the Lua script would require coordinated Redis and application deploys.
-2. The per-org bucket key space would grow unboundedly.
-3. `applyEnterpriseRateLimit` sits in front of `tieredRateLimit` in the middleware chain, so enterprise requests are short-circuited before the generic limiter runs.
+The migration automatically backfills existing entries from the legacy `_rate_limit_overrides` table (identifying rows prefixed with `ent:`) into the new typed schema with safe defaults without altering effective rate limits. The admin routes maintain fallback reads if run against an unmigrated database.
 
 ---
 
-## Rejected Alternatives
+## Architecture & Cross-Replica Propagation
 
-| Alternative                             | Reason rejected                                                                           |
-| --------------------------------------- | ----------------------------------------------------------------------------------------- |
-| New `EnterpriseTierConfig` Prisma model | Requires a DB migration in all environments; deferred to a future cleanup issue.          |
-| Redis-backed cache per org              | Adds Redis as a hard dependency for config reads; degrades cache availability.            |
-| JWT-embedded org limits                 | Limits cannot be updated without re-issuing tokens; bad UX for enterprise renegotiations. |
-| Per-endpoint custom limits              | Scope creep; endpoint-level overrides already handled by `RateLimitOverride`.             |
+### In-Memory Cache with Sub-Second Cross-Replica Propagation (Issue #1284)
+
+1. **Low-Latency In-Process Reads**:
+   - Every API replica maintains an in-memory `Map<orgId, CacheEntry>` with lazy TTL eviction (5 minutes).
+   - Rate-limit evaluations never perform a Redis or database round-trip during request handling.
+
+2. **Cross-Replica Invalidation Channel**:
+   - Mutating operations (`POST /enterprise-tiers`, `DELETE /enterprise-tiers/:orgId`) publish an invalidation payload to Redis Pub/Sub channel `__enterprise_tier:invalidate`.
+   - All active API replicas listening to the channel evict the stale entry locally within a **≤ 500 ms propagation bound**.
+
+3. **Resilience & Degraded Recovery**:
+   - If Redis Pub/Sub is unavailable or disconnected, replicas emit an observable structured diagnostic:
+     `alert: 'ENTERPRISE_TIER_INVALIDATION_DEGRADED'`.
+   - Replicas automatically recover within the 5-minute TTL window via lazy eviction.
+   - Redis is **not** a hard dependency: if running in standalone memory mode (`CACHE_URL=memory://`), the in-memory cache functions completely independently without errors.
+
+---
+
+## Migration, Deployment Order & Rollback Runbook
+
+### Deployment Order
+
+1. **Phase 1: Database Migration**:
+   - Apply additive migration `npx prisma migrate deploy`.
+   - Creates `_enterprise_tier_configs` table and backfills any existing legacy rows.
+   - Zero downtime: Existing pods continue using `_rate_limit_overrides` uninterrupted.
+
+2. **Phase 2: Application Release**:
+   - Deploy backend pods running the new release.
+   - Pods register the Pub/Sub invalidation subscriber and perform typed reads/writes on `EnterpriseTierConfig`.
+
+### Rollback Procedure
+
+- **Application Rollback**: If the release is rolled back, the prior application version continues operating using `_rate_limit_overrides`.
+- **Database Rollback**: The migration is additive and does not drop `_rate_limit_overrides`. No destructive SQL migration is required.
 
 ---
 

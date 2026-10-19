@@ -16,6 +16,30 @@ export interface AbiEventSubmission {
   inputs?: Array<{ name: string; type: string }>;
 }
 
+export type TrustLevel = 'unverified' | 'community' | 'verified_publisher' | 'canonical' | 'official';
+
+export const TRUST_LEVEL_HIERARCHY: Record<TrustLevel, number> = {
+  unverified: 0,
+  community: 1,
+  verified_publisher: 2,
+  canonical: 3,
+  official: 4,
+};
+
+export interface ContractMetadataProvenance {
+  source?: string;
+  repoUrl?: string;
+  commitHash?: string;
+  submitterIdentity?: string;
+  attestationUrl?: string;
+  signature?: string;
+  signerAddress?: string;
+  verifiedAt?: string;
+  notes?: string;
+  metadata?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
 export interface ContractAbiSubmissionInput {
   address: string;
   network: 'testnet' | 'mainnet' | 'devnet';
@@ -27,6 +51,8 @@ export interface ContractAbiSubmissionInput {
   wasmHash?: string;
   protocolKey?: string;
   deployedAtLedger?: number;
+  trustLevel?: TrustLevel;
+  provenance?: ContractMetadataProvenance;
 }
 
 function canonicalJson(value: unknown): string {
@@ -108,7 +134,7 @@ export async function createContractAbiSubmission(
   });
   if (existing) return { submission: existing, duplicate: true };
 
-  const evidence = await observedEvidence(prismaWrite, input.address, input.abi);
+  const evidence = await observedEvidence(prismaRead, input.address, input.abi);
   const payload = JSON.parse(serializedPayload) as Prisma.InputJsonValue;
 
   try {
@@ -123,6 +149,8 @@ export async function createContractAbiSubmission(
           status: 'pending',
           validatedAt: new Date(),
           validationLedger: evidence.ledger,
+          trustLevel: input.trustLevel ?? 'unverified',
+          provenance: (input.provenance ?? null) as Prisma.InputJsonValue,
         },
       });
       await tx.contractAbiSubmissionEvent.create({
@@ -192,11 +220,20 @@ export async function reviewContractAbiSubmission(
   decision: 'approved' | 'rejected',
   actor: string,
   reviewNote?: string,
+  trustLevel?: TrustLevel,
+  provenance?: ContractMetadataProvenance,
 ) {
   return prismaWrite.$transaction(async (tx) => {
     const changed = await tx.contractAbiSubmission.updateMany({
       where: { id, status: 'pending' },
-      data: { status: decision, reviewNote, reviewedBy: actor, reviewedAt: new Date() },
+      data: {
+        status: decision,
+        reviewNote,
+        reviewedBy: actor,
+        reviewedAt: new Date(),
+        ...(trustLevel ? { trustLevel } : {}),
+        ...(provenance ? { provenance: provenance as Prisma.InputJsonValue } : {}),
+      },
     });
     if (changed.count !== 1) {
       const current = await tx.contractAbiSubmission.findUnique({ where: { id }, select: { id: true } });
@@ -251,6 +288,12 @@ export async function publishContractAbiSubmission(id: string, actor: string) {
           ? { description: payload.description }
           : {}),
         ...(canonicalAddress === submission.address ? { abi: abiJson } : {}),
+        ...(canonicalAddress === submission.address
+          ? {
+              trustLevel: submission.trustLevel,
+              provenance: submission.provenance as Prisma.InputJsonValue,
+            }
+          : {}),
       },
       update: {
         ...(canonicalAddress === submission.address && payload.name !== undefined
@@ -260,6 +303,12 @@ export async function publishContractAbiSubmission(id: string, actor: string) {
           ? { description: payload.description }
           : {}),
         ...(canonicalAddress === submission.address ? { abi: abiJson } : {}),
+        ...(canonicalAddress === submission.address
+          ? {
+              trustLevel: submission.trustLevel,
+              provenance: submission.provenance as Prisma.InputJsonValue,
+            }
+          : {}),
       },
     });
 
@@ -276,6 +325,8 @@ export async function publishContractAbiSubmission(id: string, actor: string) {
         wasmHash: payload.wasmHash,
         protocolKey: payload.protocolKey,
         deployedAtLedger: payload.deployedAtLedger,
+        trustLevel: submission.trustLevel,
+        provenance: submission.provenance as Prisma.InputJsonValue,
       },
       update: {
         contractId: contract.id,
@@ -288,6 +339,8 @@ export async function publishContractAbiSubmission(id: string, actor: string) {
         ...(payload.deployedAtLedger !== undefined
           ? { deployedAtLedger: payload.deployedAtLedger }
           : {}),
+        trustLevel: submission.trustLevel,
+        provenance: submission.provenance as Prisma.InputJsonValue,
       },
     });
 

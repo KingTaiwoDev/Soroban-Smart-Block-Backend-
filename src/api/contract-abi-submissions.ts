@@ -76,6 +76,23 @@ const abiSchema = z
     });
   });
 
+const trustLevelEnum = z.enum(['unverified', 'community', 'verified_publisher', 'canonical', 'official']);
+
+const provenanceSchema = z
+  .object({
+    source: z.string().max(128).optional(),
+    repoUrl: z.string().max(512).optional(),
+    commitHash: z.string().max(64).optional(),
+    submitterIdentity: z.string().max(256).optional(),
+    attestationUrl: z.string().max(512).optional(),
+    signature: z.string().max(1024).optional(),
+    signerAddress: z.string().max(128).optional(),
+    verifiedAt: z.string().optional(),
+    notes: z.string().max(2048).optional(),
+    metadata: z.record(z.unknown()).optional(),
+  })
+  .passthrough();
+
 const submissionSchema = z
   .object({
     address: stellarAddress,
@@ -88,11 +105,19 @@ const submissionSchema = z
     wasmHash: z.string().regex(/^[a-fA-F0-9]{1,64}$/).optional(),
     protocolKey: z.string().min(1).max(128).regex(/^[a-zA-Z0-9._:-]+$/).optional(),
     deployedAtLedger: z.number().int().nonnegative().max(2_147_483_647).optional(),
+    trustLevel: trustLevelEnum.optional(),
+    provenance: provenanceSchema.optional(),
   })
   .strict();
 
 const reviewSchema = z.object({ reviewNote: z.string().trim().min(1).max(2000) }).strict();
-const approveSchema = z.object({ reviewNote: z.string().trim().max(2000).optional() }).strict();
+const approveSchema = z
+  .object({
+    reviewNote: z.string().trim().max(2000).optional(),
+    trustLevel: trustLevelEnum.optional(),
+    provenance: provenanceSchema.optional(),
+  })
+  .strict();
 const listSchema = z.object({
   status: z.enum(['pending', 'approved', 'rejected', 'published']).optional(),
   page: z.coerce.number().int().min(1).max(100_000).default(1),
@@ -406,14 +431,30 @@ contractAbiSubmissionsAdminRouter.post(
   '/:id/approve',
   asyncHandler(async (req: Request, res: Response) => {
     const parsed = approveSchema.safeParse(req.body ?? {});
-    if (!parsed.success) return res.status(400).json({ error: 'Invalid review note', code: 'INVALID_REVIEW' });
+    if (!parsed.success) {
+      return res.status(400).json({
+        error: 'Invalid review payload',
+        code: 'INVALID_REVIEW',
+        details: parsed.error.issues.map(({ path, message }) => ({ path: path.join('.'), message })),
+      });
+    }
     try {
-      const submission = await reviewContractAbiSubmission(
+      const args: [string, 'approved', string, (string | undefined)?, (TrustLevel | undefined)?, (ContractMetadataProvenance | undefined)?] = [
         req.params.id,
         'approved',
         req.actor ?? 'admin',
-        parsed.data.reviewNote,
-      );
+      ];
+      if (parsed.data.reviewNote !== undefined || parsed.data.trustLevel !== undefined || parsed.data.provenance !== undefined) {
+        args.push(parsed.data.reviewNote);
+      }
+      if (parsed.data.trustLevel !== undefined || parsed.data.provenance !== undefined) {
+        args.push(parsed.data.trustLevel);
+      }
+      if (parsed.data.provenance !== undefined) {
+        args.push(parsed.data.provenance);
+      }
+
+      const submission = await reviewContractAbiSubmission(...(args as Parameters<typeof reviewContractAbiSubmission>));
       contractAbiSubmissionOperations.inc({ operation: 'review', outcome: 'success' });
       logger.info('contract ABI submission approved', { submissionId: submission.id, actor: req.actor ?? 'admin' });
       return res.json({ submission });

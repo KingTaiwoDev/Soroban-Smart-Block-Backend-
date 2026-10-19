@@ -7,15 +7,19 @@
  * window without requiring a restart.
  *
  * Design notes:
- *  - Pure in-process Map — no Redis dependency, so the cache layer can never
- *    become a bottleneck or single point of failure on its own.
+ *  - Pure in-process Map for fast, non-blocking reads — no Redis dependency on
+ *    the critical request path.
  *  - TTL is checked lazily on every read; a periodic sweep is intentionally
- *    omitted to keep the module dependency-free and GC-friendly for the
- *    typical cardinality of enterprise orgs (< 10 000).
- *  - clearEnterpriseTierCache() is called by the admin API on every mutating
- *    operation so the fresh value is visible in the next request window.
+ *    omitted to keep the module dependency-free and GC-friendly.
+ *  - Cross-replica invalidation (Issue #1284): When an update occurs, an
+ *    invalidation message is published to the `__enterprise_tier:invalidate`
+ *    channel so peer replicas evict stale entries within sub-second bounds.
+ *  - If the invalidation channel is unavailable or Redis is not deployed,
+ *    replicas gracefully recover via the 5-minute TTL eviction and emit
+ *    diagnostic alerts (ENTERPRISE_TIER_INVALIDATION_DEGRADED).
  */
 
+import { randomUUID } from 'crypto';
 import { logger } from '../logger';
 import { TIER_CONFIG } from '../auth/rbac';
 
@@ -26,16 +30,6 @@ export type GraceDegradationStrategy = 'drop' | 'queue' | 'fallback';
 
 /**
  * Custom rate-limit configuration for a single enterprise organisation.
- *
- * @property maxPerMinute      - Sustained request ceiling per 60-second window.
- * @property maxBurst          - Instantaneous burst allowance (token-bucket capacity).
- * @property windowMs          - Rolling window length in milliseconds.
- * @property label             - Human-readable tier label shown in X-RateLimit-Tier.
- * @property featureFlags      - Opt-in feature flags scoped to this org's tier.
- * @property graceDegradation  - Behaviour when Redis/DB is unavailable:
- *                               'drop'     → reject with 503 immediately.
- *                               'queue'    → queue request and drain when healthy.
- *                               'fallback' → apply standard enterprise defaults.
  */
 export interface EnterpriseTierConfig {
   maxPerMinute: number;
@@ -46,10 +40,34 @@ export interface EnterpriseTierConfig {
   graceDegradation: GraceDegradationStrategy;
 }
 
-// ── Cache internals ───────────────────────────────────────────────────────────
+/** Pub/Sub invalidation message payload across API replicas. */
+export interface EnterpriseTierInvalidationMessage {
+  orgId?: string;
+  senderId: string;
+  timestamp: number;
+  action?: 'upsert' | 'delete' | 'clear';
+}
+
+export interface InvalidationPublisher {
+  publish(channel: string, message: string): Promise<number>;
+}
+
+export interface InvalidationSubscriber {
+  subscribe(channel: string, listener: (message: string, channel: string) => void): Promise<void>;
+  unsubscribe(channel?: string): Promise<void>;
+}
+
+// ── Constants & State ─────────────────────────────────────────────────────────
+
+export const ENTERPRISE_TIER_INVALIDATION_CHANNEL = '__enterprise_tier:invalidate';
+
+/** Bounded propagation window target for cross-replica invalidations (sub-second). */
+export const PROPAGATION_TARGET_MS = 500;
 
 /** How long a cached entry stays valid before it is evicted on next read. */
-const CACHE_TTL_MS = 5 * 60_000; // 5 minutes
+export const CACHE_TTL_MS = 5 * 60_000; // 5 minutes
+
+export const INSTANCE_ID = process.env.POD_NAME || process.env.HOSTNAME || randomUUID();
 
 interface CacheEntry {
   config: EnterpriseTierConfig;
@@ -58,9 +76,11 @@ interface CacheEntry {
 
 const tierCache = new Map<string, CacheEntry>();
 
-// ── Standard enterprise defaults (sourced from TIER_CONFIG for consistency) ──
+let activePublisher: InvalidationPublisher | null = null;
+let activeSubscriber: InvalidationSubscriber | null = null;
 
-/** Standard enterprise limits used as a fallback when no custom config exists. */
+// ── Standard enterprise defaults ──────────────────────────────────────────────
+
 export const ENTERPRISE_DEFAULTS: EnterpriseTierConfig = {
   maxPerMinute: TIER_CONFIG.enterprise.rateLimit.perMinute,
   maxBurst: TIER_CONFIG.enterprise.rateLimit.burst,
@@ -70,25 +90,149 @@ export const ENTERPRISE_DEFAULTS: EnterpriseTierConfig = {
   graceDegradation: 'fallback',
 };
 
-// ── Public API ────────────────────────────────────────────────────────────────
+// ── Invalidation Hooks ────────────────────────────────────────────────────────
+
+export function setInvalidationPublisher(publisher: InvalidationPublisher | null): void {
+  activePublisher = publisher;
+}
+
+export function setInvalidationSubscriber(subscriber: InvalidationSubscriber | null): void {
+  activeSubscriber = subscriber;
+}
+
+export function getInvalidationPublisher(): InvalidationPublisher | null {
+  return activePublisher;
+}
 
 /**
- * Retrieve the enterprise tier config for an organisation from the in-memory
- * cache.  Returns `null` if no custom config has been registered for `orgId`.
+ * Broadcast an invalidation signal to all other active API replicas.
+ * Always purges the local in-memory cache immediately.
  *
- * This is a synchronous operation that exposes an async signature so callers
- * can transparently swap in a DB-backed implementation in the future without
- * changing call sites.
+ * If the channel is disconnected or unavailable, records a structured diagnostic
+ * and returns false without breaking execution.
+ */
+export async function publishEnterpriseTierInvalidation(
+  orgId?: string,
+  publisher: InvalidationPublisher | null = activePublisher,
+): Promise<boolean> {
+  // Always evict locally first
+  clearEnterpriseTierCache(orgId);
+
+  if (!publisher) {
+    logger.warn(
+      '[enterprise-tier-cache] Invalidation publisher unavailable; cross-replica invalidation degraded. Replicas will recover on TTL expiry.',
+      { orgId, alert: 'ENTERPRISE_TIER_INVALIDATION_DEGRADED' },
+    );
+    return false;
+  }
+
+  const payload: EnterpriseTierInvalidationMessage = {
+    orgId,
+    senderId: INSTANCE_ID,
+    timestamp: Date.now(),
+    action: orgId ? 'upsert' : 'clear',
+  };
+
+  try {
+    await publisher.publish(ENTERPRISE_TIER_INVALIDATION_CHANNEL, JSON.stringify(payload));
+    logger.debug('[enterprise-tier-cache] Cross-replica invalidation broadcasted', { orgId });
+    return true;
+  } catch (err) {
+    logger.error(
+      '[enterprise-tier-cache] Failed to broadcast cross-replica invalidation; replicas will recover on TTL expiry',
+      { orgId, error: String(err), alert: 'ENTERPRISE_TIER_INVALIDATION_DEGRADED' },
+    );
+    return false;
+  }
+}
+
+/**
+ * Handle incoming cross-replica invalidation message.
+ */
+export function handleRemoteInvalidation(
+  rawMessage: string,
+  onInvalidate?: (orgId?: string) => void,
+): void {
+  try {
+    let orgId: string | undefined;
+    let senderId: string | undefined;
+
+    if (rawMessage.startsWith('{')) {
+      const parsed = JSON.parse(rawMessage) as EnterpriseTierInvalidationMessage;
+      orgId = parsed.orgId;
+      senderId = parsed.senderId;
+    } else {
+      orgId = rawMessage.trim() || undefined;
+    }
+
+    // Don't re-process messages from ourself if senderId is identified
+    if (senderId && senderId === INSTANCE_ID) {
+      return;
+    }
+
+    clearEnterpriseTierCache(orgId);
+    if (onInvalidate) onInvalidate(orgId);
+
+    logger.debug('[enterprise-tier-cache] Processed cross-replica invalidation', {
+      orgId,
+      senderId,
+    });
+  } catch (err) {
+    // If malformed, clear entire cache defensively
+    clearEnterpriseTierCache();
+    logger.warn('[enterprise-tier-cache] Malformed invalidation message; cleared full cache', {
+      error: String(err),
+      rawMessage,
+    });
+  }
+}
+
+/**
+ * Initialize subscriber on an invalidation listener.
+ */
+export async function setupEnterpriseTierSubscriber(
+  subscriber: InvalidationSubscriber,
+  onInvalidate?: (orgId?: string) => void,
+): Promise<() => Promise<void>> {
+  activeSubscriber = subscriber;
+
+  await subscriber.subscribe(ENTERPRISE_TIER_INVALIDATION_CHANNEL, (message: string) => {
+    handleRemoteInvalidation(message, onInvalidate);
+  });
+
+  logger.info('[enterprise-tier-cache] Cross-replica invalidation subscriber registered', {
+    channel: ENTERPRISE_TIER_INVALIDATION_CHANNEL,
+    boundMs: PROPAGATION_TARGET_MS,
+  });
+
+  return async () => {
+    try {
+      await subscriber.unsubscribe(ENTERPRISE_TIER_INVALIDATION_CHANNEL);
+      if (activeSubscriber === subscriber) {
+        activeSubscriber = null;
+      }
+    } catch (err) {
+      logger.warn('[enterprise-tier-cache] Error unsubscribing from invalidation channel', {
+        error: String(err),
+      });
+    }
+  };
+}
+
+// ── Public Cache Accessors ────────────────────────────────────────────────────
+
+/**
+ * Retrieve the enterprise tier config for an organisation from the in-memory cache.
+ * Returns `null` if no custom config has been registered for `orgId`.
  */
 export async function getEnterpriseTierConfig(orgId: string): Promise<EnterpriseTierConfig | null> {
   if (!orgId) return null;
 
   const entry = tierCache.get(orgId);
-
   if (!entry) return null;
 
   if (entry.expiresAt <= Date.now()) {
-    // Lazy TTL eviction — expired entry is removed on first stale read.
+    // Lazy TTL eviction
     tierCache.delete(orgId);
     logger.debug('[enterprise-tier-cache] TTL expired, entry evicted', { orgId });
     return null;
@@ -109,9 +253,6 @@ export function setEnterpriseTierConfig(orgId: string, config: EnterpriseTierCon
 
 /**
  * Evict one or all entries from the in-memory cache.
- *
- * @param orgId - When supplied, only that org's entry is removed.
- *                When omitted (or `undefined`), the entire cache is cleared.
  */
 export function clearEnterpriseTierCache(orgId?: string): void {
   if (orgId !== undefined) {
@@ -124,8 +265,7 @@ export function clearEnterpriseTierCache(orgId?: string): void {
 }
 
 /**
- * Return the number of currently cached entries (expired entries included
- * until they are lazily evicted).  Primarily useful in tests.
+ * Return the number of currently cached entries.
  */
 export function getEnterpriseTierCacheSize(): number {
   return tierCache.size;

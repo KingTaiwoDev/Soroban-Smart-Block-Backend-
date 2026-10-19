@@ -46,8 +46,6 @@ export const httpErrorsTotal = new Counter({
   registers: [registry],
 });
 
-const gasFeeAlertMeter = otelMetrics.getMeter('soroban-gas-fee-alerts');
-
 export const contractAbiSubmissionOperations = new Counter({
   name: 'contract_abi_submission_operations_total',
   help: 'Contract ABI submission workflow operations by operation and outcome',
@@ -61,7 +59,6 @@ export const gasFeeAlertApiOperations = new Counter({
   labelNames: ['operation', 'outcome'],
   registers: [registry],
 });
-const gasFeeAlertMeter = otelMetrics.getMeter('soroban-gas-fee-alerts');
 export const gasFeeAlertApiOperationsOtel = gasFeeAlertMeter.createCounter(
   'gas.fee_alert.api.operations',
 );

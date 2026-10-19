@@ -9,8 +9,10 @@ import { logger } from '../logger';
 import {
   setEnterpriseTierConfig,
   clearEnterpriseTierCache,
+  publishEnterpriseTierInvalidation,
   ENTERPRISE_DEFAULTS,
   type EnterpriseTierConfig,
+  type GraceDegradationStrategy,
 } from '../middleware/enterpriseTierCache';
 
 // ── Zod schemas ───────────────────────────────────────────────────────────────
@@ -147,6 +149,26 @@ rateLimitAdminRouter.get(
   asyncHandler(async (_req: Request, res: Response) => {
     try {
       const prisma = prismaRead as any;
+
+      if (prisma.enterpriseTierConfig) {
+        const rows = await prisma.enterpriseTierConfig.findMany({
+          orderBy: { createdAt: 'asc' },
+        });
+
+        const tiers = rows.map((row: any) => ({
+          orgId: row.orgId,
+          maxPerMinute: row.maxPerMinute,
+          maxBurst: row.maxBurst,
+          windowMs: row.windowMs,
+          label: row.label,
+          featureFlags: row.featureFlags,
+          graceDegradation: row.graceDegradation as GraceDegradationStrategy,
+        }));
+
+        return res.json({ success: true, tiers });
+      }
+
+      // Fallback for pre-migration or legacy overrides
       const rows = await prisma.rateLimitOverride.findMany({
         where: { identifier: { startsWith: 'ent:' } },
         orderBy: { createdAt: 'asc' },
@@ -200,28 +222,53 @@ rateLimitAdminRouter.post(
       featureFlags: tierFields.featureFlags,
       graceDegradation: tierFields.graceDegradation,
     };
-    const row = tierConfigToRow(orgId, config);
 
     try {
-      await prismaWrite.rateLimitOverride.upsert({
-        where: {
-          identifier_endpoint: {
+      const prisma = prismaWrite as any;
+
+      if (prisma.enterpriseTierConfig) {
+        await prisma.enterpriseTierConfig.upsert({
+          where: { orgId },
+          update: {
+            maxPerMinute: config.maxPerMinute,
+            maxBurst: config.maxBurst,
+            windowMs: config.windowMs,
+            label: config.label,
+            featureFlags: config.featureFlags,
+            graceDegradation: config.graceDegradation,
+          },
+          create: {
+            orgId,
+            maxPerMinute: config.maxPerMinute,
+            maxBurst: config.maxBurst,
+            windowMs: config.windowMs,
+            label: config.label,
+            featureFlags: config.featureFlags,
+            graceDegradation: config.graceDegradation,
+          },
+        });
+      } else {
+        const row = tierConfigToRow(orgId, config);
+        await prisma.rateLimitOverride.upsert({
+          where: {
+            identifier_endpoint: {
+              identifier: row.identifier,
+              endpoint: row.endpoint,
+            },
+          },
+          update: { max: row.max, windowMs: row.windowMs },
+          create: {
             identifier: row.identifier,
             endpoint: row.endpoint,
+            max: row.max,
+            windowMs: row.windowMs,
           },
-        },
-        update: { max: row.max, windowMs: row.windowMs },
-        create: {
-          identifier: row.identifier,
-          endpoint: row.endpoint,
-          max: row.max,
-          windowMs: row.windowMs,
-        },
-      });
+        });
+      }
 
-      // Populate cache immediately so next request uses the new config.
+      // Populate local cache and broadcast cross-replica invalidation
       setEnterpriseTierConfig(orgId, config);
-      clearEnterpriseTierCache(orgId); // invalidate then re-populate on next read
+      await publishEnterpriseTierInvalidation(orgId);
 
       logger.info('[rate-limit] Enterprise tier upserted', { orgId, label: config.label });
 
@@ -253,6 +300,33 @@ rateLimitAdminRouter.get(
 
     try {
       const prisma = prismaRead as any;
+
+      if (prisma.enterpriseTierConfig) {
+        const record = await prisma.enterpriseTierConfig.findUnique({
+          where: { orgId },
+        });
+
+        if (!record) {
+          return res.status(404).json({
+            error: 'No custom enterprise tier found for this org',
+            orgId,
+            defaults: ENTERPRISE_DEFAULTS,
+          });
+        }
+
+        const config: EnterpriseTierConfig = {
+          maxPerMinute: record.maxPerMinute,
+          maxBurst: record.maxBurst,
+          windowMs: record.windowMs,
+          label: record.label,
+          featureFlags: record.featureFlags,
+          graceDegradation: record.graceDegradation as GraceDegradationStrategy,
+        };
+
+        return res.json({ success: true, orgId, config });
+      }
+
+      // Fallback for pre-migration
       const rows = await prisma.rateLimitOverride.findMany({
         where: { identifier: `ent:${orgId}` },
       });
@@ -295,12 +369,20 @@ rateLimitAdminRouter.delete(
 
     try {
       const prisma = prismaWrite as any;
-      // Delete all rows for this org (endpoint field varies by encoding).
-      await prisma.rateLimitOverride.deleteMany({
-        where: { identifier: `ent:${orgId}` },
-      });
 
-      clearEnterpriseTierCache(orgId);
+      if (prisma.enterpriseTierConfig) {
+        await prisma.enterpriseTierConfig.deleteMany({
+          where: { orgId },
+        });
+      }
+
+      if (prisma.rateLimitOverride) {
+        await prisma.rateLimitOverride.deleteMany({
+          where: { identifier: `ent:${orgId}` },
+        });
+      }
+
+      await publishEnterpriseTierInvalidation(orgId);
 
       logger.info('[rate-limit] Enterprise tier deleted, reset to standard defaults', { orgId });
 
@@ -316,3 +398,4 @@ rateLimitAdminRouter.delete(
     }
   }),
 );
+

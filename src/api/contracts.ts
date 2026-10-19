@@ -45,6 +45,8 @@ const abiSchema = z.object({
   protocolKey: z.string().min(1).max(128).optional(),
   isCanonical: z.boolean().optional(),
   deployedAtLedger: z.number().int().nonnegative().optional(),
+  trustLevel: z.enum(['unverified', 'community', 'verified_publisher', 'canonical', 'official']).optional(),
+  provenance: z.record(z.unknown()).optional(),
 });
 
 const contractStatsQuerySchema = z.object({
@@ -67,6 +69,8 @@ const networkDeploymentSelect = {
   protocolKey: true,
   isCanonical: true,
   deployedAtLedger: true,
+  trustLevel: true,
+  provenance: true,
 } as const;
 
 const deploymentOrderBy = [{ isCanonical: 'desc' as const }, { network: 'asc' as const }];
@@ -440,12 +444,16 @@ export async function registerContractMetadata(data: ContractRegistrationInput) 
       ...(data.name !== undefined ? { name: data.name } : {}),
       ...(data.description !== undefined ? { description: data.description } : {}),
       ...(data.abi !== undefined ? { abi: data.abi as object } : {}),
+      ...(data.trustLevel !== undefined ? { trustLevel: data.trustLevel } : {}),
+      ...(data.provenance !== undefined ? { provenance: data.provenance as object } : {}),
     },
     create: {
       address: canonicalAddress,
       name: data.name,
       description: data.description,
       abi: data.abi as object,
+      ...(data.trustLevel !== undefined ? { trustLevel: data.trustLevel } : {}),
+      ...(data.provenance !== undefined ? { provenance: data.provenance as object } : {}),
     },
   });
 
@@ -468,6 +476,8 @@ export async function registerContractMetadata(data: ContractRegistrationInput) 
       ...(data.protocolKey !== undefined ? { protocolKey: data.protocolKey } : {}),
       ...(data.isCanonical !== undefined ? { isCanonical: data.isCanonical } : {}),
       ...(data.deployedAtLedger !== undefined ? { deployedAtLedger: data.deployedAtLedger } : {}),
+      ...(data.trustLevel !== undefined ? { trustLevel: data.trustLevel } : {}),
+      ...(data.provenance !== undefined ? { provenance: data.provenance as object } : {}),
     },
     create: {
       address: data.address,
@@ -481,6 +491,8 @@ export async function registerContractMetadata(data: ContractRegistrationInput) 
       protocolKey: data.protocolKey,
       isCanonical: data.isCanonical ?? false,
       deployedAtLedger: data.deployedAtLedger,
+      ...(data.trustLevel !== undefined ? { trustLevel: data.trustLevel } : {}),
+      ...(data.provenance !== undefined ? { provenance: data.provenance as object } : {}),
     },
   });
 
