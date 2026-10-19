@@ -5,6 +5,7 @@
  */
 import type { NormalizedOperation, OpenApiDocument } from '../../src/lib/openapi/normalize';
 import { pythonEmitter } from './emit-python';
+import { goEmitter } from './emit-go';
 
 export interface EmitterInput {
   doc: OpenApiDocument;
@@ -14,4 +15,4 @@ export interface EmitterInput {
 
 export type Emitter = (input: EmitterInput) => Array<{ path: string; content: string }>;
 
-export const EXTRA_EMITTERS: Emitter[] = [pythonEmitter];
+export const EXTRA_EMITTERS: Emitter[] = [pythonEmitter, goEmitter];

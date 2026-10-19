@@ -31,16 +31,16 @@ The SDK generation pipeline is a production-grade system that automatically gene
 │  • Graceful degradation with circuit breakers                     │
 └────────────────────────┬────────────────────────────────────────┘
                          │
-         ┌───────────────┼───────────────┐
-         │               │               │
-         ▼               ▼               ▼
-┌─────────────────┐ ┌─────────────┐ ┌─────────────┐
-│ TypeScript     │ │ Python      │ │ Parity      │
-│ Emitter        │ │ Emitter     │ │ Matrix      │
-│                │ │             │ │ Generator   │
-└─────────────────┘ └─────────────┘ └─────────────┘
-         │               │               │
-         └───────────────┼───────────────┘
+         ┌───────────────┬───────────────┬───────────────┐
+         │               │               │               │
+         ▼               ▼               ▼               ▼
+┌─────────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
+│ TypeScript     │ │ Python      │ │ Go          │ │ Parity      │
+│ Emitter        │ │ Emitter     │ │ Emitter     │ │ Matrix      │
+│                │ │             │ │             │ │ Generator   │
+└─────────────────┘ └─────────────┘ └─────────────┘ └─────────────┘
+         │               │               │               │
+         └───────────────┴───────────────┴───────────────┘
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
@@ -518,7 +518,8 @@ npm run sdk:test:chaos
 ## Future Enhancements
 
 ### Planned Features
-- [ ] Additional language emitters (Go, Java, C#)
+- [x] Go client emitter (`packages/go-client`)
+- [ ] Additional language emitters (Java, C#)
 - [ ] Real-time spec monitoring and auto-generation
 - [ ] Advanced caching strategies
 - [ ] Distributed generation for large specs

@@ -2,7 +2,7 @@
 
 # SDK Route Parity Matrix
 
-Every operation in `/api/v1/openapi.json` (506 operations) and how each
+Every operation in `/api/v1/openapi.json` (383 operations) and how each
 first-party client exposes it. "`call`" means the generated, fully typed
 `client.call('<operationId>', …)`; named methods are curated conveniences over
 the same call.
@@ -11,511 +11,388 @@ Realtime surfaces (not in OpenAPI): feed WebSocket `/ws/v1/feed`, feed SSE
 `/api/v1/feed/sse` and GraphQL subscriptions (SSE on `/api/graphql`) are covered
 by `client.realtime` in TypeScript and `client.stream_feed()` in Python.
 
-| Operation | Method | Path | TypeScript | Python |
-|-----------|--------|------|------------|--------|
-| `getAdminContractAbiSubmissions` | GET | `/admin/contract-abi-submissions` | ✅ `call` | ✅ `call` |
-| `postAdminContractAbiSubmissionsByIdApprove` | POST | `/admin/contract-abi-submissions/{id}/approve` | ✅ `call` | ✅ `call` |
-| `postAdminContractAbiSubmissionsByIdPublish` | POST | `/admin/contract-abi-submissions/{id}/publish` | ✅ `call` | ✅ `call` |
-| `postAdminContractAbiSubmissionsByIdReject` | POST | `/admin/contract-abi-submissions/{id}/reject` | ✅ `call` | ✅ `call` |
-| `getAdvancedEvents` | GET | `/advanced-events` | ✅ `call` | ✅ `call` |
-| `getAdvancedEventsAggregations` | GET | `/advanced-events/aggregations` | ✅ `call` | ✅ `call` |
-| `getAdvancedEventsContractsByContractId` | GET | `/advanced-events/contracts/{contractId}` | ✅ `call` | ✅ `call` |
-| `postAdvancedEventsQuery` | POST | `/advanced-events/query` | ✅ `call` | ✅ `call` |
-| `getAdvancedEventsReplayByTxHash` | GET | `/advanced-events/replay/{txHash}` | ✅ `call` | ✅ `call` |
-| `getAdvancedEventsSubscriptions` | GET | `/advanced-events/subscriptions` | ✅ `call` | ✅ `call` |
-| `postAdvancedEventsSubscriptions` | POST | `/advanced-events/subscriptions` | ✅ `call` | ✅ `call` |
-| `deleteAdvancedEventsSubscriptionsById` | DELETE | `/advanced-events/subscriptions/{id}` | ✅ `call` | ✅ `call` |
-| `getAgents` | GET | `/agents` | ✅ `call` | ✅ `call` |
-| `postAgents` | POST | `/agents` | ✅ `call` | ✅ `call` |
-| `postAgentsByIdExecute` | POST | `/agents/{id}/execute` | ✅ `call` | ✅ `call` |
-| `postAgentsEscalations` | POST | `/agents/escalations` | ✅ `call` | ✅ `call` |
-| `postAgentsMessages` | POST | `/agents/messages` | ✅ `call` | ✅ `call` |
-| `getAgentsMonitoringDashboard` | GET | `/agents/monitoring/dashboard` | ✅ `call` | ✅ `call` |
-| `postAgentsNegotiate` | POST | `/agents/negotiate` | ✅ `call` | ✅ `call` |
-| `getAgentsRegistry` | GET | `/agents/registry` | ✅ `call` | ✅ `call` |
-| `postAgentsRegistry` | POST | `/agents/registry` | ✅ `call` | ✅ `call` |
-| `getAgentsVerificationByExecutionId` | GET | `/agents/verification/{executionId}` | ✅ `call` | ✅ `call` |
-| `postAgentsVerificationByExecutionId` | POST | `/agents/verification/{executionId}` | ✅ `call` | ✅ `call` |
-| `getAnalyticsDashboardByType` | GET | `/analytics/dashboard/{type}` | ✅ `call` | ✅ `call` |
-| `getAnalyticsGas` | GET | `/analytics/gas` | ✅ `call` | ✅ `call` |
-| `getAnalyticsLineage` | GET | `/analytics/lineage` | ✅ `call` | ✅ `call` |
-| `postAnalyticsQuery` | POST | `/analytics/query` | ✅ `call` | ✅ `call` |
-| `postAnalyticsQueryEstimate` | POST | `/analytics/query/estimate` | ✅ `call` | ✅ `call` |
-| `getAnalyticsQueryTemplates` | GET | `/analytics/query/templates` | ✅ `call` | ✅ `call` |
-| `getApiV1ContractsProtocolByProtocolKey` | GET | `/api/v1/contracts/protocol/{protocolKey}` | ✅ `call` | ✅ `call` |
-| `getApiV1GraphContractCalls` | GET | `/api/v1/graph/contract-calls` | ✅ `call` | ✅ `call` |
-| `getApiV1MevPredictions` | GET | `/api/v1/mev/predictions` | ✅ `call` | ✅ `call` |
-| `getApiV1MevPredictionsConfig` | GET | `/api/v1/mev/predictions/config` | ✅ `call` | ✅ `call` |
-| `postApiV1MevPredictionsIngest` | POST | `/api/v1/mev/predictions/ingest` | ✅ `call` | ✅ `call` |
-| `deleteApiV1MevPredictionsPending` | DELETE | `/api/v1/mev/predictions/pending` | ✅ `call` | ✅ `call` |
-| `getApiV1MevPredictionsPending` | GET | `/api/v1/mev/predictions/pending` | ✅ `call` | ✅ `call` |
-| `getAssetsMetrics` | GET | `/assets/metrics` | ✅ `call` | ✅ `call` |
-| `getAuthorizations` | GET | `/authorizations` | ✅ `call` | ✅ `call` |
-| `getAuthorizationsById` | GET | `/authorizations/{id}` | ✅ `call` | ✅ `call` |
-| `getAuthorizationsDashboard` | GET | `/authorizations/dashboard` | ✅ `call` | ✅ `call` |
-| `postBatchAccounts` | POST | `/batch/accounts` | ✅ `call` | ✅ `call` |
-| `postBatchEvents` | POST | `/batch/events` | ✅ `call` | ✅ `call` |
-| `postBatchTransactions` | POST | `/batch/transactions` | ✅ `call` | ✅ `call` |
-| `getBn254` | GET | `/bn254` | ✅ `call` | ✅ `call` |
-| `postBn254PairingCheck` | POST | `/bn254/pairing-check` | ✅ `call` | ✅ `call` |
-| `getBn254Params` | GET | `/bn254/params` | ✅ `call` | ✅ `call` |
-| `postBn254PointAdd` | POST | `/bn254/point-add` | ✅ `call` | ✅ `call` |
-| `postBn254ScalarMul` | POST | `/bn254/scalar-mul` | ✅ `call` | ✅ `call` |
-| `postBn254VerifyGroth16` | POST | `/bn254/verify-groth16` | ✅ `call` | ✅ `call` |
-| `postBn254VerifyPlonk` | POST | `/bn254/verify-plonk` | ✅ `call` | ✅ `call` |
-| `getCheckedArithmetic` | GET | `/checked-arithmetic` | ✅ `call` | ✅ `call` |
-| `postCheckedArithmeticCompute` | POST | `/checked-arithmetic/compute` | ✅ `call` | ✅ `call` |
-| `postCheckedArithmeticComputeBatch` | POST | `/checked-arithmetic/compute/batch` | ✅ `call` | ✅ `call` |
-| `getCheckedArithmeticLimits` | GET | `/checked-arithmetic/limits` | ✅ `call` | ✅ `call` |
-| `postCheckedArithmeticValidate` | POST | `/checked-arithmetic/validate` | ✅ `call` | ✅ `call` |
-| `getCompiler` | GET | `/compiler` | ✅ `call` | ✅ `call` |
-| `postCompilerCompile` | POST | `/compiler/compile` | ✅ `call` | ✅ `call` |
-| `getCompilerMetrics` | GET | `/compiler/metrics` | ✅ `call` | ✅ `call` |
-| `getCompilerToolchains` | GET | `/compiler/toolchains` | ✅ `call` | ✅ `call` |
-| `postCompilerVerify` | POST | `/compiler/verify` | ✅ `call` | ✅ `call` |
-| `getComplianceTokenLabelsByTokenId` | GET | `/compliance/token-labels/{tokenId}` | ✅ `call` | ✅ `call` |
-| `putComplianceTokenLabelsByTokenId` | PUT | `/compliance/token-labels/{tokenId}` | ✅ `call` | ✅ `call` |
-| `postComposabilityAlerts` | POST | `/composability/alerts` | ✅ `call` | ✅ `call` |
-| `postComposabilityAnalyze` | POST | `/composability/analyze` | ✅ `call` | ✅ `call` |
-| `postComposabilityAnalyzeBatch` | POST | `/composability/analyze/batch` | ✅ `call` | ✅ `call` |
-| `getComposabilityCircularDependencies` | GET | `/composability/circular-dependencies` | ✅ `call` | ✅ `call` |
-| `getComposabilityContractsByAddress` | GET | `/composability/contracts/{address}` | ✅ `call` | ✅ `call` |
-| `getComposabilityContractsByAddressCallees` | GET | `/composability/contracts/{address}/callees` | ✅ `call` | ✅ `call` |
-| `getComposabilityContractsByAddressCallers` | GET | `/composability/contracts/{address}/callers` | ✅ `call` | ✅ `call` |
-| `getComposabilityContractsByAddressPatterns` | GET | `/composability/contracts/{address}/patterns` | ✅ `call` | ✅ `call` |
-| `getComposabilityDigest` | GET | `/composability/digest` | ✅ `call` | ✅ `call` |
-| `getComposabilityEcosystemIndex` | GET | `/composability/ecosystem-index` | ✅ `call` | ✅ `call` |
-| `getComposabilityEcosystemIndexHistory` | GET | `/composability/ecosystem-index/history` | ✅ `call` | ✅ `call` |
-| `getComposabilityExploitDatabase` | GET | `/composability/exploit-database` | ✅ `call` | ✅ `call` |
-| `postComposabilityExploitDatabase` | POST | `/composability/exploit-database` | ✅ `call` | ✅ `call` |
-| `postComposabilityExploitCheck` | POST | `/composability/exploit/check` | ✅ `call` | ✅ `call` |
-| `getComposabilityExploitDetected` | GET | `/composability/exploit/detected` | ✅ `call` | ✅ `call` |
-| `getComposabilityFuzzByCampaignId` | GET | `/composability/fuzz/{campaignId}` | ✅ `call` | ✅ `call` |
-| `getComposabilityFuzzByCampaignIdCoverage` | GET | `/composability/fuzz/{campaignId}/coverage` | ✅ `call` | ✅ `call` |
-| `postComposabilityFuzzByContractAddress` | POST | `/composability/fuzz/{contractAddress}` | ✅ `call` | ✅ `call` |
-| `getComposabilityGraph` | GET | `/composability/graph` | ✅ `call` | ✅ `call` |
-| `getComposabilityLeaderboard` | GET | `/composability/leaderboard` | ✅ `call` | ✅ `call` |
-| `postComposabilityMitigateByTxHash` | POST | `/composability/mitigate/{txHash}` | ✅ `call` | ✅ `call` |
-| `postComposabilityMitigateContractByContractAddress` | POST | `/composability/mitigate/contract/{contractAddress}` | ✅ `call` | ✅ `call` |
-| `getComposabilityPatterns` | GET | `/composability/patterns` | ✅ `call` | ✅ `call` |
-| `postComposabilityPatterns` | POST | `/composability/patterns` | ✅ `call` | ✅ `call` |
-| `getComposabilityPatternsById` | GET | `/composability/patterns/{id}` | ✅ `call` | ✅ `call` |
-| `getComposabilityReportByTxHash` | GET | `/composability/report/{txHash}` | ✅ `call` | ✅ `call` |
-| `getComposabilityScoreByTxHash` | GET | `/composability/score/{txHash}` | ✅ `call` | ✅ `call` |
-| `postComposabilityStaticAnalyzeByAddress` | POST | `/composability/static-analyze/{address}` | ✅ `call` | ✅ `call` |
-| `getComposabilityTransactionsByTxHash` | GET | `/composability/transactions/{txHash}` | ✅ `call` | ✅ `call` |
-| `postComposabilityVerifyByTxHash` | POST | `/composability/verify/{txHash}` | ✅ `call` | ✅ `call` |
-| `getComposabilityVerifyByTxHashProof` | GET | `/composability/verify/{txHash}/proof` | ✅ `call` | ✅ `call` |
-| `getContracts` | GET | `/contracts` | ✅ `client.contracts.list()` | ✅ `client.contracts.list()` |
-| `postContracts` | POST | `/contracts` | ✅ `call` | ✅ `call` |
-| `getContractsByAddress` | GET | `/contracts/{address}` | ✅ `client.contracts.get(address)` | ✅ `client.contracts.get(address)` |
-| `getContractsByAddressStats` | GET | `/contracts/{address}/stats` | ✅ `call` | ✅ `call` |
-| `postContractsAbiSubmissions` | POST | `/contracts/abi-submissions` | ✅ `call` | ✅ `call` |
-| `getContractsLicenses` | GET | `/contracts/licenses` | ✅ `call` | ✅ `call` |
-| `getContractsLicensesByContractId` | GET | `/contracts/licenses/{contractId}` | ✅ `call` | ✅ `call` |
-| `putContractsLicensesByContractId` | PUT | `/contracts/licenses/{contractId}` | ✅ `call` | ✅ `call` |
-| `getEvents` | GET | `/events` | ✅ `client.events.list()` | ✅ `client.events.list()` |
-| `getEventsById` | GET | `/events/{id}` | ✅ `client.events.get(id)` | ✅ `client.events.get(id)` |
-| `getFactoryTracker` | GET | `/factory-tracker` | ✅ `call` | ✅ `call` |
-| `getFactoryTrackerContractsByContractIdLineage` | GET | `/factory-tracker/contracts/{contractId}/lineage` | ✅ `call` | ✅ `call` |
-| `getFactoryTrackerFactories` | GET | `/factory-tracker/factories` | ✅ `call` | ✅ `call` |
-| `getFactoryTrackerFactoriesByContractId` | GET | `/factory-tracker/factories/{contractId}` | ✅ `call` | ✅ `call` |
-| `getFactoryTrackerFactoriesByContractIdChildren` | GET | `/factory-tracker/factories/{contractId}/children` | ✅ `call` | ✅ `call` |
-| `getFactoryTrackerStats` | GET | `/factory-tracker/stats` | ✅ `call` | ✅ `call` |
-| `getGraphContractsByAddressDownstream` | GET | `/graph/contracts/{address}/downstream` | ✅ `call` | ✅ `call` |
-| `getGraphContractsByAddressUpstream` | GET | `/graph/contracts/{address}/upstream` | ✅ `call` | ✅ `call` |
-| `getGraphDependencies` | GET | `/graph/dependencies` | ✅ `call` | ✅ `call` |
-| `getGraphDependenciesSvg` | GET | `/graph/dependencies/svg` | ✅ `call` | ✅ `call` |
-| `getGraphExplorer` | GET | `/graph/explorer` | ✅ `call` | ✅ `call` |
-| `postGraphQuery` | POST | `/graph/query` | ✅ `call` | ✅ `call` |
-| `postGraphTemplatesCommunityDetection` | POST | `/graph/templates/community-detection` | ✅ `call` | ✅ `call` |
-| `postGraphTemplatesContractCalls` | POST | `/graph/templates/contract-calls` | ✅ `call` | ✅ `call` |
-| `postGraphTemplatesInfluence` | POST | `/graph/templates/influence` | ✅ `call` | ✅ `call` |
-| `postGraphTemplatesKHop` | POST | `/graph/templates/k-hop` | ✅ `call` | ✅ `call` |
-| `postGraphTemplatesPagerank` | POST | `/graph/templates/pagerank` | ✅ `call` | ✅ `call` |
-| `postGraphTemplatesShortestPath` | POST | `/graph/templates/shortest-path` | ✅ `call` | ✅ `call` |
-| `postGraphTemplatesTokenNetwork` | POST | `/graph/templates/token-network` | ✅ `call` | ✅ `call` |
-| `postGraphTemplatesTransactionFlow` | POST | `/graph/templates/transaction-flow` | ✅ `call` | ✅ `call` |
-| `postHydrationEntities` | POST | `/hydration/entities` | ✅ `call` | ✅ `call` |
-| `getI18nDictionaryByLanguage` | GET | `/i18n/dictionary/{language}` | ✅ `call` | ✅ `call` |
-| `getI18nKeys` | GET | `/i18n/keys` | ✅ `call` | ✅ `call` |
-| `postI18nKeys` | POST | `/i18n/keys` | ✅ `call` | ✅ `call` |
-| `getI18nLanguages` | GET | `/i18n/languages` | ✅ `call` | ✅ `call` |
-| `getI18nMatrix` | GET | `/i18n/matrix` | ✅ `call` | ✅ `call` |
-| `postI18nSeed` | POST | `/i18n/seed` | ✅ `call` | ✅ `call` |
-| `getI18nTranslate` | GET | `/i18n/translate` | ✅ `call` | ✅ `call` |
-| `postI18nTranslateBatch` | POST | `/i18n/translate/batch` | ✅ `call` | ✅ `call` |
-| `postI18nTranslations` | POST | `/i18n/translations` | ✅ `call` | ✅ `call` |
-| `patchI18nTranslationsById` | PATCH | `/i18n/translations/{id}` | ✅ `call` | ✅ `call` |
-| `getLakehouseDashboards` | GET | `/lakehouse/dashboards` | ✅ `call` | ✅ `call` |
-| `getLakehouseHealth` | GET | `/lakehouse/health` | ✅ `call` | ✅ `call` |
-| `postLakehouseQuery` | POST | `/lakehouse/query` | ✅ `call` | ✅ `call` |
-| `postLakehouseQueryPlan` | POST | `/lakehouse/query/plan` | ✅ `call` | ✅ `call` |
-| `getLakehouseSchemas` | GET | `/lakehouse/schemas` | ✅ `call` | ✅ `call` |
-| `getLakehouseTiers` | GET | `/lakehouse/tiers` | ✅ `call` | ✅ `call` |
-| `postLakehouseTiersEvaluate` | POST | `/lakehouse/tiers/evaluate` | ✅ `call` | ✅ `call` |
-| `getMevAlerts` | GET | `/mev/alerts` | ✅ `call` | ✅ `call` |
-| `postMevAlerts` | POST | `/mev/alerts` | ✅ `call` | ✅ `call` |
-| `getMevArbitrageExecuted` | GET | `/mev/arbitrage/executed` | ✅ `call` | ✅ `call` |
-| `getMevArbitrageLeaderboard` | GET | `/mev/arbitrage/leaderboard` | ✅ `call` | ✅ `call` |
-| `getMevArbitrageOpportunities` | GET | `/mev/arbitrage/opportunities` | ✅ `call` | ✅ `call` |
-| `getMevAttackersByAddress` | GET | `/mev/attackers/{address}` | ✅ `call` | ✅ `call` |
-| `getMevBots` | GET | `/mev/bots` | ✅ `call` | ✅ `call` |
-| `getMevBotsActive` | GET | `/mev/bots/active` | ✅ `call` | ✅ `call` |
-| `postMevCheckPendingTx` | POST | `/mev/check-pending-tx` | ✅ `call` | ✅ `call` |
-| `postMevClassifyLedger` | POST | `/mev/classify-ledger` | ✅ `call` | ✅ `call` |
-| `postMevCompensationClaim` | POST | `/mev/compensation/claim` | ✅ `call` | ✅ `call` |
-| `getMevCompensationClaimsByAddress` | GET | `/mev/compensation/claims/{address}` | ✅ `call` | ✅ `call` |
-| `getMevCompensationEstimateByAddress` | GET | `/mev/compensation/estimate/{address}` | ✅ `call` | ✅ `call` |
-| `getMevEvents` | GET | `/mev/events` | ✅ `call` | ✅ `call` |
-| `getMevEventsById` | GET | `/mev/events/{id}` | ✅ `call` | ✅ `call` |
-| `getMevEventsByTxHashByTx` | GET | `/mev/events/{txHash}/by-tx` | ✅ `call` | ✅ `call` |
-| `getMevExport` | GET | `/mev/export` | ✅ `call` | ✅ `call` |
-| `getMevFlashLoanAttacks` | GET | `/mev/flash-loan-attacks` | ✅ `call` | ✅ `call` |
-| `getMevLeaderboard` | GET | `/mev/leaderboard` | ✅ `call` | ✅ `call` |
-| `getMevMempoolPending` | GET | `/mev/mempool/pending` | ✅ `call` | ✅ `call` |
-| `getMevOverview` | GET | `/mev/overview` | ✅ `call` | ✅ `call` |
-| `postMevProtectTx` | POST | `/mev/protect-tx` | ✅ `call` | ✅ `call` |
-| `getMevProtectionsByContract` | GET | `/mev/protections/{contract}` | ✅ `call` | ✅ `call` |
-| `getMevProtectionsByContractScoreHistory` | GET | `/mev/protections/{contract}/score-history` | ✅ `call` | ✅ `call` |
-| `getMevProtectionsLeaderboard` | GET | `/mev/protections/leaderboard` | ✅ `call` | ✅ `call` |
-| `getMevReportsDaily` | GET | `/mev/reports/daily` | ✅ `call` | ✅ `call` |
-| `postMevReportsSubscribe` | POST | `/mev/reports/subscribe` | ✅ `call` | ✅ `call` |
-| `getMevReportsWeekly` | GET | `/mev/reports/weekly` | ✅ `call` | ✅ `call` |
-| `getMevSandwichPatterns` | GET | `/mev/sandwich-patterns` | ✅ `call` | ✅ `call` |
-| `postMevSandwichPatterns` | POST | `/mev/sandwich-patterns` | ✅ `call` | ✅ `call` |
-| `getMevStatistics` | GET | `/mev/statistics` | ✅ `call` | ✅ `call` |
-| `getMevVictimsByAddress` | GET | `/mev/victims/{address}` | ✅ `call` | ✅ `call` |
-| `postMevVictimsByAddressNotify` | POST | `/mev/victims/{address}/notify` | ✅ `call` | ✅ `call` |
-| `getNetwork` | GET | `/network` | ✅ `client.network.status()` | ✅ `client.network.status()` |
-| `getOracleFeeds` | GET | `/oracle-feeds` | ✅ `call` | ✅ `call` |
-| `getOracleFeedsAssets` | GET | `/oracle-feeds/assets` | ✅ `call` | ✅ `call` |
-| `getOracleFeedsAssetsByAssetPairHistory` | GET | `/oracle-feeds/assets/{assetPair}/history` | ✅ `call` | ✅ `call` |
-| `getOracleFeedsAssetsByAssetPairOhlcv` | GET | `/oracle-feeds/assets/{assetPair}/ohlcv` | ✅ `call` | ✅ `call` |
-| `getOracleFeedsAssetsByAssetPairPrice` | GET | `/oracle-feeds/assets/{assetPair}/price` | ✅ `call` | ✅ `call` |
-| `getOracleFeedsProviders` | GET | `/oracle-feeds/providers` | ✅ `call` | ✅ `call` |
-| `postOracleFeedsSubscribe` | POST | `/oracle-feeds/subscribe` | ✅ `call` | ✅ `call` |
-| `getOracleFeedsSubscriptions` | GET | `/oracle-feeds/subscriptions` | ✅ `call` | ✅ `call` |
-| `deleteOracleFeedsSubscriptionsById` | DELETE | `/oracle-feeds/subscriptions/{id}` | ✅ `call` | ✅ `call` |
-| `getOraclesAudit` | GET | `/oracles/audit` | ✅ `call` | ✅ `call` |
-| `getOraclesAuditAnomalies` | GET | `/oracles/audit/anomalies` | ✅ `call` | ✅ `call` |
-| `getOraclesAuditProviders` | GET | `/oracles/audit/providers` | ✅ `call` | ✅ `call` |
-| `getOraclesAuditProvidersByProviderIdReliability` | GET | `/oracles/audit/providers/{providerId}/reliability` | ✅ `call` | ✅ `call` |
-| `getOraclesAuditRequests` | GET | `/oracles/audit/requests` | ✅ `call` | ✅ `call` |
-| `getOraclesAuditRequestsByRequestTxHash` | GET | `/oracles/audit/requests/{requestTxHash}` | ✅ `call` | ✅ `call` |
-| `getOraclesAuditStats` | GET | `/oracles/audit/stats` | ✅ `call` | ✅ `call` |
-| `postOraclesAuditValidate` | POST | `/oracles/audit/validate` | ✅ `call` | ✅ `call` |
-| `getPrivacyAnonymitySets` | GET | `/privacy/anonymity-sets` | ✅ `call` | ✅ `call` |
-| `getPrivacyAnonymitySetsByProtocolHistory` | GET | `/privacy/anonymity-sets/{protocol}/history` | ✅ `call` | ✅ `call` |
-| `getPrivacyAnonymitySetsEffective` | GET | `/privacy/anonymity-sets/effective` | ✅ `call` | ✅ `call` |
-| `getPrivacyBridges` | GET | `/privacy/bridges` | ✅ `call` | ✅ `call` |
-| `getPrivacyComplianceByAddress` | GET | `/privacy/compliance/{address}` | ✅ `call` | ✅ `call` |
-| `getPrivacyComplianceDashboard` | GET | `/privacy/compliance/dashboard` | ✅ `call` | ✅ `call` |
-| `postPrivacyComplianceFlag` | POST | `/privacy/compliance/flag` | ✅ `call` | ✅ `call` |
-| `getPrivacyComplianceFlagged` | GET | `/privacy/compliance/flagged` | ✅ `call` | ✅ `call` |
-| `getPrivacyComplianceReportByAddressExport` | GET | `/privacy/compliance/report/{address}/export` | ✅ `call` | ✅ `call` |
-| `getPrivacyComplianceReportsPeriodic` | GET | `/privacy/compliance/reports/periodic` | ✅ `call` | ✅ `call` |
-| `postPrivacyComplianceScreen` | POST | `/privacy/compliance/screen` | ✅ `call` | ✅ `call` |
-| `postPrivacyComplianceUnflagByAddress` | POST | `/privacy/compliance/unflag/{address}` | ✅ `call` | ✅ `call` |
-| `getPrivacyCrossProtocolByAddress` | GET | `/privacy/cross-protocol/{address}` | ✅ `call` | ✅ `call` |
-| `getPrivacyDeAnonymizationAmountByAddress` | GET | `/privacy/de-anonymization/amount/{address}` | ✅ `call` | ✅ `call` |
-| `getPrivacyDeAnonymizationClusters` | GET | `/privacy/de-anonymization/clusters` | ✅ `call` | ✅ `call` |
-| `getPrivacyDeAnonymizationFindings` | GET | `/privacy/de-anonymization/findings` | ✅ `call` | ✅ `call` |
-| `getPrivacyDeAnonymizationTaintByAddress` | GET | `/privacy/de-anonymization/taint/{address}` | ✅ `call` | ✅ `call` |
-| `getPrivacyDeAnonymizationTimingByAddress` | GET | `/privacy/de-anonymization/timing/{address}` | ✅ `call` | ✅ `call` |
-| `getPrivacyDefi` | GET | `/privacy/defi` | ✅ `call` | ✅ `call` |
-| `postPrivacyDetect` | POST | `/privacy/detect` | ✅ `call` | ✅ `call` |
-| `getPrivacyHistory` | GET | `/privacy/history` | ✅ `call` | ✅ `call` |
-| `getPrivacyHistoryByProtocol` | GET | `/privacy/history/{protocol}` | ✅ `call` | ✅ `call` |
-| `getPrivacyLeaderboard` | GET | `/privacy/leaderboard` | ✅ `call` | ✅ `call` |
-| `getPrivacyLeaderboardUsers` | GET | `/privacy/leaderboard/users` | ✅ `call` | ✅ `call` |
-| `getPrivacyMlPredictAnonymity` | GET | `/privacy/ml/predict-anonymity` | ✅ `call` | ✅ `call` |
-| `getPrivacyOverview` | GET | `/privacy/overview` | ✅ `call` | ✅ `call` |
-| `getPrivacyProtocols` | GET | `/privacy/protocols` | ✅ `call` | ✅ `call` |
-| `getPrivacyProtocolsByProtocol` | GET | `/privacy/protocols/{protocol}` | ✅ `call` | ✅ `call` |
-| `getPrivacyRegistry` | GET | `/privacy/registry` | ✅ `call` | ✅ `call` |
-| `postPrivacyResearchAnalyzeCluster` | POST | `/privacy/research/analyze-cluster` | ✅ `call` | ✅ `call` |
-| `getPrivacyResearchDatasets` | GET | `/privacy/research/datasets` | ✅ `call` | ✅ `call` |
-| `postPrivacyResearchGraph` | POST | `/privacy/research/graph` | ✅ `call` | ✅ `call` |
-| `getPrivacyScoresContracts` | GET | `/privacy/scores/contracts` | ✅ `call` | ✅ `call` |
-| `getPrivacyScoresTransactions` | GET | `/privacy/scores/transactions` | ✅ `call` | ✅ `call` |
-| `getPrivacyTransactions` | GET | `/privacy/transactions` | ✅ `call` | ✅ `call` |
-| `getPrivacyTransactionsByTxHash` | GET | `/privacy/transactions/{txHash}` | ✅ `call` | ✅ `call` |
-| `getPrivacyZkBenchmarks` | GET | `/privacy/zk/benchmarks` | ✅ `call` | ✅ `call` |
-| `getPrivacyZkProofs` | GET | `/privacy/zk/proofs` | ✅ `call` | ✅ `call` |
-| `getPrivacyZkVerifiers` | GET | `/privacy/zk/verifiers` | ✅ `call` | ✅ `call` |
-| `getPrivacyZkVerifiersByAddress` | GET | `/privacy/zk/verifiers/{address}` | ✅ `call` | ✅ `call` |
-| `getProtocol26` | GET | `/protocol26` | ✅ `call` | ✅ `call` |
-| `getProtocol26ArchiveStats` | GET | `/protocol26/archive/stats` | ✅ `call` | ✅ `call` |
-| `getProtocol26ContractsByContractIdEntries` | GET | `/protocol26/contracts/{contractId}/entries` | ✅ `call` | ✅ `call` |
-| `postProtocol26ContractsByContractIdExtendTtl` | POST | `/protocol26/contracts/{contractId}/extend-ttl` | ✅ `call` | ✅ `call` |
-| `getProtocol26ContractsByContractIdTtl` | GET | `/protocol26/contracts/{contractId}/ttl` | ✅ `call` | ✅ `call` |
-| `getProtocol26Expiring` | GET | `/protocol26/expiring` | ✅ `call` | ✅ `call` |
-| `postProtocol26FootprintOptimize` | POST | `/protocol26/footprint/optimize` | ✅ `call` | ✅ `call` |
-| `postRampExecute` | POST | `/ramp/execute` | ✅ `call` | ✅ `call` |
-| `postRampKycStatus` | POST | `/ramp/kyc/status` | ✅ `call` | ✅ `call` |
-| `getRampOrders` | GET | `/ramp/orders` | ✅ `call` | ✅ `call` |
-| `getRampOrdersById` | GET | `/ramp/orders/{id}` | ✅ `call` | ✅ `call` |
-| `getRampProviders` | GET | `/ramp/providers` | ✅ `call` | ✅ `call` |
-| `postRampQuote` | POST | `/ramp/quote` | ✅ `call` | ✅ `call` |
-| `postRampRefund` | POST | `/ramp/refund` | ✅ `call` | ✅ `call` |
-| `postRampWebhookByProvider` | POST | `/ramp/webhook/{provider}` | ✅ `call` | ✅ `call` |
-| `postRender` | POST | `/render` | ✅ `call` | ✅ `call` |
-| `getRenderTemplates` | GET | `/render/templates` | ✅ `call` | ✅ `call` |
-| `getReputationByAddress` | GET | `/reputation/{address}` | ✅ `call` | ✅ `call` |
-| `postReputationByAddressAttest` | POST | `/reputation/{address}/attest` | ✅ `call` | ✅ `call` |
-| `getReputationByAddressAttestations` | GET | `/reputation/{address}/attestations` | ✅ `call` | ✅ `call` |
-| `getReputationByAddressAttestationsByIdVerify` | GET | `/reputation/{address}/attestations/{id}/verify` | ✅ `call` | ✅ `call` |
-| `getReputationByAddressBadges` | GET | `/reputation/{address}/badges` | ✅ `call` | ✅ `call` |
-| `getReputationByAddressCredentials` | GET | `/reputation/{address}/credentials` | ✅ `call` | ✅ `call` |
-| `postReputationByAddressCredentials` | POST | `/reputation/{address}/credentials` | ✅ `call` | ✅ `call` |
-| `getReputationByAddressCrossChain` | GET | `/reputation/{address}/cross-chain` | ✅ `call` | ✅ `call` |
-| `getReputationByAddressEndorsementsReceived` | GET | `/reputation/{address}/endorsements/received` | ✅ `call` | ✅ `call` |
-| `getReputationByAddressHistory` | GET | `/reputation/{address}/history` | ✅ `call` | ✅ `call` |
-| `getReputationByAddressLinks` | GET | `/reputation/{address}/links` | ✅ `call` | ✅ `call` |
-| `getReputationByAddressSignals` | GET | `/reputation/{address}/signals` | ✅ `call` | ✅ `call` |
-| `getReputationByAddressSummary` | GET | `/reputation/{address}/summary` | ✅ `call` | ✅ `call` |
-| `getReputationByAddressSybilScore` | GET | `/reputation/{address}/sybil-score` | ✅ `call` | ✅ `call` |
-| `getReputationAttestationsByAddress` | GET | `/reputation/attestations/{address}` | ✅ `call` | ✅ `call` |
-| `getReputationBadgesByAddress` | GET | `/reputation/badges/{address}` | ✅ `call` | ✅ `call` |
-| `getReputationCredentialsByAddress` | GET | `/reputation/credentials/{address}` | ✅ `call` | ✅ `call` |
-| `postReputationCredentialsVerify` | POST | `/reputation/credentials/verify` | ✅ `call` | ✅ `call` |
-| `postReputationDisputes` | POST | `/reputation/disputes` | ✅ `call` | ✅ `call` |
-| `getReputationDisputesById` | GET | `/reputation/disputes/{id}` | ✅ `call` | ✅ `call` |
-| `postReputationDisputesByIdResolve` | POST | `/reputation/disputes/{id}/resolve` | ✅ `call` | ✅ `call` |
-| `postReputationDisputesByIdVote` | POST | `/reputation/disputes/{id}/vote` | ✅ `call` | ✅ `call` |
-| `postReputationEndorse` | POST | `/reputation/endorse` | ✅ `call` | ✅ `call` |
-| `postReputationEndorsements` | POST | `/reputation/endorsements` | ✅ `call` | ✅ `call` |
-| `postReputationGovernanceDelegate` | POST | `/reputation/governance/delegate` | ✅ `call` | ✅ `call` |
-| `postReputationGovernanceVote` | POST | `/reputation/governance/vote` | ✅ `call` | ✅ `call` |
-| `getReputationGovernanceVotingPowerByAddress` | GET | `/reputation/governance/voting-power/{address}` | ✅ `call` | ✅ `call` |
-| `postReputationIdentityLink` | POST | `/reputation/identity/link` | ✅ `call` | ✅ `call` |
-| `postReputationIdentityScore` | POST | `/reputation/identity/score` | ✅ `call` | ✅ `call` |
-| `getReputationLeaderboard` | GET | `/reputation/leaderboard` | ✅ `call` | ✅ `call` |
-| `getReputationLeaderboardByCategory` | GET | `/reputation/leaderboard/{category}` | ✅ `call` | ✅ `call` |
-| `getReputationLeaderboardsByCategory` | GET | `/reputation/leaderboards/{category}` | ✅ `call` | ✅ `call` |
-| `postReputationLink` | POST | `/reputation/link` | ✅ `call` | ✅ `call` |
-| `deleteReputationLinkById` | DELETE | `/reputation/link/{id}` | ✅ `call` | ✅ `call` |
-| `getReputationNftsByAddress` | GET | `/reputation/nfts/{address}` | ✅ `call` | ✅ `call` |
-| `getReputationNftsByAddressByBadgeTypeVerify` | GET | `/reputation/nfts/{address}/{badgeType}/verify` | ✅ `call` | ✅ `call` |
-| `postReputationNftsMintByBadgeType` | POST | `/reputation/nfts/mint/{badgeType}` | ✅ `call` | ✅ `call` |
-| `getReputationOracleCountsByAddress` | GET | `/reputation/oracle-counts/{address}` | ✅ `call` | ✅ `call` |
-| `getReputationOracleByAddress` | GET | `/reputation/oracle/{address}` | ✅ `call` | ✅ `call` |
-| `getReputationOracleProof` | GET | `/reputation/oracle/proof` | ✅ `call` | ✅ `call` |
-| `postReputationOracleQuery` | POST | `/reputation/oracle/query` | ✅ `call` | ✅ `call` |
-| `postReputationScore` | POST | `/reputation/score` | ✅ `call` | ✅ `call` |
-| `getReputationSdkJs` | GET | `/reputation/sdk/js` | ✅ `call` | ✅ `call` |
-| `postReputationSdkRegister` | POST | `/reputation/sdk/register` | ✅ `call` | ✅ `call` |
-| `getReputationSearch` | GET | `/reputation/search` | ✅ `call` | ✅ `call` |
-| `getReputationSybilByAddress` | GET | `/reputation/sybil/{address}` | ✅ `call` | ✅ `call` |
-| `getReputationTrustNetworkByAddress` | GET | `/reputation/trust-network/{address}` | ✅ `call` | ✅ `call` |
-| `getReputationTrustNetworkByAddressPathByTarget` | GET | `/reputation/trust-network/{address}/path/{target}` | ✅ `call` | ✅ `call` |
-| `getReputationTrustNetworkInfluenceByAddress` | GET | `/reputation/trust-network/influence/{address}` | ✅ `call` | ✅ `call` |
-| `postReputationTrustPath` | POST | `/reputation/trust/path` | ✅ `call` | ✅ `call` |
-| `postReputationVerifyCrossChain` | POST | `/reputation/verify-cross-chain` | ✅ `call` | ✅ `call` |
-| `getResourceAudit` | GET | `/resource-audit` | ✅ `call` | ✅ `call` |
-| `getResourceAuditContractsByContractId` | GET | `/resource-audit/contracts/{contractId}` | ✅ `call` | ✅ `call` |
-| `getResourceAuditContractsByContractIdHistory` | GET | `/resource-audit/contracts/{contractId}/history` | ✅ `call` | ✅ `call` |
-| `getResourceAuditNetworkSummary` | GET | `/resource-audit/network/summary` | ✅ `call` | ✅ `call` |
-| `postResourceAuditSimulate` | POST | `/resource-audit/simulate` | ✅ `call` | ✅ `call` |
-| `getResourceAuditTopConsumers` | GET | `/resource-audit/top-consumers` | ✅ `call` | ✅ `call` |
-| `getRwaCompliance` | GET | `/rwa-compliance` | ✅ `call` | ✅ `call` |
-| `getRwaComplianceAssets` | GET | `/rwa-compliance/assets` | ✅ `call` | ✅ `call` |
-| `getRwaComplianceAssetsByAssetId` | GET | `/rwa-compliance/assets/{assetId}` | ✅ `call` | ✅ `call` |
-| `postRwaComplianceAssetsByAssetIdCheck` | POST | `/rwa-compliance/assets/{assetId}/check` | ✅ `call` | ✅ `call` |
-| `getRwaComplianceHoldersByAddress` | GET | `/rwa-compliance/holders/{address}` | ✅ `call` | ✅ `call` |
-| `postRwaComplianceHoldersByAddressVerify` | POST | `/rwa-compliance/holders/{address}/verify` | ✅ `call` | ✅ `call` |
-| `getRwaComplianceJurisdictions` | GET | `/rwa-compliance/jurisdictions` | ✅ `call` | ✅ `call` |
-| `getRwaComplianceReports` | GET | `/rwa-compliance/reports` | ✅ `call` | ✅ `call` |
-| `postRwaComplianceReportsSchedule` | POST | `/rwa-compliance/reports/schedule` | ✅ `call` | ✅ `call` |
-| `getSacTrustlines` | GET | `/sac-trustlines` | ✅ `call` | ✅ `call` |
-| `getSacTrustlinesAccountsByAddress` | GET | `/sac-trustlines/accounts/{address}` | ✅ `call` | ✅ `call` |
-| `getSacTrustlinesAccountsByAddressAuthorized` | GET | `/sac-trustlines/accounts/{address}/authorized` | ✅ `call` | ✅ `call` |
-| `getSacTrustlinesAssetsByAssetCode` | GET | `/sac-trustlines/assets/{assetCode}` | ✅ `call` | ✅ `call` |
-| `postSacTrustlinesAuthorize` | POST | `/sac-trustlines/authorize` | ✅ `call` | ✅ `call` |
-| `postSacTrustlinesRevoke` | POST | `/sac-trustlines/revoke` | ✅ `call` | ✅ `call` |
-| `getSacTrustlinesStats` | GET | `/sac-trustlines/stats` | ✅ `call` | ✅ `call` |
-| `postSandboxBenchmark` | POST | `/sandbox/benchmark` | ✅ `call` | ✅ `call` |
-| `postSandboxCall` | POST | `/sandbox/call` | ✅ `call` | ✅ `call` |
-| `postSandboxCallBatch` | POST | `/sandbox/call-batch` | ✅ `call` | ✅ `call` |
-| `postSandboxCiExecute` | POST | `/sandbox/ci/execute` | ✅ `call` | ✅ `call` |
-| `getSandboxCiResultByRunId` | GET | `/sandbox/ci/result/{runId}` | ✅ `call` | ✅ `call` |
-| `postSandboxCompare` | POST | `/sandbox/compare` | ✅ `call` | ✅ `call` |
-| `postSandboxDebug` | POST | `/sandbox/debug` | ✅ `call` | ✅ `call` |
-| `postSandboxDebugContinue` | POST | `/sandbox/debug/continue` | ✅ `call` | ✅ `call` |
-| `postSandboxDebugSetBreakpoint` | POST | `/sandbox/debug/set-breakpoint` | ✅ `call` | ✅ `call` |
-| `postSandboxDeploy` | POST | `/sandbox/deploy` | ✅ `call` | ✅ `call` |
-| `postSandboxDeployFromMainnet` | POST | `/sandbox/deploy-from-mainnet` | ✅ `call` | ✅ `call` |
-| `postSandboxDeployFromTemplate` | POST | `/sandbox/deploy-from-template` | ✅ `call` | ✅ `call` |
-| `postSandboxDeployToMainnet` | POST | `/sandbox/deploy-to-mainnet` | ✅ `call` | ✅ `call` |
-| `postSandboxDeployToTestnet` | POST | `/sandbox/deploy-to-testnet` | ✅ `call` | ✅ `call` |
-| `postSandboxForkByContractAddress` | POST | `/sandbox/fork/{contractAddress}` | ✅ `call` | ✅ `call` |
-| `getSandboxFuzzRunByRunId` | GET | `/sandbox/fuzz/run/{runId}` | ✅ `call` | ✅ `call` |
-| `getSandboxFuzzRunByRunIdFindings` | GET | `/sandbox/fuzz/run/{runId}/findings` | ✅ `call` | ✅ `call` |
-| `postSandboxFuzzRunByRunIdReplayByFindingId` | POST | `/sandbox/fuzz/run/{runId}/replay/{findingId}` | ✅ `call` | ✅ `call` |
-| `getSandboxFuzzRuns` | GET | `/sandbox/fuzz/runs` | ✅ `call` | ✅ `call` |
-| `postSandboxFuzzStart` | POST | `/sandbox/fuzz/start` | ✅ `call` | ✅ `call` |
-| `postSandboxFuzzStopByRunId` | POST | `/sandbox/fuzz/stop/{runId}` | ✅ `call` | ✅ `call` |
-| `postSandboxGenerateDocs` | POST | `/sandbox/generate/docs` | ✅ `call` | ✅ `call` |
-| `postSandboxGenerateSdk` | POST | `/sandbox/generate/sdk` | ✅ `call` | ✅ `call` |
-| `postSandboxGenerateTests` | POST | `/sandbox/generate/tests` | ✅ `call` | ✅ `call` |
-| `postSandboxOptimize` | POST | `/sandbox/optimize` | ✅ `call` | ✅ `call` |
-| `postSandboxReplayByTxHash` | POST | `/sandbox/replay/{txHash}` | ✅ `call` | ✅ `call` |
-| `getSandboxReplayByTxHashComparison` | GET | `/sandbox/replay/{txHash}/comparison` | ✅ `call` | ✅ `call` |
-| `postSandboxSession` | POST | `/sandbox/session` | ✅ `call` | ✅ `call` |
-| `deleteSandboxSessionBySessionId` | DELETE | `/sandbox/session/{sessionId}` | ✅ `call` | ✅ `call` |
-| `getSandboxSessionBySessionId` | GET | `/sandbox/session/{sessionId}` | ✅ `call` | ✅ `call` |
-| `getSandboxSessionBySessionIdAccounts` | GET | `/sandbox/session/{sessionId}/accounts` | ✅ `call` | ✅ `call` |
-| `postSandboxSessionBySessionIdAccounts` | POST | `/sandbox/session/{sessionId}/accounts` | ✅ `call` | ✅ `call` |
-| `postSandboxSessionBySessionIdAdvance` | POST | `/sandbox/session/{sessionId}/advance` | ✅ `call` | ✅ `call` |
-| `getSandboxSessionBySessionIdCalls` | GET | `/sandbox/session/{sessionId}/calls` | ✅ `call` | ✅ `call` |
-| `getSandboxSessionBySessionIdCallsByCallId` | GET | `/sandbox/session/{sessionId}/calls/{callId}` | ✅ `call` | ✅ `call` |
-| `getSandboxSessionBySessionIdContracts` | GET | `/sandbox/session/{sessionId}/contracts` | ✅ `call` | ✅ `call` |
-| `getSandboxSessionBySessionIdContractsByAddressAbi` | GET | `/sandbox/session/{sessionId}/contracts/{address}/abi` | ✅ `call` | ✅ `call` |
-| `getSandboxSessionBySessionIdContractsByAddressState` | GET | `/sandbox/session/{sessionId}/contracts/{address}/state` | ✅ `call` | ✅ `call` |
-| `getSandboxSessionBySessionIdDebuggerUi` | GET | `/sandbox/session/{sessionId}/debugger-ui` | ✅ `call` | ✅ `call` |
-| `postSandboxSessionBySessionIdExport` | POST | `/sandbox/session/{sessionId}/export` | ✅ `call` | ✅ `call` |
-| `postSandboxSessionBySessionIdFund` | POST | `/sandbox/session/{sessionId}/fund` | ✅ `call` | ✅ `call` |
-| `postSandboxSessionBySessionIdImport` | POST | `/sandbox/session/{sessionId}/import` | ✅ `call` | ✅ `call` |
-| `postSandboxSessionBySessionIdPause` | POST | `/sandbox/session/{sessionId}/pause` | ✅ `call` | ✅ `call` |
-| `postSandboxSessionBySessionIdRegisterToken` | POST | `/sandbox/session/{sessionId}/register-token` | ✅ `call` | ✅ `call` |
-| `postSandboxSessionBySessionIdReset` | POST | `/sandbox/session/{sessionId}/reset` | ✅ `call` | ✅ `call` |
-| `postSandboxSessionBySessionIdRestoreBySnapshotId` | POST | `/sandbox/session/{sessionId}/restore/{snapshotId}` | ✅ `call` | ✅ `call` |
-| `postSandboxSessionBySessionIdShare` | POST | `/sandbox/session/{sessionId}/share` | ✅ `call` | ✅ `call` |
-| `postSandboxSessionBySessionIdSnapshot` | POST | `/sandbox/session/{sessionId}/snapshot` | ✅ `call` | ✅ `call` |
-| `getSandboxSessionBySessionIdSnapshots` | GET | `/sandbox/session/{sessionId}/snapshots` | ✅ `call` | ✅ `call` |
-| `getSandboxSessionBySessionIdStateDiff` | GET | `/sandbox/session/{sessionId}/state-diff` | ✅ `call` | ✅ `call` |
-| `getSandboxShareByShareId` | GET | `/sandbox/share/{shareId}` | ✅ `call` | ✅ `call` |
-| `getSandboxTemplates` | GET | `/sandbox/templates` | ✅ `call` | ✅ `call` |
-| `postSandboxTemplates` | POST | `/sandbox/templates` | ✅ `call` | ✅ `call` |
-| `getSandboxTemplatesById` | GET | `/sandbox/templates/{id}` | ✅ `call` | ✅ `call` |
-| `getSandboxTemplatesByIdParams` | GET | `/sandbox/templates/{id}/params` | ✅ `call` | ✅ `call` |
-| `postSandboxVerifyAssertion` | POST | `/sandbox/verify/assertion` | ✅ `call` | ✅ `call` |
-| `postSandboxVerifyInvariant` | POST | `/sandbox/verify/invariant` | ✅ `call` | ✅ `call` |
-| `getScheduleAlerts` | GET | `/schedule/alerts` | ✅ `call` | ✅ `call` |
-| `postScheduleAlertsByIdAcknowledge` | POST | `/schedule/alerts/{id}/acknowledge` | ✅ `call` | ✅ `call` |
-| `getScheduleCalendar` | GET | `/schedule/calendar` | ✅ `call` | ✅ `call` |
-| `getScheduleCalendarIcs` | GET | `/schedule/calendar.ics` | ✅ `call` | ✅ `call` |
-| `getScheduleContractsByAddress` | GET | `/schedule/contracts/{address}` | ✅ `call` | ✅ `call` |
-| `getScheduleContractsByAddressCron` | GET | `/schedule/contracts/{address}/cron` | ✅ `call` | ✅ `call` |
-| `getScheduleContractsByAddressGovernance` | GET | `/schedule/contracts/{address}/governance` | ✅ `call` | ✅ `call` |
-| `getScheduleContractsByAddressTimeline` | GET | `/schedule/contracts/{address}/timeline` | ✅ `call` | ✅ `call` |
-| `getScheduleContractsByAddressVesting` | GET | `/schedule/contracts/{address}/vesting` | ✅ `call` | ✅ `call` |
-| `postScheduleCron` | POST | `/schedule/cron` | ✅ `call` | ✅ `call` |
-| `deleteScheduleCronById` | DELETE | `/schedule/cron/{id}` | ✅ `call` | ✅ `call` |
-| `putScheduleCronById` | PUT | `/schedule/cron/{id}` | ✅ `call` | ✅ `call` |
-| `getScheduleCronByIdHistory` | GET | `/schedule/cron/{id}/history` | ✅ `call` | ✅ `call` |
-| `patchScheduleCronByIdToggle` | PATCH | `/schedule/cron/{id}/toggle` | ✅ `call` | ✅ `call` |
-| `postScheduleCronByIdTrigger` | POST | `/schedule/cron/{id}/trigger` | ✅ `call` | ✅ `call` |
-| `getScheduleDiscover` | GET | `/schedule/discover` | ✅ `call` | ✅ `call` |
-| `getScheduleGovernanceExpired` | GET | `/schedule/governance/expired` | ✅ `call` | ✅ `call` |
-| `getScheduleGovernancePending` | GET | `/schedule/governance/pending` | ✅ `call` | ✅ `call` |
-| `getScheduleGovernanceStats` | GET | `/schedule/governance/stats` | ✅ `call` | ✅ `call` |
-| `getScheduleHealth` | GET | `/schedule/health` | ✅ `call` | ✅ `call` |
-| `getScheduleOperationsByOpId` | GET | `/schedule/operations/{opId}` | ✅ `call` | ✅ `call` |
-| `getScheduleSearch` | GET | `/schedule/search` | ✅ `call` | ✅ `call` |
-| `getScheduleStats` | GET | `/schedule/stats` | ✅ `call` | ✅ `call` |
-| `getScheduleUpcoming` | GET | `/schedule/upcoming` | ✅ `call` | ✅ `call` |
-| `getScheduleVestingByBeneficiaryAddress` | GET | `/schedule/vesting/{beneficiaryAddress}` | ✅ `call` | ✅ `call` |
-| `getScheduleVestingLargeUnlocks` | GET | `/schedule/vesting/large-unlocks` | ✅ `call` | ✅ `call` |
-| `getScheduleVestingLeaderboard` | GET | `/schedule/vesting/leaderboard` | ✅ `call` | ✅ `call` |
-| `getSearchSuggest` | GET | `/search/suggest` | ✅ `client.search.suggest(q)` | ✅ `call` |
-| `getSigners` | GET | `/signers` | ✅ `call` | ✅ `call` |
-| `getSignersAccountsByAddress` | GET | `/signers/accounts/{address}` | ✅ `call` | ✅ `call` |
-| `getSignersAccountsByAddressHistory` | GET | `/signers/accounts/{address}/history` | ✅ `call` | ✅ `call` |
-| `getSignersAccountsByAddressSigners` | GET | `/signers/accounts/{address}/signers` | ✅ `call` | ✅ `call` |
-| `getSignersAccountsByAddressThresholds` | GET | `/signers/accounts/{address}/thresholds` | ✅ `call` | ✅ `call` |
-| `getSignersKeyByPublicKey` | GET | `/signers/key/{publicKey}` | ✅ `call` | ✅ `call` |
-| `postSignersVerify` | POST | `/signers/verify` | ✅ `call` | ✅ `call` |
-| `postSimulate` | POST | `/simulate` | ✅ `call` | ✅ `call` |
-| `getStorage` | GET | `/storage` | ✅ `call` | ✅ `call` |
-| `getStorageTrap` | GET | `/storage-trap` | ✅ `call` | ✅ `call` |
-| `postStorageTrapAnalyze` | POST | `/storage-trap/analyze` | ✅ `call` | ✅ `call` |
-| `getStorageTrapContractsByContractId` | GET | `/storage-trap/contracts/{contractId}` | ✅ `call` | ✅ `call` |
-| `getStorageTrapDetected` | GET | `/storage-trap/detected` | ✅ `call` | ✅ `call` |
-| `getStorageTrapStats` | GET | `/storage-trap/stats` | ✅ `call` | ✅ `call` |
-| `getStorageContractsByContractId` | GET | `/storage/contracts/{contractId}` | ✅ `call` | ✅ `call` |
-| `getStorageContractsByContractIdEntries` | GET | `/storage/contracts/{contractId}/entries` | ✅ `call` | ✅ `call` |
-| `getStorageContractsByContractIdEntriesByKey` | GET | `/storage/contracts/{contractId}/entries/{key}` | ✅ `call` | ✅ `call` |
-| `getStorageContractsByContractIdSize` | GET | `/storage/contracts/{contractId}/size` | ✅ `call` | ✅ `call` |
-| `getStorageNetworkStats` | GET | `/storage/network/stats` | ✅ `call` | ✅ `call` |
-| `getStorageNetworkTopUsers` | GET | `/storage/network/top-users` | ✅ `call` | ✅ `call` |
-| `getSystemicConcentration` | GET | `/systemic/concentration` | ✅ `call` | ✅ `call` |
-| `getSystemicCriticalNodes` | GET | `/systemic/critical-nodes` | ✅ `call` | ✅ `call` |
-| `getSystemicDependencyGraph` | GET | `/systemic/dependency-graph` | ✅ `call` | ✅ `call` |
-| `getSystemicMonitorAlerts` | GET | `/systemic/monitor/alerts` | ✅ `call` | ✅ `call` |
-| `getSystemicMonitorHistory` | GET | `/systemic/monitor/history` | ✅ `call` | ✅ `call` |
-| `getSystemicMonitorRiskIndex` | GET | `/systemic/monitor/risk-index` | ✅ `call` | ✅ `call` |
-| `getSystemicOverview` | GET | `/systemic/overview` | ✅ `call` | ✅ `call` |
-| `getSystemicProtocolsByAddress` | GET | `/systemic/protocols/{address}` | ✅ `call` | ✅ `call` |
-| `postSystemicSimulateCascade` | POST | `/systemic/simulate-cascade` | ✅ `call` | ✅ `call` |
-| `getTax` | GET | `/tax` | ✅ `call` | ✅ `call` |
-| `getTaxAccountsByAddressCostBasis` | GET | `/tax/accounts/{address}/cost-basis` | ✅ `call` | ✅ `call` |
-| `getTaxAccountsByAddressGains` | GET | `/tax/accounts/{address}/gains` | ✅ `call` | ✅ `call` |
-| `getTaxAccountsByAddressIncome` | GET | `/tax/accounts/{address}/income` | ✅ `call` | ✅ `call` |
-| `postTaxAccountsByAddressReport` | POST | `/tax/accounts/{address}/report` | ✅ `call` | ✅ `call` |
-| `getTaxAccountsByAddressSummary` | GET | `/tax/accounts/{address}/summary` | ✅ `call` | ✅ `call` |
-| `getTaxRates` | GET | `/tax/rates` | ✅ `call` | ✅ `call` |
-| `getTipAdvisories` | GET | `/tip/advisories` | ✅ `call` | ✅ `call` |
-| `postTipAdvisories` | POST | `/tip/advisories` | ✅ `call` | ✅ `call` |
-| `deleteTipAdvisoriesById` | DELETE | `/tip/advisories/{id}` | ✅ `call` | ✅ `call` |
-| `getTipAdvisoriesById` | GET | `/tip/advisories/{id}` | ✅ `call` | ✅ `call` |
-| `patchTipAdvisoriesById` | PATCH | `/tip/advisories/{id}` | ✅ `call` | ✅ `call` |
-| `postTipAdvisoriesByIdComments` | POST | `/tip/advisories/{id}/comments` | ✅ `call` | ✅ `call` |
-| `postTipAdvisoriesByIdRescore` | POST | `/tip/advisories/{id}/rescore` | ✅ `call` | ✅ `call` |
-| `postTipAdvisoriesByIdReviews` | POST | `/tip/advisories/{id}/reviews` | ✅ `call` | ✅ `call` |
-| `getTipAnalyticsSeverity` | GET | `/tip/analytics/severity` | ✅ `call` | ✅ `call` |
-| `getTipAnalyticsStatus` | GET | `/tip/analytics/status` | ✅ `call` | ✅ `call` |
-| `getTipAnalyticsTopContracts` | GET | `/tip/analytics/top-contracts` | ✅ `call` | ✅ `call` |
-| `getTipAnalyticsTrend` | GET | `/tip/analytics/trend` | ✅ `call` | ✅ `call` |
-| `postTipCorrelate` | POST | `/tip/correlate` | ✅ `call` | ✅ `call` |
-| `getTipFeedsJson` | GET | `/tip/feeds/json` | ✅ `call` | ✅ `call` |
-| `getTipFeedsRss` | GET | `/tip/feeds/rss` | ✅ `call` | ✅ `call` |
-| `getTipSources` | GET | `/tip/sources` | ✅ `call` | ✅ `call` |
-| `getTipSubscriptions` | GET | `/tip/subscriptions` | ✅ `call` | ✅ `call` |
-| `postTipSubscriptions` | POST | `/tip/subscriptions` | ✅ `call` | ✅ `call` |
-| `deleteTipSubscriptionsById` | DELETE | `/tip/subscriptions/{id}` | ✅ `call` | ✅ `call` |
-| `getTipWebhooks` | GET | `/tip/webhooks` | ✅ `call` | ✅ `call` |
-| `postTipWebhooks` | POST | `/tip/webhooks` | ✅ `call` | ✅ `call` |
-| `deleteTipWebhooksById` | DELETE | `/tip/webhooks/{id}` | ✅ `call` | ✅ `call` |
-| `getTokenMetadataByAddress` | GET | `/token-metadata/{address}` | ✅ `call` | ✅ `call` |
-| `deleteTokenMetadataByAddressCache` | DELETE | `/token-metadata/{address}/cache` | ✅ `call` | ✅ `call` |
-| `getTokenMetadataByAddressFormat` | GET | `/token-metadata/{address}/format` | ✅ `call` | ✅ `call` |
-| `postTokenMetadataBatch` | POST | `/token-metadata/batch` | ✅ `call` | ✅ `call` |
-| `getTokens` | GET | `/tokens` | ✅ `client.tokens.list()` | ✅ `client.tokens.list()` |
-| `getTokensByAddress` | GET | `/tokens/{address}` | ✅ `client.tokens.get(address)` | ✅ `client.tokens.get(address)` |
-| `getTokensByAddressBalanceByAccount` | GET | `/tokens/{address}/balance/{account}` | ✅ `call` | ✅ `call` |
-| `getTokensByAddressTransfers` | GET | `/tokens/{address}/transfers` | ✅ `call` | ✅ `call` |
-| `getTransactions` | GET | `/transactions` | ✅ `client.transactions.list()` | ✅ `client.transactions.list()` |
-| `getTransactionsByHash` | GET | `/transactions/{hash}` | ✅ `client.transactions.get(hash)` | ✅ `client.transactions.get(hash)` |
-| `getTreasury` | GET | `/treasury` | ✅ `call` | ✅ `call` |
-| `getTreasuryAllocations` | GET | `/treasury/allocations` | ✅ `call` | ✅ `call` |
-| `getTreasuryBalances` | GET | `/treasury/balances` | ✅ `call` | ✅ `call` |
-| `getTreasuryBalancesByAssetCode` | GET | `/treasury/balances/{assetCode}` | ✅ `call` | ✅ `call` |
-| `getTreasuryProposals` | GET | `/treasury/proposals` | ✅ `call` | ✅ `call` |
-| `postTreasuryProposals` | POST | `/treasury/proposals` | ✅ `call` | ✅ `call` |
-| `getTreasuryProposalsById` | GET | `/treasury/proposals/{id}` | ✅ `call` | ✅ `call` |
-| `postTreasuryProposalsByIdVote` | POST | `/treasury/proposals/{id}/vote` | ✅ `call` | ✅ `call` |
-| `getTreasuryStats` | GET | `/treasury/stats` | ✅ `call` | ✅ `call` |
-| `getTreasuryTransactions` | GET | `/treasury/transactions` | ✅ `call` | ✅ `call` |
-| `getUpgradeTrace` | GET | `/upgrade-trace` | ✅ `call` | ✅ `call` |
-| `getUpgradeTraceContractsByContractId` | GET | `/upgrade-trace/contracts/{contractId}` | ✅ `call` | ✅ `call` |
-| `getUpgradeTraceContractsByContractIdDiff` | GET | `/upgrade-trace/contracts/{contractId}/diff` | ✅ `call` | ✅ `call` |
-| `getUpgradeTraceContractsByContractIdHistory` | GET | `/upgrade-trace/contracts/{contractId}/history` | ✅ `call` | ✅ `call` |
-| `getUpgradeTraceRecent` | GET | `/upgrade-trace/recent` | ✅ `call` | ✅ `call` |
-| `getUpgradeTraceStats` | GET | `/upgrade-trace/stats` | ✅ `call` | ✅ `call` |
-| `getVirtualListEvents` | GET | `/virtual-list/events` | ✅ `call` | ✅ `call` |
-| `getVirtualListTransactions` | GET | `/virtual-list/transactions` | ✅ `call` | ✅ `call` |
-| `getWalletsByAddressEvents` | GET | `/wallets/{address}/events` | ✅ `client.wallets.events(address)` | ✅ `client.wallets.events(address)` |
-| `getWalletsByAddressHistory` | GET | `/wallets/{address}/history` | ✅ `call` | ✅ `call` |
-| `getWalletsByAddressJourney` | GET | `/wallets/{address}/journey` | ✅ `call` | ✅ `call` |
-| `getWalletsByAddressTransactions` | GET | `/wallets/{address}/transactions` | ✅ `client.wallets.transactions(address)` | ✅ `client.wallets.transactions(address)` |
-| `getWebhooks` | GET | `/webhooks` | ✅ `call` | ✅ `call` |
-| `postWebhooks` | POST | `/webhooks` | ✅ `call` | ✅ `call` |
-| `deleteWebhooksById` | DELETE | `/webhooks/{id}` | ✅ `call` | ✅ `call` |
-| `patchWebhooksById` | PATCH | `/webhooks/{id}` | ✅ `call` | ✅ `call` |
-| `getWebhooksByIdDeliveries` | GET | `/webhooks/{id}/deliveries` | ✅ `call` | ✅ `call` |
-| `postWebhooksByIdPing` | POST | `/webhooks/{id}/ping` | ✅ `call` | ✅ `call` |
-| `getWebhooksByIdPreview` | GET | `/webhooks/{id}/preview` | ✅ `call` | ✅ `call` |
-| `postWebhooksByIdVerify` | POST | `/webhooks/{id}/verify` | ✅ `call` | ✅ `call` |
-| `getWebhooksSdk` | GET | `/webhooks/sdk` | ✅ `call` | ✅ `call` |
+| Operation | Method | Path | TypeScript | Python | Go |
+|-----------|--------|------|------------|--------|----|
+| `getAdminContractAbiSubmissions` | GET | `/admin/contract-abi-submissions` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postAdminContractAbiSubmissionsByIdApprove` | POST | `/admin/contract-abi-submissions/{id}/approve` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postAdminContractAbiSubmissionsByIdPublish` | POST | `/admin/contract-abi-submissions/{id}/publish` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postAdminContractAbiSubmissionsByIdReject` | POST | `/admin/contract-abi-submissions/{id}/reject` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getAgents` | GET | `/agents` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postAgents` | POST | `/agents` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postAgentsByIdExecute` | POST | `/agents/{id}/execute` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postAgentsEscalations` | POST | `/agents/escalations` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postAgentsMessages` | POST | `/agents/messages` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getAgentsMonitoringDashboard` | GET | `/agents/monitoring/dashboard` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postAgentsNegotiate` | POST | `/agents/negotiate` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getAgentsRegistry` | GET | `/agents/registry` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postAgentsRegistry` | POST | `/agents/registry` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getAgentsVerificationByExecutionId` | GET | `/agents/verification/{executionId}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postAgentsVerificationByExecutionIdVerify` | POST | `/agents/verification/{executionId}/verify` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getAnalyticsGas` | GET | `/analytics/gas` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postAnalyticsQuery` | POST | `/analytics/query` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getAnalyticsQueryDashboardByType` | GET | `/analytics/query/dashboard/{type}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postAnalyticsQueryEstimate` | POST | `/analytics/query/estimate` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getAnalyticsQueryLineage` | GET | `/analytics/query/lineage` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getAnalyticsQueryTemplates` | GET | `/analytics/query/templates` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getAssetsMetrics` | GET | `/assets/metrics` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getAuthorizations` | GET | `/authorizations` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getAuthorizationsById` | GET | `/authorizations/{id}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getAuthorizationsDashboard` | GET | `/authorizations/dashboard` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postBatchAccounts` | POST | `/batch/accounts` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postBatchEvents` | POST | `/batch/events` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postBatchTransactions` | POST | `/batch/transactions` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getCompiler` | GET | `/compiler` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postCompilerCompile` | POST | `/compiler/compile` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getCompilerMetrics` | GET | `/compiler/metrics` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getCompilerToolchains` | GET | `/compiler/toolchains` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postCompilerVerify` | POST | `/compiler/verify` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComplianceRwa` | GET | `/compliance/rwa` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComplianceRwaAssets` | GET | `/compliance/rwa/assets` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComplianceRwaAssetsByAssetId` | GET | `/compliance/rwa/assets/{assetId}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postComplianceRwaAssetsByAssetIdCheck` | POST | `/compliance/rwa/assets/{assetId}/check` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComplianceRwaHoldersByAddress` | GET | `/compliance/rwa/holders/{address}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postComplianceRwaHoldersByAddressVerify` | POST | `/compliance/rwa/holders/{address}/verify` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComplianceRwaJurisdictions` | GET | `/compliance/rwa/jurisdictions` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComplianceRwaReports` | GET | `/compliance/rwa/reports` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postComplianceRwaReportsSchedule` | POST | `/compliance/rwa/reports/schedule` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComplianceTokenLabelsByTokenId` | GET | `/compliance/token-labels/{tokenId}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `putComplianceTokenLabelsByTokenId` | PUT | `/compliance/token-labels/{tokenId}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postComposabilityAlerts` | POST | `/composability/alerts` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postComposabilityAnalyze` | POST | `/composability/analyze` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postComposabilityAnalyzeBatch` | POST | `/composability/analyze/batch` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComposabilityCircularDependencies` | GET | `/composability/circular-dependencies` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComposabilityContractsByAddress` | GET | `/composability/contracts/{address}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComposabilityContractsByAddressCallees` | GET | `/composability/contracts/{address}/callees` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComposabilityContractsByAddressCallers` | GET | `/composability/contracts/{address}/callers` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComposabilityContractsByAddressPatterns` | GET | `/composability/contracts/{address}/patterns` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComposabilityDigest` | GET | `/composability/digest` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComposabilityEcosystemIndex` | GET | `/composability/ecosystem-index` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComposabilityEcosystemIndexHistory` | GET | `/composability/ecosystem-index/history` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComposabilityExploitDatabase` | GET | `/composability/exploit-database` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postComposabilityExploitDatabase` | POST | `/composability/exploit-database` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postComposabilityExploitCheck` | POST | `/composability/exploit/check` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComposabilityExploitDetected` | GET | `/composability/exploit/detected` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComposabilityFuzzByCampaignId` | GET | `/composability/fuzz/{campaignId}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComposabilityFuzzByCampaignIdCoverage` | GET | `/composability/fuzz/{campaignId}/coverage` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postComposabilityFuzzByContractAddress` | POST | `/composability/fuzz/{contractAddress}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComposabilityGraph` | GET | `/composability/graph` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComposabilityLeaderboard` | GET | `/composability/leaderboard` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postComposabilityMitigateByTxHash` | POST | `/composability/mitigate/{txHash}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postComposabilityMitigateContractByContractAddress` | POST | `/composability/mitigate/contract/{contractAddress}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComposabilityPatterns` | GET | `/composability/patterns` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postComposabilityPatterns` | POST | `/composability/patterns` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComposabilityPatternsById` | GET | `/composability/patterns/{id}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComposabilityReportByTxHash` | GET | `/composability/report/{txHash}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComposabilityScoreByTxHash` | GET | `/composability/score/{txHash}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postComposabilityStaticAnalyzeByAddress` | POST | `/composability/static-analyze/{address}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComposabilityTransactionsByTxHash` | GET | `/composability/transactions/{txHash}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postComposabilityVerifyByTxHash` | POST | `/composability/verify/{txHash}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getComposabilityVerifyByTxHashProof` | GET | `/composability/verify/{txHash}/proof` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getContracts` | GET | `/contracts` | ✅ `client.contracts.list()` | ✅ `client.contracts.list()` | ✅ `client.Contracts.List(ctx, ...)` |
+| `postContracts` | POST | `/contracts` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getContractsByAddress` | GET | `/contracts/{address}` | ✅ `client.contracts.get(address)` | ✅ `client.contracts.get(address)` | ✅ `client.Contracts.Get(ctx, address)` |
+| `getContractsByAddressStats` | GET | `/contracts/{address}/stats` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postContractsAbiSubmissions` | POST | `/contracts/abi-submissions` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getContractsLicenses` | GET | `/contracts/licenses` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getContractsLicensesByContractId` | GET | `/contracts/licenses/{contractId}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `putContractsLicensesByContractId` | PUT | `/contracts/licenses/{contractId}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getContractsProtocolByProtocolKey` | GET | `/contracts/protocol/{protocolKey}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getEvents` | GET | `/events` | ✅ `client.events.list()` | ✅ `client.events.list()` | ✅ `client.Events.List(ctx, ...)` |
+| `getEventsById` | GET | `/events/{id}` | ✅ `client.events.get(id)` | ✅ `client.events.get(id)` | ✅ `client.Events.Get(ctx, id)` |
+| `getEventsAdvanced` | GET | `/events/advanced` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getEventsAdvancedAggregations` | GET | `/events/advanced/aggregations` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getEventsAdvancedContractsByContractId` | GET | `/events/advanced/contracts/{contractId}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postEventsAdvancedQuery` | POST | `/events/advanced/query` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getEventsAdvancedReplayByTxHash` | GET | `/events/advanced/replay/{txHash}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getEventsAdvancedSubscriptions` | GET | `/events/advanced/subscriptions` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postEventsAdvancedSubscriptions` | POST | `/events/advanced/subscriptions` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `deleteEventsAdvancedSubscriptionsById` | DELETE | `/events/advanced/subscriptions/{id}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getFactoryTracker` | GET | `/factory-tracker` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getFactoryTrackerContractsByContractIdLineage` | GET | `/factory-tracker/contracts/{contractId}/lineage` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getFactoryTrackerFactories` | GET | `/factory-tracker/factories` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getFactoryTrackerFactoriesByContractId` | GET | `/factory-tracker/factories/{contractId}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getFactoryTrackerFactoriesByContractIdChildren` | GET | `/factory-tracker/factories/{contractId}/children` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getFactoryTrackerStats` | GET | `/factory-tracker/stats` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getGraphContractCalls` | GET | `/graph/contract-calls` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getGraphContractsByAddressDownstream` | GET | `/graph/contracts/{address}/downstream` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getGraphContractsByAddressUpstream` | GET | `/graph/contracts/{address}/upstream` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getGraphDependencies` | GET | `/graph/dependencies` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getGraphDependenciesSvg` | GET | `/graph/dependencies/svg` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getGraphExplorer` | GET | `/graph/explorer` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postGraphQuery` | POST | `/graph/query` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postGraphTemplatesCommunityDetection` | POST | `/graph/templates/community-detection` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postGraphTemplatesContractCalls` | POST | `/graph/templates/contract-calls` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postGraphTemplatesInfluence` | POST | `/graph/templates/influence` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postGraphTemplatesKHop` | POST | `/graph/templates/k-hop` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postGraphTemplatesPagerank` | POST | `/graph/templates/pagerank` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postGraphTemplatesShortestPath` | POST | `/graph/templates/shortest-path` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postGraphTemplatesTokenNetwork` | POST | `/graph/templates/token-network` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postGraphTemplatesTransactionFlow` | POST | `/graph/templates/transaction-flow` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postHydrationEntities` | POST | `/hydration/entities` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getI18nDictionaryByLanguage` | GET | `/i18n/dictionary/{language}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getI18nKeys` | GET | `/i18n/keys` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postI18nKeys` | POST | `/i18n/keys` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getI18nLanguages` | GET | `/i18n/languages` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getI18nMatrix` | GET | `/i18n/matrix` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postI18nSeed` | POST | `/i18n/seed` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getI18nTranslate` | GET | `/i18n/translate` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postI18nTranslateBatch` | POST | `/i18n/translate/batch` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postI18nTranslations` | POST | `/i18n/translations` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `patchI18nTranslationsById` | PATCH | `/i18n/translations/{id}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getLakehouseDashboards` | GET | `/lakehouse/dashboards` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getLakehouseHealth` | GET | `/lakehouse/health` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postLakehouseQuery` | POST | `/lakehouse/query` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postLakehouseQueryPlan` | POST | `/lakehouse/query/plan` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getLakehouseSchemas` | GET | `/lakehouse/schemas` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getLakehouseTiers` | GET | `/lakehouse/tiers` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postLakehouseTiersEvaluate` | POST | `/lakehouse/tiers/evaluate` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevAlerts` | GET | `/mev/alerts` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postMevAlerts` | POST | `/mev/alerts` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevArbitrageExecuted` | GET | `/mev/arbitrage/executed` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevArbitrageLeaderboard` | GET | `/mev/arbitrage/leaderboard` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevArbitrageOpportunities` | GET | `/mev/arbitrage/opportunities` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevAttackersByAddress` | GET | `/mev/attackers/{address}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevBots` | GET | `/mev/bots` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevBotsActive` | GET | `/mev/bots/active` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postMevCheckPendingTx` | POST | `/mev/check-pending-tx` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postMevClassifyLedger` | POST | `/mev/classify-ledger` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postMevCompensationClaim` | POST | `/mev/compensation/claim` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevCompensationClaimsByAddress` | GET | `/mev/compensation/claims/{address}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevCompensationEstimateByAddress` | GET | `/mev/compensation/estimate/{address}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevEvents` | GET | `/mev/events` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevEventsById` | GET | `/mev/events/{id}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevEventsByTxHashByTx` | GET | `/mev/events/{txHash}/by-tx` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevExport` | GET | `/mev/export` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevFlashLoanAttacks` | GET | `/mev/flash-loan-attacks` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevLeaderboard` | GET | `/mev/leaderboard` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevMempoolPending` | GET | `/mev/mempool/pending` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevOverview` | GET | `/mev/overview` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevPredictions` | GET | `/mev/predictions` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevPredictionsConfig` | GET | `/mev/predictions/config` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postMevPredictionsIngest` | POST | `/mev/predictions/ingest` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `deleteMevPredictionsPending` | DELETE | `/mev/predictions/pending` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevPredictionsPending` | GET | `/mev/predictions/pending` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postMevProtectTx` | POST | `/mev/protect-tx` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevProtectionsByContract` | GET | `/mev/protections/{contract}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevProtectionsByContractScoreHistory` | GET | `/mev/protections/{contract}/score-history` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevProtectionsLeaderboard` | GET | `/mev/protections/leaderboard` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevReportsDaily` | GET | `/mev/reports/daily` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postMevReportsSubscribe` | POST | `/mev/reports/subscribe` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevReportsWeekly` | GET | `/mev/reports/weekly` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevSandwichPatterns` | GET | `/mev/sandwich-patterns` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postMevSandwichPatterns` | POST | `/mev/sandwich-patterns` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevStatistics` | GET | `/mev/statistics` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getMevVictimsByAddress` | GET | `/mev/victims/{address}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postMevVictimsByAddressNotify` | POST | `/mev/victims/{address}/notify` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getNetwork` | GET | `/network` | ✅ `client.network.status()` | ✅ `client.network.status()` | ✅ `client.Network.Status(ctx)` |
+| `getOraclesAudit` | GET | `/oracles/audit` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getOraclesAuditAnomalies` | GET | `/oracles/audit/anomalies` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getOraclesAuditProviders` | GET | `/oracles/audit/providers` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getOraclesAuditProvidersByProviderIdReliability` | GET | `/oracles/audit/providers/{providerId}/reliability` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getOraclesAuditRequests` | GET | `/oracles/audit/requests` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getOraclesAuditRequestsByRequestTxHash` | GET | `/oracles/audit/requests/{requestTxHash}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getOraclesAuditStats` | GET | `/oracles/audit/stats` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postOraclesAuditValidate` | POST | `/oracles/audit/validate` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getOraclesFeeds` | GET | `/oracles/feeds` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getOraclesFeedsAssets` | GET | `/oracles/feeds/assets` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getOraclesFeedsAssetsByAssetPairHistory` | GET | `/oracles/feeds/assets/{assetPair}/history` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getOraclesFeedsAssetsByAssetPairOhlcv` | GET | `/oracles/feeds/assets/{assetPair}/ohlcv` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getOraclesFeedsAssetsByAssetPairPrice` | GET | `/oracles/feeds/assets/{assetPair}/price` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getOraclesFeedsProviders` | GET | `/oracles/feeds/providers` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postOraclesFeedsSubscribe` | POST | `/oracles/feeds/subscribe` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getOraclesFeedsSubscriptions` | GET | `/oracles/feeds/subscriptions` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `deleteOraclesFeedsSubscriptionsById` | DELETE | `/oracles/feeds/subscriptions/{id}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyAnonymitySets` | GET | `/privacy/anonymity-sets` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyAnonymitySetsByProtocolHistory` | GET | `/privacy/anonymity-sets/{protocol}/history` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyAnonymitySetsEffective` | GET | `/privacy/anonymity-sets/effective` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyBridges` | GET | `/privacy/bridges` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyComplianceByAddress` | GET | `/privacy/compliance/{address}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyComplianceDashboard` | GET | `/privacy/compliance/dashboard` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postPrivacyComplianceFlag` | POST | `/privacy/compliance/flag` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyComplianceFlagged` | GET | `/privacy/compliance/flagged` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyComplianceReportByAddressExport` | GET | `/privacy/compliance/report/{address}/export` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyComplianceReportsPeriodic` | GET | `/privacy/compliance/reports/periodic` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postPrivacyComplianceScreen` | POST | `/privacy/compliance/screen` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postPrivacyComplianceUnflagByAddress` | POST | `/privacy/compliance/unflag/{address}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyCrossProtocolByAddress` | GET | `/privacy/cross-protocol/{address}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyDeAnonymizationAmountByAddress` | GET | `/privacy/de-anonymization/amount/{address}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyDeAnonymizationClusters` | GET | `/privacy/de-anonymization/clusters` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyDeAnonymizationFindings` | GET | `/privacy/de-anonymization/findings` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyDeAnonymizationTaintByAddress` | GET | `/privacy/de-anonymization/taint/{address}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyDeAnonymizationTimingByAddress` | GET | `/privacy/de-anonymization/timing/{address}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyDefi` | GET | `/privacy/defi` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postPrivacyDetect` | POST | `/privacy/detect` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyHistory` | GET | `/privacy/history` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyHistoryByProtocol` | GET | `/privacy/history/{protocol}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyLeaderboard` | GET | `/privacy/leaderboard` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyLeaderboardUsers` | GET | `/privacy/leaderboard/users` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyMlPredictAnonymity` | GET | `/privacy/ml/predict-anonymity` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyOverview` | GET | `/privacy/overview` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyProtocols` | GET | `/privacy/protocols` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyProtocolsByProtocol` | GET | `/privacy/protocols/{protocol}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyRegistry` | GET | `/privacy/registry` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postPrivacyResearchAnalyzeCluster` | POST | `/privacy/research/analyze-cluster` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyResearchDatasets` | GET | `/privacy/research/datasets` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postPrivacyResearchGraph` | POST | `/privacy/research/graph` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyScoresContracts` | GET | `/privacy/scores/contracts` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyScoresTransactions` | GET | `/privacy/scores/transactions` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyTransactions` | GET | `/privacy/transactions` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyTransactionsByTxHash` | GET | `/privacy/transactions/{txHash}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyZkBenchmarks` | GET | `/privacy/zk/benchmarks` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyZkProofs` | GET | `/privacy/zk/proofs` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyZkVerifiers` | GET | `/privacy/zk/verifiers` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getPrivacyZkVerifiersByAddress` | GET | `/privacy/zk/verifiers/{address}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postRampExecute` | POST | `/ramp/execute` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postRampKycStatus` | POST | `/ramp/kyc/status` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getRampOrders` | GET | `/ramp/orders` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getRampOrdersById` | GET | `/ramp/orders/{id}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getRampProviders` | GET | `/ramp/providers` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postRampQuote` | POST | `/ramp/quote` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postRampRefund` | POST | `/ramp/refund` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postRampWebhookByProvider` | POST | `/ramp/webhook/{provider}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postRender` | POST | `/render` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getRenderTemplates` | GET | `/render/templates` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSacTrustlines` | GET | `/sac-trustlines` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSacTrustlinesAccountsByAddress` | GET | `/sac-trustlines/accounts/{address}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSacTrustlinesAccountsByAddressAuthorized` | GET | `/sac-trustlines/accounts/{address}/authorized` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSacTrustlinesAssetsByAssetCode` | GET | `/sac-trustlines/assets/{assetCode}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSacTrustlinesAuthorize` | POST | `/sac-trustlines/authorize` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSacTrustlinesRevoke` | POST | `/sac-trustlines/revoke` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSacTrustlinesStats` | GET | `/sac-trustlines/stats` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxBenchmark` | POST | `/sandbox/benchmark` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxCall` | POST | `/sandbox/call` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxCallBatch` | POST | `/sandbox/call-batch` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxCiExecute` | POST | `/sandbox/ci/execute` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSandboxCiResultByRunId` | GET | `/sandbox/ci/result/{runId}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxCompare` | POST | `/sandbox/compare` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxDebug` | POST | `/sandbox/debug` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxDebugContinue` | POST | `/sandbox/debug/continue` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxDebugSetBreakpoint` | POST | `/sandbox/debug/set-breakpoint` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxDeploy` | POST | `/sandbox/deploy` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxDeployFromMainnet` | POST | `/sandbox/deploy-from-mainnet` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxDeployFromTemplate` | POST | `/sandbox/deploy-from-template` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxDeployToMainnet` | POST | `/sandbox/deploy-to-mainnet` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxDeployToTestnet` | POST | `/sandbox/deploy-to-testnet` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxForkByContractAddress` | POST | `/sandbox/fork/{contractAddress}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSandboxFuzzRunByRunId` | GET | `/sandbox/fuzz/run/{runId}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSandboxFuzzRunByRunIdFindings` | GET | `/sandbox/fuzz/run/{runId}/findings` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxFuzzRunByRunIdReplayByFindingId` | POST | `/sandbox/fuzz/run/{runId}/replay/{findingId}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSandboxFuzzRuns` | GET | `/sandbox/fuzz/runs` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxFuzzStart` | POST | `/sandbox/fuzz/start` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxFuzzStopByRunId` | POST | `/sandbox/fuzz/stop/{runId}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxGenerateDocs` | POST | `/sandbox/generate/docs` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxGenerateSdk` | POST | `/sandbox/generate/sdk` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxGenerateTests` | POST | `/sandbox/generate/tests` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxOptimize` | POST | `/sandbox/optimize` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxReplayByTxHash` | POST | `/sandbox/replay/{txHash}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSandboxReplayByTxHashComparison` | GET | `/sandbox/replay/{txHash}/comparison` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxSession` | POST | `/sandbox/session` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `deleteSandboxSessionBySessionId` | DELETE | `/sandbox/session/{sessionId}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSandboxSessionBySessionId` | GET | `/sandbox/session/{sessionId}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSandboxSessionBySessionIdAccounts` | GET | `/sandbox/session/{sessionId}/accounts` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxSessionBySessionIdAccounts` | POST | `/sandbox/session/{sessionId}/accounts` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxSessionBySessionIdAdvance` | POST | `/sandbox/session/{sessionId}/advance` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSandboxSessionBySessionIdCalls` | GET | `/sandbox/session/{sessionId}/calls` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSandboxSessionBySessionIdCallsByCallId` | GET | `/sandbox/session/{sessionId}/calls/{callId}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSandboxSessionBySessionIdContracts` | GET | `/sandbox/session/{sessionId}/contracts` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSandboxSessionBySessionIdContractsByAddressAbi` | GET | `/sandbox/session/{sessionId}/contracts/{address}/abi` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSandboxSessionBySessionIdContractsByAddressState` | GET | `/sandbox/session/{sessionId}/contracts/{address}/state` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSandboxSessionBySessionIdDebuggerUi` | GET | `/sandbox/session/{sessionId}/debugger-ui` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxSessionBySessionIdExport` | POST | `/sandbox/session/{sessionId}/export` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxSessionBySessionIdFund` | POST | `/sandbox/session/{sessionId}/fund` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxSessionBySessionIdImport` | POST | `/sandbox/session/{sessionId}/import` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxSessionBySessionIdPause` | POST | `/sandbox/session/{sessionId}/pause` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxSessionBySessionIdRegisterToken` | POST | `/sandbox/session/{sessionId}/register-token` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxSessionBySessionIdReset` | POST | `/sandbox/session/{sessionId}/reset` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxSessionBySessionIdRestoreBySnapshotId` | POST | `/sandbox/session/{sessionId}/restore/{snapshotId}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxSessionBySessionIdShare` | POST | `/sandbox/session/{sessionId}/share` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxSessionBySessionIdSnapshot` | POST | `/sandbox/session/{sessionId}/snapshot` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSandboxSessionBySessionIdSnapshots` | GET | `/sandbox/session/{sessionId}/snapshots` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSandboxSessionBySessionIdStateDiff` | GET | `/sandbox/session/{sessionId}/state-diff` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSandboxShareByShareId` | GET | `/sandbox/share/{shareId}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSandboxTemplates` | GET | `/sandbox/templates` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxTemplates` | POST | `/sandbox/templates` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSandboxTemplatesById` | GET | `/sandbox/templates/{id}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSandboxTemplatesByIdParams` | GET | `/sandbox/templates/{id}/params` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxVerifyAssertion` | POST | `/sandbox/verify/assertion` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSandboxVerifyInvariant` | POST | `/sandbox/verify/invariant` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getScheduleAlerts` | GET | `/schedule/alerts` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postScheduleAlertsByIdAcknowledge` | POST | `/schedule/alerts/{id}/acknowledge` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getScheduleCalendar` | GET | `/schedule/calendar` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getScheduleCalendarIcs` | GET | `/schedule/calendar.ics` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getScheduleContractsByAddress` | GET | `/schedule/contracts/{address}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getScheduleContractsByAddressCron` | GET | `/schedule/contracts/{address}/cron` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getScheduleContractsByAddressGovernance` | GET | `/schedule/contracts/{address}/governance` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getScheduleContractsByAddressTimeline` | GET | `/schedule/contracts/{address}/timeline` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getScheduleContractsByAddressVesting` | GET | `/schedule/contracts/{address}/vesting` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postScheduleCron` | POST | `/schedule/cron` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `deleteScheduleCronById` | DELETE | `/schedule/cron/{id}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `putScheduleCronById` | PUT | `/schedule/cron/{id}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getScheduleCronByIdHistory` | GET | `/schedule/cron/{id}/history` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `patchScheduleCronByIdToggle` | PATCH | `/schedule/cron/{id}/toggle` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postScheduleCronByIdTrigger` | POST | `/schedule/cron/{id}/trigger` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getScheduleDiscover` | GET | `/schedule/discover` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getScheduleGovernanceExpired` | GET | `/schedule/governance/expired` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getScheduleGovernancePending` | GET | `/schedule/governance/pending` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getScheduleGovernanceStats` | GET | `/schedule/governance/stats` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getScheduleHealth` | GET | `/schedule/health` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getScheduleOperationsByOpId` | GET | `/schedule/operations/{opId}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getScheduleSearch` | GET | `/schedule/search` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getScheduleStats` | GET | `/schedule/stats` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getScheduleUpcoming` | GET | `/schedule/upcoming` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getScheduleVestingByBeneficiaryAddress` | GET | `/schedule/vesting/{beneficiaryAddress}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getScheduleVestingLargeUnlocks` | GET | `/schedule/vesting/large-unlocks` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getScheduleVestingLeaderboard` | GET | `/schedule/vesting/leaderboard` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSearchSuggest` | GET | `/search/suggest` | ✅ `client.search.suggest(q)` | ✅ `call` | ✅ `Call` |
+| `postSimulate` | POST | `/simulate` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getStorage` | GET | `/storage` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getStorageTrap` | GET | `/storage-trap` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postStorageTrapAnalyze` | POST | `/storage-trap/analyze` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getStorageTrapContractsByContractId` | GET | `/storage-trap/contracts/{contractId}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getStorageTrapDetected` | GET | `/storage-trap/detected` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getStorageTrapStats` | GET | `/storage-trap/stats` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getStorageContractsByContractId` | GET | `/storage/contracts/{contractId}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getStorageContractsByContractIdEntries` | GET | `/storage/contracts/{contractId}/entries` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getStorageContractsByContractIdEntriesByKey` | GET | `/storage/contracts/{contractId}/entries/{key}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getStorageContractsByContractIdSize` | GET | `/storage/contracts/{contractId}/size` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getStorageNetworkStats` | GET | `/storage/network/stats` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getStorageNetworkTopUsers` | GET | `/storage/network/top-users` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSystemicConcentration` | GET | `/systemic/concentration` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSystemicCriticalNodes` | GET | `/systemic/critical-nodes` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSystemicDependencyGraph` | GET | `/systemic/dependency-graph` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSystemicMonitorAlerts` | GET | `/systemic/monitor/alerts` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSystemicMonitorHistory` | GET | `/systemic/monitor/history` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSystemicMonitorRiskIndex` | GET | `/systemic/monitor/risk-index` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSystemicOverview` | GET | `/systemic/overview` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getSystemicProtocolsByAddress` | GET | `/systemic/protocols/{address}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postSystemicSimulateCascade` | POST | `/systemic/simulate-cascade` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getTokenMetadataByAddress` | GET | `/token-metadata/{address}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `deleteTokenMetadataByAddressCache` | DELETE | `/token-metadata/{address}/cache` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getTokenMetadataByAddressFormat` | GET | `/token-metadata/{address}/format` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postTokenMetadataBatch` | POST | `/token-metadata/batch` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getTokens` | GET | `/tokens` | ✅ `client.tokens.list()` | ✅ `client.tokens.list()` | ✅ `client.Tokens.List(ctx, ...)` |
+| `getTokensByAddress` | GET | `/tokens/{address}` | ✅ `client.tokens.get(address)` | ✅ `client.tokens.get(address)` | ✅ `client.Tokens.Get(ctx, address)` |
+| `getTokensByAddressBalanceByAccount` | GET | `/tokens/{address}/balance/{account}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getTokensByAddressTransfers` | GET | `/tokens/{address}/transfers` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getTransactions` | GET | `/transactions` | ✅ `client.transactions.list()` | ✅ `client.transactions.list()` | ✅ `client.Transactions.List(ctx, ...)` |
+| `getTransactionsByHash` | GET | `/transactions/{hash}` | ✅ `client.transactions.get(hash)` | ✅ `client.transactions.get(hash)` | ✅ `client.Transactions.Get(ctx, hash)` |
+| `getTransactionsByHashXdr` | GET | `/transactions/{hash}/xdr` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getUpgradeTrace` | GET | `/upgrade-trace` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getUpgradeTraceContractsByContractId` | GET | `/upgrade-trace/contracts/{contractId}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getUpgradeTraceContractsByContractIdDiff` | GET | `/upgrade-trace/contracts/{contractId}/diff` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getUpgradeTraceContractsByContractIdHistory` | GET | `/upgrade-trace/contracts/{contractId}/history` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getUpgradeTraceRecent` | GET | `/upgrade-trace/recent` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getUpgradeTraceStats` | GET | `/upgrade-trace/stats` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getWalletsByAddressEvents` | GET | `/wallets/{address}/events` | ✅ `client.wallets.events(address)` | ✅ `client.wallets.events(address)` | ✅ `client.Wallets.Events(ctx, address)` |
+| `getWalletsByAddressHistory` | GET | `/wallets/{address}/history` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getWalletsByAddressJourney` | GET | `/wallets/{address}/journey` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getWalletsByAddressTransactions` | GET | `/wallets/{address}/transactions` | ✅ `client.wallets.transactions(address)` | ✅ `client.wallets.transactions(address)` | ✅ `client.Wallets.Transactions(ctx, address)` |
+| `getWebhooks` | GET | `/webhooks` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postWebhooks` | POST | `/webhooks` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `deleteWebhooksById` | DELETE | `/webhooks/{id}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `patchWebhooksById` | PATCH | `/webhooks/{id}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getWebhooksByIdDeliveries` | GET | `/webhooks/{id}/deliveries` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postWebhooksByIdPing` | POST | `/webhooks/{id}/ping` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getWebhooksByIdPreview` | GET | `/webhooks/{id}/preview` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postWebhooksByIdVerify` | POST | `/webhooks/{id}/verify` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getWebhooksSdk` | GET | `/webhooks/sdk` | ✅ `call` | ✅ `call` | ✅ `Call` |
