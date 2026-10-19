@@ -19,6 +19,7 @@
 import { Router, Request, Response } from 'express';
 import { randomUUID } from 'crypto';
 import { z } from 'zod';
+import { recordAdminAudit } from '../lib/admin-audit';
 
 export type OrgRole = 'owner' | 'admin' | 'billing' | 'member';
 
@@ -68,6 +69,14 @@ function record(
   log.push({ at: new Date().toISOString(), actor, action, details });
   if (log.length > 1_000) log.shift();
   audit.set(orgId, log);
+  // The in-memory log above backs GET /:orgId/audit; also persist to the
+  // durable audit table so membership/role/key changes survive restarts (#1232).
+  void recordAdminAudit({
+    actor,
+    action: action.startsWith('org.') ? action : `org.${action}`,
+    target: orgId,
+    newState: details,
+  });
 }
 
 function actorOf(req: Request): string | undefined {

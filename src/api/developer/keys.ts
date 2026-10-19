@@ -6,6 +6,7 @@ import { prismaWrite, prismaRead } from '../../db';
 import { asyncHandler } from '../../middleware/asyncHandler';
 import { invalidateKeyCache } from '../../middleware/apiKeyAuth';
 import { logger } from '../../logger';
+import { auditActor, recordAdminAudit } from '../../lib/admin-audit';
 
 export const keysRouter = Router();
 
@@ -117,6 +118,13 @@ keysRouter.post(
       },
     });
 
+    void recordAdminAudit({
+      actor: auditActor(req, developerId),
+      action: 'api_key.created',
+      target: key.id,
+      newState: { developerId, keyPrefix: key.keyPrefix, permissions, expiresAt },
+    });
+
     // Return the raw key only on creation — never stored in plain text
     res
       .status(201)
@@ -218,6 +226,13 @@ keysRouter.patch(
     // Invalidate cache so updated permissions/IPs take effect immediately
     evictFromCache(existing.keyHash);
 
+    void recordAdminAudit({
+      actor: auditActor(req, developerId),
+      action: 'api_key.updated',
+      target: key.id,
+      newState: { developerId, ...parsed.data },
+    });
+
     res.json(key);
   }),
 );
@@ -242,6 +257,13 @@ keysRouter.delete(
     // Invalidate cache immediately so the revoked key is rejected on the
     // very next request rather than staying valid for up to KEY_CACHE_TTL ms.
     evictFromCache(existing.keyHash);
+
+    void recordAdminAudit({
+      actor: auditActor(req, developerId),
+      action: 'api_key.revoked',
+      target: existing.id,
+      newState: { developerId, status: 'revoked' },
+    });
 
     res.status(204).end();
   }),
