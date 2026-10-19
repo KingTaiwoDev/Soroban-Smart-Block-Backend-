@@ -79,8 +79,9 @@
     "sdk:build": "npm run build -w @soroban-explorer/client",
     "sdk:test:chaos": "vitest run tests/sdk-chaos.test.ts",
     "sdk:test:load": "vitest run tests/sdk-load.test.ts",
-    "sdk:bench": "vitest run src/benchmarks/sdk-generation.bench.ts",
-    "sdk:audit:security": "ts-node --transpile-only scripts/sdk/security-audit.ts"
+    "sdk:audit:security": "ts-node --transpile-only scripts/sdk/security-audit.ts",
+    "sdk:quality": "ts-node --transpile-only scripts/sdk/quality-report.ts",
+    "sdk:quality:check": "ts-node --transpile-only scripts/sdk/quality-report.ts --check"
   },
   "overrides": {
     "@libp2p/interface": "2.11.0"

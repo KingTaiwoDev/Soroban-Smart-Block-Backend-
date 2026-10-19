@@ -258,6 +258,32 @@ npm run sdk:test:load
 npm run sdk:test:chaos
 ```
 
+### 9. OpenAPI Quality Report & Baseline Enforcement (Issue #1294)
+
+**Implementation**: `scripts/sdk/quality-report.ts`  
+**Artifacts**: `docs/sdk/openapi-quality-report.json`, `scripts/sdk/quality-baseline.json`
+
+Analyzes OpenAPI contracts for quality issues that impair SDK ergonomics and client code generation:
+- **Missing `operationId`** (`critical`): Unnamed operations force emitters to synthesize brittle names from HTTP path/method.
+- **Undocumented Errors** (`warning`): Missing 4xx/5xx/default response schemas prevent typed exception handling in SDKs.
+- **Incomplete / Dangling Schemas** (`critical`): Dangling `$ref` pointers or array schemas lacking `items` yield unresolved types or compilation errors in strongly typed SDK targets.
+- **Ambiguous Pagination Metadata** (`warning`): Incompatible query parameter bounds (e.g. non-integer `limit`) or missing pagination cursor tokens prevent automated iterator and pager generation.
+
+**Baseline Mode**:
+Supports gradual adoption by comparing findings against `scripts/sdk/quality-baseline.json`. Known issues recorded in the baseline are tolerated, while newly introduced `critical` contract defects fail CI checks immediately.
+
+**Commands**:
+```bash
+# Generate report artifact
+npm run sdk:quality
+
+# Check for newly introduced critical findings against baseline (CI gate)
+npm run sdk:quality:check
+
+# Update baseline after deliberate contract remediation
+npx ts-node --transpile-only scripts/sdk/quality-report.ts --update-baseline
+```
+
 ## SLO and Error Budgets
 
 **Service Level Objectives**:
@@ -355,6 +381,7 @@ npm run sdk:test:chaos
    npm run sdk:check          # Drift detection
    npm run sdk:breaking       # Semver validation
    npm run sdk:audit:security # Security audit
+   npm run sdk:quality:check  # OpenAPI quality baseline check
    ```
 
 ### Release Process
@@ -365,6 +392,7 @@ npm run sdk:test:chaos
    npm run sdk:check          # Verify no drift
    npm run sdk:breaking       # Check semver compliance
    npm run sdk:audit:security # Security audit
+   npm run sdk:quality:check  # OpenAPI quality baseline check
    npm run sdk:test:chaos     # Chaos tests
    npm run sdk:test:load      # Load tests
    npm run sdk:bench          # Performance benchmarks
