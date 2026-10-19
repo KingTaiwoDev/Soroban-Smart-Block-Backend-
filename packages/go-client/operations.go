@@ -6,8 +6,8 @@ package soroban
 // SpecMetadata carries version and generation fingerprint information.
 const (
 	SpecVersion     = "1.0.0"
-	SpecFingerprint = "4c0ba0fdc2224255"
-	OperationCount  = 383
+	SpecFingerprint = "4c126e23b9a2d4e1"
+	OperationCount  = 388
 )
 
 // QueryParamMeta describes an allowed query parameter for an operation.
@@ -3935,6 +3935,37 @@ var Operations = map[string]OperationMeta{
 		Deprecated: false,
 		Summary: "Preview the exact payload and headers for a subscription",
 	},
+	"getWebhooksByIdReplay": {
+		ID: "getWebhooksByIdReplay",
+		Method: "GET",
+		Path: "/webhooks/{id}/replay",
+		PathParams: []string{
+			"id",
+		},
+		QueryParams: []QueryParamMeta{
+
+		},
+		Body: "none",
+		ContentType: "application/json",
+		Deprecated: false,
+		Summary: "List replay jobs for a webhook subscription",
+	},
+	"getWebhooksByIdReplayByJobId": {
+		ID: "getWebhooksByIdReplayByJobId",
+		Method: "GET",
+		Path: "/webhooks/{id}/replay/{jobId}",
+		PathParams: []string{
+			"id",
+			"jobId",
+		},
+		QueryParams: []QueryParamMeta{
+
+		},
+		Body: "none",
+		ContentType: "application/json",
+		Deprecated: false,
+		Summary: "Get progress of a specific replay job",
+	},
 	"getWebhooksSdk": {
 		ID: "getWebhooksSdk",
 		Method: "GET",
@@ -5841,6 +5872,53 @@ var Operations = map[string]OperationMeta{
 		ContentType: "application/json",
 		Deprecated: false,
 		Summary: "Send a synthetic test event to a subscription",
+	},
+	"postWebhooksByIdReplay": {
+		ID: "postWebhooksByIdReplay",
+		Method: "POST",
+		Path: "/webhooks/{id}/replay",
+		PathParams: []string{
+			"id",
+		},
+		QueryParams: []QueryParamMeta{
+
+		},
+		Body: "required",
+		ContentType: "application/json",
+		Deprecated: false,
+		Summary: "Replay webhook deliveries from a selected ledger checkpoint",
+	},
+	"postWebhooksByIdReplayByJobIdCancel": {
+		ID: "postWebhooksByIdReplayByJobIdCancel",
+		Method: "POST",
+		Path: "/webhooks/{id}/replay/{jobId}/cancel",
+		PathParams: []string{
+			"id",
+			"jobId",
+		},
+		QueryParams: []QueryParamMeta{
+
+		},
+		Body: "none",
+		ContentType: "application/json",
+		Deprecated: false,
+		Summary: "Cancel a replay job",
+	},
+	"postWebhooksByIdReplayByJobIdResume": {
+		ID: "postWebhooksByIdReplayByJobIdResume",
+		Method: "POST",
+		Path: "/webhooks/{id}/replay/{jobId}/resume",
+		PathParams: []string{
+			"id",
+			"jobId",
+		},
+		QueryParams: []QueryParamMeta{
+
+		},
+		Body: "none",
+		ContentType: "application/json",
+		Deprecated: false,
+		Summary: "Resume an interrupted replay job",
 	},
 	"postWebhooksByIdVerify": {
 		ID: "postWebhooksByIdVerify",

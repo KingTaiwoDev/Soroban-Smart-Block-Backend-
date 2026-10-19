@@ -1,10 +1,10 @@
 {
   "specVersion": "1.0.0",
-  "operationCount": 506,
+  "operationCount": 388,
   "operations": {
-    "deleteAdvancedEventsSubscriptionsById": {
+    "deleteEventsAdvancedSubscriptionsById": {
       "method": "DELETE",
-      "path": "/advanced-events/subscriptions/{id}",
+      "path": "/events/advanced/subscriptions/{id}",
       "params": {
         "path:id": {
           "type": "string",
@@ -14,28 +14,16 @@
       "body": "none",
       "deprecated": false
     },
-    "deleteApiV1MevPredictionsPending": {
+    "deleteMevPredictionsPending": {
       "method": "DELETE",
-      "path": "/api/v1/mev/predictions/pending",
+      "path": "/mev/predictions/pending",
       "params": {},
       "body": "none",
       "deprecated": false
     },
-    "deleteOracleFeedsSubscriptionsById": {
+    "deleteOraclesFeedsSubscriptionsById": {
       "method": "DELETE",
-      "path": "/oracle-feeds/subscriptions/{id}",
-      "params": {
-        "path:id": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "deleteReputationLinkById": {
-      "method": "DELETE",
-      "path": "/reputation/link/{id}",
+      "path": "/oracles/feeds/subscriptions/{id}",
       "params": {
         "path:id": {
           "type": "string",
@@ -60,42 +48,6 @@
     "deleteScheduleCronById": {
       "method": "DELETE",
       "path": "/schedule/cron/{id}",
-      "params": {
-        "path:id": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "deleteTipAdvisoriesById": {
-      "method": "DELETE",
-      "path": "/tip/advisories/{id}",
-      "params": {
-        "path:id": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "deleteTipSubscriptionsById": {
-      "method": "DELETE",
-      "path": "/tip/subscriptions/{id}",
-      "params": {
-        "path:id": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "deleteTipWebhooksById": {
-      "method": "DELETE",
-      "path": "/tip/webhooks/{id}",
       "params": {
         "path:id": {
           "type": "string",
@@ -155,62 +107,6 @@
       "body": "none",
       "deprecated": false
     },
-    "getAdvancedEvents": {
-      "method": "GET",
-      "path": "/advanced-events",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getAdvancedEventsAggregations": {
-      "method": "GET",
-      "path": "/advanced-events/aggregations",
-      "params": {
-        "query:period": {
-          "type": "string",
-          "required": false,
-          "enum": [
-            "1h",
-            "24h",
-            "7d",
-            "30d"
-          ]
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getAdvancedEventsContractsByContractId": {
-      "method": "GET",
-      "path": "/advanced-events/contracts/{contractId}",
-      "params": {
-        "path:contractId": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getAdvancedEventsReplayByTxHash": {
-      "method": "GET",
-      "path": "/advanced-events/replay/{txHash}",
-      "params": {
-        "path:txHash": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getAdvancedEventsSubscriptions": {
-      "method": "GET",
-      "path": "/advanced-events/subscriptions",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
     "getAgents": {
       "method": "GET",
       "path": "/agents",
@@ -266,25 +162,6 @@
       "body": "none",
       "deprecated": false
     },
-    "getAnalyticsDashboardByType": {
-      "method": "GET",
-      "path": "/analytics/dashboard/{type}",
-      "params": {
-        "path:type": {
-          "type": "string",
-          "required": true,
-          "enum": [
-            "top-contracts",
-            "gas-distribution",
-            "wallet-creation",
-            "token-heatmap",
-            "protocol-summary"
-          ]
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
     "getAnalyticsGas": {
       "method": "GET",
       "path": "/analytics/gas",
@@ -306,9 +183,28 @@
       "body": "none",
       "deprecated": false
     },
-    "getAnalyticsLineage": {
+    "getAnalyticsQueryDashboardByType": {
       "method": "GET",
-      "path": "/analytics/lineage",
+      "path": "/analytics/query/dashboard/{type}",
+      "params": {
+        "path:type": {
+          "type": "string",
+          "required": true,
+          "enum": [
+            "top-contracts",
+            "gas-distribution",
+            "wallet-creation",
+            "token-heatmap",
+            "protocol-summary"
+          ]
+        }
+      },
+      "body": "none",
+      "deprecated": false
+    },
+    "getAnalyticsQueryLineage": {
+      "method": "GET",
+      "path": "/analytics/query/lineage",
       "params": {},
       "body": "none",
       "deprecated": false
@@ -316,126 +212,6 @@
     "getAnalyticsQueryTemplates": {
       "method": "GET",
       "path": "/analytics/query/templates",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getApiV1ContractsProtocolByProtocolKey": {
-      "method": "GET",
-      "path": "/api/v1/contracts/protocol/{protocolKey}",
-      "params": {
-        "path:protocolKey": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getApiV1GraphContractCalls": {
-      "method": "GET",
-      "path": "/api/v1/graph/contract-calls",
-      "params": {
-        "query:address": {
-          "type": "string",
-          "required": false
-        },
-        "query:direction": {
-          "type": "string",
-          "required": false,
-          "enum": [
-            "upstream",
-            "downstream",
-            "both"
-          ]
-        },
-        "query:includeInactive": {
-          "type": "boolean",
-          "required": false
-        },
-        "query:maxDepth": {
-          "type": "integer",
-          "required": false
-        },
-        "query:maxEdges": {
-          "type": "integer",
-          "required": false
-        },
-        "query:maxNodes": {
-          "type": "integer",
-          "required": false
-        },
-        "query:minWeight": {
-          "type": "integer",
-          "required": false
-        },
-        "query:refresh": {
-          "type": "boolean",
-          "required": false
-        },
-        "query:timeoutMs": {
-          "type": "integer",
-          "required": false
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getApiV1MevPredictions": {
-      "method": "GET",
-      "path": "/api/v1/mev/predictions",
-      "params": {
-        "query:limit": {
-          "type": "integer",
-          "required": false
-        },
-        "query:lookbackMinutes": {
-          "type": "integer",
-          "required": false
-        },
-        "query:minScore": {
-          "type": "number",
-          "required": false
-        },
-        "query:preview": {
-          "type": "string",
-          "required": false,
-          "enum": [
-            "true",
-            "false"
-          ]
-        },
-        "query:sensitivity": {
-          "type": "string",
-          "required": false
-        },
-        "query:stage": {
-          "type": "string",
-          "required": false,
-          "enum": [
-            "pending",
-            "recent",
-            "all"
-          ]
-        },
-        "query:types": {
-          "type": "string",
-          "required": false
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getApiV1MevPredictionsConfig": {
-      "method": "GET",
-      "path": "/api/v1/mev/predictions/config",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getApiV1MevPredictionsPending": {
-      "method": "GET",
-      "path": "/api/v1/mev/predictions/pending",
       "params": {},
       "body": "none",
       "deprecated": false
@@ -496,34 +272,6 @@
       "body": "none",
       "deprecated": false
     },
-    "getBn254": {
-      "method": "GET",
-      "path": "/bn254",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getBn254Params": {
-      "method": "GET",
-      "path": "/bn254/params",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getCheckedArithmetic": {
-      "method": "GET",
-      "path": "/checked-arithmetic",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getCheckedArithmeticLimits": {
-      "method": "GET",
-      "path": "/checked-arithmetic/limits",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
     "getCompiler": {
       "method": "GET",
       "path": "/compiler",
@@ -541,6 +289,58 @@
     "getCompilerToolchains": {
       "method": "GET",
       "path": "/compiler/toolchains",
+      "params": {},
+      "body": "none",
+      "deprecated": false
+    },
+    "getComplianceRwa": {
+      "method": "GET",
+      "path": "/compliance/rwa",
+      "params": {},
+      "body": "none",
+      "deprecated": false
+    },
+    "getComplianceRwaAssets": {
+      "method": "GET",
+      "path": "/compliance/rwa/assets",
+      "params": {},
+      "body": "none",
+      "deprecated": false
+    },
+    "getComplianceRwaAssetsByAssetId": {
+      "method": "GET",
+      "path": "/compliance/rwa/assets/{assetId}",
+      "params": {
+        "path:assetId": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "body": "none",
+      "deprecated": false
+    },
+    "getComplianceRwaHoldersByAddress": {
+      "method": "GET",
+      "path": "/compliance/rwa/holders/{address}",
+      "params": {
+        "path:address": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "body": "none",
+      "deprecated": false
+    },
+    "getComplianceRwaJurisdictions": {
+      "method": "GET",
+      "path": "/compliance/rwa/jurisdictions",
+      "params": {},
+      "body": "none",
+      "deprecated": false
+    },
+    "getComplianceRwaReports": {
+      "method": "GET",
+      "path": "/compliance/rwa/reports",
       "params": {},
       "body": "none",
       "deprecated": false
@@ -840,6 +640,18 @@
       "body": "none",
       "deprecated": false
     },
+    "getContractsProtocolByProtocolKey": {
+      "method": "GET",
+      "path": "/contracts/protocol/{protocolKey}",
+      "params": {
+        "path:protocolKey": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "body": "none",
+      "deprecated": false
+    },
     "getEvents": {
       "method": "GET",
       "path": "/events",
@@ -860,6 +672,13 @@
           "type": "integer",
           "required": false
         },
+        "query:pagination": {
+          "type": "string",
+          "required": false,
+          "enum": [
+            "cursor"
+          ]
+        },
         "query:topic": {
           "type": "string",
           "required": false
@@ -869,6 +688,62 @@
           "required": false
         }
       },
+      "body": "none",
+      "deprecated": false
+    },
+    "getEventsAdvanced": {
+      "method": "GET",
+      "path": "/events/advanced",
+      "params": {},
+      "body": "none",
+      "deprecated": false
+    },
+    "getEventsAdvancedAggregations": {
+      "method": "GET",
+      "path": "/events/advanced/aggregations",
+      "params": {
+        "query:period": {
+          "type": "string",
+          "required": false,
+          "enum": [
+            "1h",
+            "24h",
+            "7d",
+            "30d"
+          ]
+        }
+      },
+      "body": "none",
+      "deprecated": false
+    },
+    "getEventsAdvancedContractsByContractId": {
+      "method": "GET",
+      "path": "/events/advanced/contracts/{contractId}",
+      "params": {
+        "path:contractId": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "body": "none",
+      "deprecated": false
+    },
+    "getEventsAdvancedReplayByTxHash": {
+      "method": "GET",
+      "path": "/events/advanced/replay/{txHash}",
+      "params": {
+        "path:txHash": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "body": "none",
+      "deprecated": false
+    },
+    "getEventsAdvancedSubscriptions": {
+      "method": "GET",
+      "path": "/events/advanced/subscriptions",
+      "params": {},
       "body": "none",
       "deprecated": false
     },
@@ -951,6 +826,55 @@
       "method": "GET",
       "path": "/factory-tracker/stats",
       "params": {},
+      "body": "none",
+      "deprecated": false
+    },
+    "getGraphContractCalls": {
+      "method": "GET",
+      "path": "/graph/contract-calls",
+      "params": {
+        "query:address": {
+          "type": "string",
+          "required": false
+        },
+        "query:direction": {
+          "type": "string",
+          "required": false,
+          "enum": [
+            "upstream",
+            "downstream",
+            "both"
+          ]
+        },
+        "query:includeInactive": {
+          "type": "boolean",
+          "required": false
+        },
+        "query:maxDepth": {
+          "type": "integer",
+          "required": false
+        },
+        "query:maxEdges": {
+          "type": "integer",
+          "required": false
+        },
+        "query:maxNodes": {
+          "type": "integer",
+          "required": false
+        },
+        "query:minWeight": {
+          "type": "integer",
+          "required": false
+        },
+        "query:refresh": {
+          "type": "boolean",
+          "required": false
+        },
+        "query:timeoutMs": {
+          "type": "integer",
+          "required": false
+        }
+      },
       "body": "none",
       "deprecated": false
     },
@@ -1383,6 +1307,65 @@
       "body": "none",
       "deprecated": false
     },
+    "getMevPredictions": {
+      "method": "GET",
+      "path": "/mev/predictions",
+      "params": {
+        "query:limit": {
+          "type": "integer",
+          "required": false
+        },
+        "query:lookbackMinutes": {
+          "type": "integer",
+          "required": false
+        },
+        "query:minScore": {
+          "type": "number",
+          "required": false
+        },
+        "query:preview": {
+          "type": "string",
+          "required": false,
+          "enum": [
+            "true",
+            "false"
+          ]
+        },
+        "query:sensitivity": {
+          "type": "string",
+          "required": false
+        },
+        "query:stage": {
+          "type": "string",
+          "required": false,
+          "enum": [
+            "pending",
+            "recent",
+            "all"
+          ]
+        },
+        "query:types": {
+          "type": "string",
+          "required": false
+        }
+      },
+      "body": "none",
+      "deprecated": false
+    },
+    "getMevPredictionsConfig": {
+      "method": "GET",
+      "path": "/mev/predictions/config",
+      "params": {},
+      "body": "none",
+      "deprecated": false
+    },
+    "getMevPredictionsPending": {
+      "method": "GET",
+      "path": "/mev/predictions/pending",
+      "params": {},
+      "body": "none",
+      "deprecated": false
+    },
     "getMevProtectionsByContract": {
       "method": "GET",
       "path": "/mev/protections/{contract}",
@@ -1462,98 +1445,6 @@
     "getNetwork": {
       "method": "GET",
       "path": "/network",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getOracleFeeds": {
-      "method": "GET",
-      "path": "/oracle-feeds",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getOracleFeedsAssets": {
-      "method": "GET",
-      "path": "/oracle-feeds/assets",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getOracleFeedsAssetsByAssetPairHistory": {
-      "method": "GET",
-      "path": "/oracle-feeds/assets/{assetPair}/history",
-      "params": {
-        "path:assetPair": {
-          "type": "string",
-          "required": true
-        },
-        "query:from": {
-          "type": "string",
-          "required": false
-        },
-        "query:limit": {
-          "type": "number",
-          "required": false
-        },
-        "query:to": {
-          "type": "string",
-          "required": false
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getOracleFeedsAssetsByAssetPairOhlcv": {
-      "method": "GET",
-      "path": "/oracle-feeds/assets/{assetPair}/ohlcv",
-      "params": {
-        "path:assetPair": {
-          "type": "string",
-          "required": true
-        },
-        "query:limit": {
-          "type": "number",
-          "required": false
-        },
-        "query:resolution": {
-          "type": "string",
-          "required": false,
-          "enum": [
-            "1m",
-            "5m",
-            "15m",
-            "1h",
-            "4h",
-            "1d"
-          ]
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getOracleFeedsAssetsByAssetPairPrice": {
-      "method": "GET",
-      "path": "/oracle-feeds/assets/{assetPair}/price",
-      "params": {
-        "path:assetPair": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getOracleFeedsProviders": {
-      "method": "GET",
-      "path": "/oracle-feeds/providers",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getOracleFeedsSubscriptions": {
-      "method": "GET",
-      "path": "/oracle-feeds/subscriptions",
       "params": {},
       "body": "none",
       "deprecated": false
@@ -1641,6 +1532,98 @@
     "getOraclesAuditStats": {
       "method": "GET",
       "path": "/oracles/audit/stats",
+      "params": {},
+      "body": "none",
+      "deprecated": false
+    },
+    "getOraclesFeeds": {
+      "method": "GET",
+      "path": "/oracles/feeds",
+      "params": {},
+      "body": "none",
+      "deprecated": false
+    },
+    "getOraclesFeedsAssets": {
+      "method": "GET",
+      "path": "/oracles/feeds/assets",
+      "params": {},
+      "body": "none",
+      "deprecated": false
+    },
+    "getOraclesFeedsAssetsByAssetPairHistory": {
+      "method": "GET",
+      "path": "/oracles/feeds/assets/{assetPair}/history",
+      "params": {
+        "path:assetPair": {
+          "type": "string",
+          "required": true
+        },
+        "query:from": {
+          "type": "string",
+          "required": false
+        },
+        "query:limit": {
+          "type": "number",
+          "required": false
+        },
+        "query:to": {
+          "type": "string",
+          "required": false
+        }
+      },
+      "body": "none",
+      "deprecated": false
+    },
+    "getOraclesFeedsAssetsByAssetPairOhlcv": {
+      "method": "GET",
+      "path": "/oracles/feeds/assets/{assetPair}/ohlcv",
+      "params": {
+        "path:assetPair": {
+          "type": "string",
+          "required": true
+        },
+        "query:limit": {
+          "type": "number",
+          "required": false
+        },
+        "query:resolution": {
+          "type": "string",
+          "required": false,
+          "enum": [
+            "1m",
+            "5m",
+            "15m",
+            "1h",
+            "4h",
+            "1d"
+          ]
+        }
+      },
+      "body": "none",
+      "deprecated": false
+    },
+    "getOraclesFeedsAssetsByAssetPairPrice": {
+      "method": "GET",
+      "path": "/oracles/feeds/assets/{assetPair}/price",
+      "params": {
+        "path:assetPair": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "body": "none",
+      "deprecated": false
+    },
+    "getOraclesFeedsProviders": {
+      "method": "GET",
+      "path": "/oracles/feeds/providers",
+      "params": {},
+      "body": "none",
+      "deprecated": false
+    },
+    "getOraclesFeedsSubscriptions": {
+      "method": "GET",
+      "path": "/oracles/feeds/subscriptions",
       "params": {},
       "body": "none",
       "deprecated": false
@@ -2128,69 +2111,6 @@
       "body": "none",
       "deprecated": false
     },
-    "getProtocol26": {
-      "method": "GET",
-      "path": "/protocol26",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getProtocol26ArchiveStats": {
-      "method": "GET",
-      "path": "/protocol26/archive/stats",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getProtocol26ContractsByContractIdEntries": {
-      "method": "GET",
-      "path": "/protocol26/contracts/{contractId}/entries",
-      "params": {
-        "path:contractId": {
-          "type": "string",
-          "required": true
-        },
-        "query:nearExpiry": {
-          "type": "boolean",
-          "required": false
-        },
-        "query:type": {
-          "type": "string",
-          "required": false,
-          "enum": [
-            "persistent",
-            "temporary",
-            "all"
-          ]
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getProtocol26ContractsByContractIdTtl": {
-      "method": "GET",
-      "path": "/protocol26/contracts/{contractId}/ttl",
-      "params": {
-        "path:contractId": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getProtocol26Expiring": {
-      "method": "GET",
-      "path": "/protocol26/expiring",
-      "params": {
-        "query:ledgersThreshold": {
-          "type": "number",
-          "required": false
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
     "getRampOrders": {
       "method": "GET",
       "path": "/ramp/orders",
@@ -2242,552 +2162,6 @@
     "getRenderTemplates": {
       "method": "GET",
       "path": "/render/templates",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationAttestationsByAddress": {
-      "method": "GET",
-      "path": "/reputation/attestations/{address}",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        },
-        "query:chainData": {
-          "type": "string",
-          "required": false
-        },
-        "query:verified": {
-          "type": "string",
-          "required": false,
-          "enum": [
-            "true"
-          ]
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationBadgesByAddress": {
-      "method": "GET",
-      "path": "/reputation/badges/{address}",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        },
-        "query:chainData": {
-          "type": "string",
-          "required": false
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationByAddress": {
-      "method": "GET",
-      "path": "/reputation/{address}",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationByAddressAttestations": {
-      "method": "GET",
-      "path": "/reputation/{address}/attestations",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationByAddressAttestationsByIdVerify": {
-      "method": "GET",
-      "path": "/reputation/{address}/attestations/{id}/verify",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        },
-        "path:id": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationByAddressBadges": {
-      "method": "GET",
-      "path": "/reputation/{address}/badges",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationByAddressCredentials": {
-      "method": "GET",
-      "path": "/reputation/{address}/credentials",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationByAddressCrossChain": {
-      "method": "GET",
-      "path": "/reputation/{address}/cross-chain",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationByAddressEndorsementsReceived": {
-      "method": "GET",
-      "path": "/reputation/{address}/endorsements/received",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationByAddressHistory": {
-      "method": "GET",
-      "path": "/reputation/{address}/history",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationByAddressLinks": {
-      "method": "GET",
-      "path": "/reputation/{address}/links",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationByAddressSignals": {
-      "method": "GET",
-      "path": "/reputation/{address}/signals",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationByAddressSummary": {
-      "method": "GET",
-      "path": "/reputation/{address}/summary",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationByAddressSybilScore": {
-      "method": "GET",
-      "path": "/reputation/{address}/sybil-score",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationCredentialsByAddress": {
-      "method": "GET",
-      "path": "/reputation/credentials/{address}",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        },
-        "query:chainData": {
-          "type": "string",
-          "required": false
-        },
-        "query:verified": {
-          "type": "string",
-          "required": false,
-          "enum": [
-            "true"
-          ]
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationDisputesById": {
-      "method": "GET",
-      "path": "/reputation/disputes/{id}",
-      "params": {
-        "path:id": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationGovernanceVotingPowerByAddress": {
-      "method": "GET",
-      "path": "/reputation/governance/voting-power/{address}",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationLeaderboard": {
-      "method": "GET",
-      "path": "/reputation/leaderboard",
-      "params": {
-        "query:limit": {
-          "type": "integer",
-          "required": false
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationLeaderboardByCategory": {
-      "method": "GET",
-      "path": "/reputation/leaderboard/{category}",
-      "params": {
-        "path:category": {
-          "type": "string",
-          "required": true
-        },
-        "query:limit": {
-          "type": "integer",
-          "required": false
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationLeaderboardsByCategory": {
-      "method": "GET",
-      "path": "/reputation/leaderboards/{category}",
-      "params": {
-        "path:category": {
-          "type": "string",
-          "required": true
-        },
-        "query:chainData": {
-          "type": "string",
-          "required": false
-        },
-        "query:limit": {
-          "type": "integer",
-          "required": false
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationNftsByAddress": {
-      "method": "GET",
-      "path": "/reputation/nfts/{address}",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationNftsByAddressByBadgeTypeVerify": {
-      "method": "GET",
-      "path": "/reputation/nfts/{address}/{badgeType}/verify",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        },
-        "path:badgeType": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationOracleByAddress": {
-      "method": "GET",
-      "path": "/reputation/oracle/{address}",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        },
-        "query:chainData": {
-          "type": "string",
-          "required": false
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationOracleCountsByAddress": {
-      "method": "GET",
-      "path": "/reputation/oracle-counts/{address}",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        },
-        "query:chainData": {
-          "type": "string",
-          "required": false
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationOracleProof": {
-      "method": "GET",
-      "path": "/reputation/oracle/proof",
-      "params": {
-        "query:address": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationSdkJs": {
-      "method": "GET",
-      "path": "/reputation/sdk/js",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationSearch": {
-      "method": "GET",
-      "path": "/reputation/search",
-      "params": {
-        "query:q": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationSybilByAddress": {
-      "method": "GET",
-      "path": "/reputation/sybil/{address}",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        },
-        "query:chainData": {
-          "type": "string",
-          "required": false
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationTrustNetworkByAddress": {
-      "method": "GET",
-      "path": "/reputation/trust-network/{address}",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationTrustNetworkByAddressPathByTarget": {
-      "method": "GET",
-      "path": "/reputation/trust-network/{address}/path/{target}",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        },
-        "path:target": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getReputationTrustNetworkInfluenceByAddress": {
-      "method": "GET",
-      "path": "/reputation/trust-network/influence/{address}",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getResourceAudit": {
-      "method": "GET",
-      "path": "/resource-audit",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getResourceAuditContractsByContractId": {
-      "method": "GET",
-      "path": "/resource-audit/contracts/{contractId}",
-      "params": {
-        "path:contractId": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getResourceAuditContractsByContractIdHistory": {
-      "method": "GET",
-      "path": "/resource-audit/contracts/{contractId}/history",
-      "params": {
-        "path:contractId": {
-          "type": "string",
-          "required": true
-        },
-        "query:days": {
-          "type": "number",
-          "required": false
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getResourceAuditNetworkSummary": {
-      "method": "GET",
-      "path": "/resource-audit/network/summary",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getResourceAuditTopConsumers": {
-      "method": "GET",
-      "path": "/resource-audit/top-consumers",
-      "params": {
-        "query:limit": {
-          "type": "number",
-          "required": false
-        },
-        "query:metric": {
-          "type": "string",
-          "required": false,
-          "enum": [
-            "compute_units",
-            "read_bytes",
-            "write_bytes",
-            "events_bytes",
-            "fees"
-          ]
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getRwaCompliance": {
-      "method": "GET",
-      "path": "/rwa-compliance",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getRwaComplianceAssets": {
-      "method": "GET",
-      "path": "/rwa-compliance/assets",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getRwaComplianceAssetsByAssetId": {
-      "method": "GET",
-      "path": "/rwa-compliance/assets/{assetId}",
-      "params": {
-        "path:assetId": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getRwaComplianceHoldersByAddress": {
-      "method": "GET",
-      "path": "/rwa-compliance/holders/{address}",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getRwaComplianceJurisdictions": {
-      "method": "GET",
-      "path": "/rwa-compliance/jurisdictions",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getRwaComplianceReports": {
-      "method": "GET",
-      "path": "/rwa-compliance/reports",
       "params": {},
       "body": "none",
       "deprecated": false
@@ -3462,77 +2836,6 @@
       "body": "none",
       "deprecated": false
     },
-    "getSigners": {
-      "method": "GET",
-      "path": "/signers",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getSignersAccountsByAddress": {
-      "method": "GET",
-      "path": "/signers/accounts/{address}",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getSignersAccountsByAddressHistory": {
-      "method": "GET",
-      "path": "/signers/accounts/{address}/history",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        },
-        "query:limit": {
-          "type": "number",
-          "required": false
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getSignersAccountsByAddressSigners": {
-      "method": "GET",
-      "path": "/signers/accounts/{address}/signers",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getSignersAccountsByAddressThresholds": {
-      "method": "GET",
-      "path": "/signers/accounts/{address}/thresholds",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getSignersKeyByPublicKey": {
-      "method": "GET",
-      "path": "/signers/key/{publicKey}",
-      "params": {
-        "path:publicKey": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
     "getStorage": {
       "method": "GET",
       "path": "/storage",
@@ -3740,221 +3043,6 @@
       "body": "none",
       "deprecated": false
     },
-    "getTax": {
-      "method": "GET",
-      "path": "/tax",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getTaxAccountsByAddressCostBasis": {
-      "method": "GET",
-      "path": "/tax/accounts/{address}/cost-basis",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getTaxAccountsByAddressGains": {
-      "method": "GET",
-      "path": "/tax/accounts/{address}/gains",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        },
-        "query:method": {
-          "type": "string",
-          "required": false,
-          "enum": [
-            "FIFO",
-            "LIFO",
-            "HIFO",
-            "average_cost"
-          ]
-        },
-        "query:year": {
-          "type": "number",
-          "required": false
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getTaxAccountsByAddressIncome": {
-      "method": "GET",
-      "path": "/tax/accounts/{address}/income",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        },
-        "query:year": {
-          "type": "number",
-          "required": false
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getTaxAccountsByAddressSummary": {
-      "method": "GET",
-      "path": "/tax/accounts/{address}/summary",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        },
-        "query:year": {
-          "type": "number",
-          "required": false
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getTaxRates": {
-      "method": "GET",
-      "path": "/tax/rates",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getTipAdvisories": {
-      "method": "GET",
-      "path": "/tip/advisories",
-      "params": {
-        "query:limit": {
-          "type": "integer",
-          "required": false
-        },
-        "query:page": {
-          "type": "integer",
-          "required": false
-        },
-        "query:search": {
-          "type": "string",
-          "required": false
-        },
-        "query:severity": {
-          "type": "string",
-          "required": false,
-          "enum": [
-            "critical",
-            "high",
-            "medium",
-            "low",
-            "info"
-          ]
-        },
-        "query:status": {
-          "type": "string",
-          "required": false,
-          "enum": [
-            "open",
-            "under_review",
-            "resolved",
-            "disputed"
-          ]
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getTipAdvisoriesById": {
-      "method": "GET",
-      "path": "/tip/advisories/{id}",
-      "params": {
-        "path:id": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getTipAnalyticsSeverity": {
-      "method": "GET",
-      "path": "/tip/analytics/severity",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getTipAnalyticsStatus": {
-      "method": "GET",
-      "path": "/tip/analytics/status",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getTipAnalyticsTopContracts": {
-      "method": "GET",
-      "path": "/tip/analytics/top-contracts",
-      "params": {
-        "query:limit": {
-          "type": "integer",
-          "required": false
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getTipAnalyticsTrend": {
-      "method": "GET",
-      "path": "/tip/analytics/trend",
-      "params": {
-        "query:days": {
-          "type": "integer",
-          "required": false
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getTipFeedsJson": {
-      "method": "GET",
-      "path": "/tip/feeds/json",
-      "params": {
-        "query:limit": {
-          "type": "integer",
-          "required": false
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getTipFeedsRss": {
-      "method": "GET",
-      "path": "/tip/feeds/rss",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getTipSources": {
-      "method": "GET",
-      "path": "/tip/sources",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getTipSubscriptions": {
-      "method": "GET",
-      "path": "/tip/subscriptions",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getTipWebhooks": {
-      "method": "GET",
-      "path": "/tip/webhooks",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
     "getTokenMetadataByAddress": {
       "method": "GET",
       "path": "/token-metadata/{address}",
@@ -4043,7 +3131,7 @@
           "required": false
         },
         "query:cursor": {
-          "type": "integer",
+          "type": "string",
           "required": false
         },
         "query:ledgerMax": {
@@ -4061,6 +3149,13 @@
         "query:page": {
           "type": "integer",
           "required": false
+        },
+        "query:pagination": {
+          "type": "string",
+          "required": false,
+          "enum": [
+            "cursor"
+          ]
         },
         "query:status": {
           "type": "string",
@@ -4082,81 +3177,15 @@
       "body": "none",
       "deprecated": false
     },
-    "getTreasury": {
+    "getTransactionsByHashXdr": {
       "method": "GET",
-      "path": "/treasury",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getTreasuryAllocations": {
-      "method": "GET",
-      "path": "/treasury/allocations",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getTreasuryBalances": {
-      "method": "GET",
-      "path": "/treasury/balances",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getTreasuryBalancesByAssetCode": {
-      "method": "GET",
-      "path": "/treasury/balances/{assetCode}",
+      "path": "/transactions/{hash}/xdr",
       "params": {
-        "path:assetCode": {
+        "path:hash": {
           "type": "string",
           "required": true
         }
       },
-      "body": "none",
-      "deprecated": false
-    },
-    "getTreasuryProposals": {
-      "method": "GET",
-      "path": "/treasury/proposals",
-      "params": {
-        "query:status": {
-          "type": "string",
-          "required": false,
-          "enum": [
-            "pending",
-            "active",
-            "passed",
-            "rejected",
-            "executed"
-          ]
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getTreasuryProposalsById": {
-      "method": "GET",
-      "path": "/treasury/proposals/{id}",
-      "params": {
-        "path:id": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getTreasuryStats": {
-      "method": "GET",
-      "path": "/treasury/stats",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getTreasuryTransactions": {
-      "method": "GET",
-      "path": "/treasury/transactions",
-      "params": {},
       "body": "none",
       "deprecated": false
     },
@@ -4227,59 +3256,6 @@
       "method": "GET",
       "path": "/upgrade-trace/stats",
       "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "getVirtualListEvents": {
-      "method": "GET",
-      "path": "/virtual-list/events",
-      "params": {
-        "query:contract": {
-          "type": "string",
-          "required": false
-        },
-        "query:limit": {
-          "type": "integer",
-          "required": false
-        },
-        "query:offset": {
-          "type": "integer",
-          "required": false
-        },
-        "query:type": {
-          "type": "string",
-          "required": false
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "getVirtualListTransactions": {
-      "method": "GET",
-      "path": "/virtual-list/transactions",
-      "params": {
-        "query:contract": {
-          "type": "string",
-          "required": false
-        },
-        "query:limit": {
-          "type": "integer",
-          "required": false
-        },
-        "query:offset": {
-          "type": "integer",
-          "required": false
-        },
-        "query:status": {
-          "type": "string",
-          "required": false,
-          "enum": [
-            "success",
-            "failed",
-            "pending"
-          ]
-        }
-      },
       "body": "none",
       "deprecated": false
     },
@@ -4394,6 +3370,34 @@
       "body": "none",
       "deprecated": false
     },
+    "getWebhooksByIdReplay": {
+      "method": "GET",
+      "path": "/webhooks/{id}/replay",
+      "params": {
+        "path:id": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "body": "none",
+      "deprecated": false
+    },
+    "getWebhooksByIdReplayByJobId": {
+      "method": "GET",
+      "path": "/webhooks/{id}/replay/{jobId}",
+      "params": {
+        "path:id": {
+          "type": "string",
+          "required": true
+        },
+        "path:jobId": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "body": "none",
+      "deprecated": false
+    },
     "getWebhooksSdk": {
       "method": "GET",
       "path": "/webhooks/sdk",
@@ -4423,18 +3427,6 @@
         }
       },
       "body": "none",
-      "deprecated": false
-    },
-    "patchTipAdvisoriesById": {
-      "method": "PATCH",
-      "path": "/tip/advisories/{id}",
-      "params": {
-        "path:id": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "required",
       "deprecated": false
     },
     "patchWebhooksById": {
@@ -4485,20 +3477,6 @@
       "body": "required",
       "deprecated": false
     },
-    "postAdvancedEventsQuery": {
-      "method": "POST",
-      "path": "/advanced-events/query",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postAdvancedEventsSubscriptions": {
-      "method": "POST",
-      "path": "/advanced-events/subscriptions",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
     "postAgents": {
       "method": "POST",
       "path": "/agents",
@@ -4546,9 +3524,9 @@
       "body": "required",
       "deprecated": false
     },
-    "postAgentsVerificationByExecutionId": {
+    "postAgentsVerificationByExecutionIdVerify": {
       "method": "POST",
-      "path": "/agents/verification/{executionId}",
+      "path": "/agents/verification/{executionId}/verify",
       "params": {
         "path:executionId": {
           "type": "string",
@@ -4572,13 +3550,6 @@
       "body": "none",
       "deprecated": false
     },
-    "postApiV1MevPredictionsIngest": {
-      "method": "POST",
-      "path": "/api/v1/mev/predictions/ingest",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
     "postBatchAccounts": {
       "method": "POST",
       "path": "/batch/accounts",
@@ -4600,62 +3571,6 @@
       "body": "required",
       "deprecated": false
     },
-    "postBn254PairingCheck": {
-      "method": "POST",
-      "path": "/bn254/pairing-check",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postBn254PointAdd": {
-      "method": "POST",
-      "path": "/bn254/point-add",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postBn254ScalarMul": {
-      "method": "POST",
-      "path": "/bn254/scalar-mul",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postBn254VerifyGroth16": {
-      "method": "POST",
-      "path": "/bn254/verify-groth16",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postBn254VerifyPlonk": {
-      "method": "POST",
-      "path": "/bn254/verify-plonk",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postCheckedArithmeticCompute": {
-      "method": "POST",
-      "path": "/checked-arithmetic/compute",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postCheckedArithmeticComputeBatch": {
-      "method": "POST",
-      "path": "/checked-arithmetic/compute/batch",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postCheckedArithmeticValidate": {
-      "method": "POST",
-      "path": "/checked-arithmetic/validate",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
     "postCompilerCompile": {
       "method": "POST",
       "path": "/compiler/compile",
@@ -4666,6 +3581,37 @@
     "postCompilerVerify": {
       "method": "POST",
       "path": "/compiler/verify",
+      "params": {},
+      "body": "required",
+      "deprecated": false
+    },
+    "postComplianceRwaAssetsByAssetIdCheck": {
+      "method": "POST",
+      "path": "/compliance/rwa/assets/{assetId}/check",
+      "params": {
+        "path:assetId": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "body": "required",
+      "deprecated": false
+    },
+    "postComplianceRwaHoldersByAddressVerify": {
+      "method": "POST",
+      "path": "/compliance/rwa/holders/{address}/verify",
+      "params": {
+        "path:address": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "body": "required",
+      "deprecated": false
+    },
+    "postComplianceRwaReportsSchedule": {
+      "method": "POST",
+      "path": "/compliance/rwa/reports/schedule",
       "params": {},
       "body": "required",
       "deprecated": false
@@ -4786,6 +3732,20 @@
     "postContractsAbiSubmissions": {
       "method": "POST",
       "path": "/contracts/abi-submissions",
+      "params": {},
+      "body": "required",
+      "deprecated": false
+    },
+    "postEventsAdvancedQuery": {
+      "method": "POST",
+      "path": "/events/advanced/query",
+      "params": {},
+      "body": "required",
+      "deprecated": false
+    },
+    "postEventsAdvancedSubscriptions": {
+      "method": "POST",
+      "path": "/events/advanced/subscriptions",
       "params": {},
       "body": "required",
       "deprecated": false
@@ -4937,6 +3897,13 @@
       "body": "required",
       "deprecated": false
     },
+    "postMevPredictionsIngest": {
+      "method": "POST",
+      "path": "/mev/predictions/ingest",
+      "params": {},
+      "body": "required",
+      "deprecated": false
+    },
     "postMevProtectTx": {
       "method": "POST",
       "path": "/mev/protect-tx",
@@ -4970,16 +3937,16 @@
       "body": "optional",
       "deprecated": false
     },
-    "postOracleFeedsSubscribe": {
+    "postOraclesAuditValidate": {
       "method": "POST",
-      "path": "/oracle-feeds/subscribe",
+      "path": "/oracles/audit/validate",
       "params": {},
       "body": "required",
       "deprecated": false
     },
-    "postOraclesAuditValidate": {
+    "postOraclesFeedsSubscribe": {
       "method": "POST",
-      "path": "/oracles/audit/validate",
+      "path": "/oracles/feeds/subscribe",
       "params": {},
       "body": "required",
       "deprecated": false
@@ -5031,25 +3998,6 @@
       "body": "required",
       "deprecated": false
     },
-    "postProtocol26ContractsByContractIdExtendTtl": {
-      "method": "POST",
-      "path": "/protocol26/contracts/{contractId}/extend-ttl",
-      "params": {
-        "path:contractId": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "required",
-      "deprecated": false
-    },
-    "postProtocol26FootprintOptimize": {
-      "method": "POST",
-      "path": "/protocol26/footprint/optimize",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
     "postRampExecute": {
       "method": "POST",
       "path": "/ramp/execute",
@@ -5093,202 +4041,6 @@
     "postRender": {
       "method": "POST",
       "path": "/render",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postReputationByAddressAttest": {
-      "method": "POST",
-      "path": "/reputation/{address}/attest",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "required",
-      "deprecated": false
-    },
-    "postReputationByAddressCredentials": {
-      "method": "POST",
-      "path": "/reputation/{address}/credentials",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "required",
-      "deprecated": false
-    },
-    "postReputationCredentialsVerify": {
-      "method": "POST",
-      "path": "/reputation/credentials/verify",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postReputationDisputes": {
-      "method": "POST",
-      "path": "/reputation/disputes",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postReputationDisputesByIdResolve": {
-      "method": "POST",
-      "path": "/reputation/disputes/{id}/resolve",
-      "params": {
-        "path:id": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "postReputationDisputesByIdVote": {
-      "method": "POST",
-      "path": "/reputation/disputes/{id}/vote",
-      "params": {
-        "path:id": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "required",
-      "deprecated": false
-    },
-    "postReputationEndorse": {
-      "method": "POST",
-      "path": "/reputation/endorse",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postReputationEndorsements": {
-      "method": "POST",
-      "path": "/reputation/endorsements",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postReputationGovernanceDelegate": {
-      "method": "POST",
-      "path": "/reputation/governance/delegate",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postReputationGovernanceVote": {
-      "method": "POST",
-      "path": "/reputation/governance/vote",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postReputationIdentityLink": {
-      "method": "POST",
-      "path": "/reputation/identity/link",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postReputationIdentityScore": {
-      "method": "POST",
-      "path": "/reputation/identity/score",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postReputationLink": {
-      "method": "POST",
-      "path": "/reputation/link",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postReputationNftsMintByBadgeType": {
-      "method": "POST",
-      "path": "/reputation/nfts/mint/{badgeType}",
-      "params": {
-        "path:badgeType": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "required",
-      "deprecated": false
-    },
-    "postReputationOracleQuery": {
-      "method": "POST",
-      "path": "/reputation/oracle/query",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postReputationScore": {
-      "method": "POST",
-      "path": "/reputation/score",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postReputationSdkRegister": {
-      "method": "POST",
-      "path": "/reputation/sdk/register",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postReputationTrustPath": {
-      "method": "POST",
-      "path": "/reputation/trust/path",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postReputationVerifyCrossChain": {
-      "method": "POST",
-      "path": "/reputation/verify-cross-chain",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postResourceAuditSimulate": {
-      "method": "POST",
-      "path": "/resource-audit/simulate",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postRwaComplianceAssetsByAssetIdCheck": {
-      "method": "POST",
-      "path": "/rwa-compliance/assets/{assetId}/check",
-      "params": {
-        "path:assetId": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "required",
-      "deprecated": false
-    },
-    "postRwaComplianceHoldersByAddressVerify": {
-      "method": "POST",
-      "path": "/rwa-compliance/holders/{address}/verify",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "required",
-      "deprecated": false
-    },
-    "postRwaComplianceReportsSchedule": {
-      "method": "POST",
-      "path": "/rwa-compliance/reports/schedule",
       "params": {},
       "body": "required",
       "deprecated": false
@@ -5680,13 +4432,6 @@
       "body": "none",
       "deprecated": false
     },
-    "postSignersVerify": {
-      "method": "POST",
-      "path": "/signers/verify",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
     "postSimulate": {
       "method": "POST",
       "path": "/simulate",
@@ -5708,105 +4453,10 @@
       "body": "required",
       "deprecated": false
     },
-    "postTaxAccountsByAddressReport": {
-      "method": "POST",
-      "path": "/tax/accounts/{address}/report",
-      "params": {
-        "path:address": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "required",
-      "deprecated": false
-    },
-    "postTipAdvisories": {
-      "method": "POST",
-      "path": "/tip/advisories",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postTipAdvisoriesByIdComments": {
-      "method": "POST",
-      "path": "/tip/advisories/{id}/comments",
-      "params": {
-        "path:id": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "required",
-      "deprecated": false
-    },
-    "postTipAdvisoriesByIdRescore": {
-      "method": "POST",
-      "path": "/tip/advisories/{id}/rescore",
-      "params": {
-        "path:id": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "postTipAdvisoriesByIdReviews": {
-      "method": "POST",
-      "path": "/tip/advisories/{id}/reviews",
-      "params": {
-        "path:id": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "required",
-      "deprecated": false
-    },
-    "postTipCorrelate": {
-      "method": "POST",
-      "path": "/tip/correlate",
-      "params": {},
-      "body": "none",
-      "deprecated": false
-    },
-    "postTipSubscriptions": {
-      "method": "POST",
-      "path": "/tip/subscriptions",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postTipWebhooks": {
-      "method": "POST",
-      "path": "/tip/webhooks",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
     "postTokenMetadataBatch": {
       "method": "POST",
       "path": "/token-metadata/batch",
       "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postTreasuryProposals": {
-      "method": "POST",
-      "path": "/treasury/proposals",
-      "params": {},
-      "body": "required",
-      "deprecated": false
-    },
-    "postTreasuryProposalsByIdVote": {
-      "method": "POST",
-      "path": "/treasury/proposals/{id}/vote",
-      "params": {
-        "path:id": {
-          "type": "string",
-          "required": true
-        }
-      },
       "body": "required",
       "deprecated": false
     },
@@ -5822,6 +4472,50 @@
       "path": "/webhooks/{id}/ping",
       "params": {
         "path:id": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "body": "none",
+      "deprecated": false
+    },
+    "postWebhooksByIdReplay": {
+      "method": "POST",
+      "path": "/webhooks/{id}/replay",
+      "params": {
+        "path:id": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "body": "required",
+      "deprecated": false
+    },
+    "postWebhooksByIdReplayByJobIdCancel": {
+      "method": "POST",
+      "path": "/webhooks/{id}/replay/{jobId}/cancel",
+      "params": {
+        "path:id": {
+          "type": "string",
+          "required": true
+        },
+        "path:jobId": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "body": "none",
+      "deprecated": false
+    },
+    "postWebhooksByIdReplayByJobIdResume": {
+      "method": "POST",
+      "path": "/webhooks/{id}/replay/{jobId}/resume",
+      "params": {
+        "path:id": {
+          "type": "string",
+          "required": true
+        },
+        "path:jobId": {
           "type": "string",
           "required": true
         }

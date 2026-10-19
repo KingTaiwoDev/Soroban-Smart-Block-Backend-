@@ -2,7 +2,7 @@
 
 # SDK Route Parity Matrix
 
-Every operation in `/api/v1/openapi.json` (383 operations) and how each
+Every operation in `/api/v1/openapi.json` (388 operations) and how each
 first-party client exposes it. "`call`" means the generated, fully typed
 `client.call('<operationId>', …)`; named methods are curated conveniences over
 the same call.
@@ -394,5 +394,10 @@ by `client.realtime` in TypeScript and `client.stream_feed()` in Python.
 | `getWebhooksByIdDeliveries` | GET | `/webhooks/{id}/deliveries` | ✅ `call` | ✅ `call` | ✅ `Call` |
 | `postWebhooksByIdPing` | POST | `/webhooks/{id}/ping` | ✅ `call` | ✅ `call` | ✅ `Call` |
 | `getWebhooksByIdPreview` | GET | `/webhooks/{id}/preview` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getWebhooksByIdReplay` | GET | `/webhooks/{id}/replay` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postWebhooksByIdReplay` | POST | `/webhooks/{id}/replay` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `getWebhooksByIdReplayByJobId` | GET | `/webhooks/{id}/replay/{jobId}` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postWebhooksByIdReplayByJobIdCancel` | POST | `/webhooks/{id}/replay/{jobId}/cancel` | ✅ `call` | ✅ `call` | ✅ `Call` |
+| `postWebhooksByIdReplayByJobIdResume` | POST | `/webhooks/{id}/replay/{jobId}/resume` | ✅ `call` | ✅ `call` | ✅ `Call` |
 | `postWebhooksByIdVerify` | POST | `/webhooks/{id}/verify` | ✅ `call` | ✅ `call` | ✅ `Call` |
 | `getWebhooksSdk` | GET | `/webhooks/sdk` | ✅ `call` | ✅ `call` | ✅ `Call` |

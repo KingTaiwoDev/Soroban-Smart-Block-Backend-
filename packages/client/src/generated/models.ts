@@ -170,8 +170,10 @@ export type EcosystemComposabilityIndex = {
 };
 
 export type Error = {
-  /** Human-readable error message */
-  error?: string;
+  /** Stable machine-readable error code; clients should branch on this value. */
+  code: string;
+  /** Endpoint-specific error details or human-readable message. */
+  error?: unknown;
 };
 
 export type Event = {

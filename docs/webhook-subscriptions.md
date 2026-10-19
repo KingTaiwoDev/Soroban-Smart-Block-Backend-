@@ -19,6 +19,11 @@ Base path: `/webhooks`
 | GET    | `/webhooks/:id/preview`    | Preview the exact body + signing headers                    |
 | GET    | `/webhooks/:id/deliveries` | Recent delivery attempts (last 50)                          |
 | GET    | `/webhooks/sdk`            | Integration guide + verification snippets                   |
+| POST   | `/webhooks/:id/replay`     | Request event replay from a ledger checkpoint               |
+| GET    | `/webhooks/:id/replay`     | List replay jobs for a subscription                         |
+| GET    | `/webhooks/:id/replay/:jobId` | Get progress and status of a replay job                  |
+| POST   | `/webhooks/:id/replay/:jobId/resume` | Resume an interrupted replay job                  |
+| POST   | `/webhooks/:id/replay/:jobId/cancel` | Cancel an in-flight replay job                     |
 
 ### Create
 
@@ -226,3 +231,20 @@ with capped exponential backoff so destination outages do not discard queued
 events. Retries stop for inactive subscriptions and for URLs blocked by the
 SSRF guard; those terminal outcomes are visible in delivery history. Inspect
 results via `GET /webhooks/:id/deliveries`.
+
+## Replay from checkpoint
+
+Recover missed events starting from a validated ledger sequence:
+
+```bash
+curl -X POST https://api.example.com/webhooks/$SUB_ID/replay \
+  -H "X-Api-Key: $SOROBAN_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"fromLedger":10500,"toLedger":11000,"idempotencyKey":"replay-recovery-1"}'
+```
+
+- **Validation:** `fromLedger` must be >= 1, `toLedger >= fromLedger`, and the range cannot exceed 10,000 ledgers.
+- **Idempotency:** Supplying an `idempotencyKey` prevents duplicate replay jobs.
+- **Progress Tracking:** Check status and events replayed via `GET /webhooks/:id/replay/:jobId`.
+- **Interruption & Resumption:** If interrupted, resume from the last processed checkpoint via `POST /webhooks/:id/replay/:jobId/resume`.
+- **Replay Markers:** Replayed payloads carry `replayed: true` and headers `X-Webhook-Replay: true` and `X-Webhook-Replay-Job-Id`. Signatures are computed over the exact replayed body.
