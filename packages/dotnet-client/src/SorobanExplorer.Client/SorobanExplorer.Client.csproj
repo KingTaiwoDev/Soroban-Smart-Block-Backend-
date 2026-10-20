@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <RootNamespace>SorobanExplorer.Client</RootNamespace>
+    <AssemblyName>SorobanExplorer.Client</AssemblyName>
+    <PackageId>SorobanExplorer.Client</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Soroban Smart Block Explorer Contributors</Authors>
+    <Description>Official .NET SDK client for Soroban Smart Block Explorer API</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0" />
+  </ItemGroup>
+
+</Project>

@@ -557,7 +557,7 @@ Every cached file entry stores its SHA-256 checksum in a manifest. A cache hit r
 - [ ] Machine learning for spec quality analysis
 
 ### Performance Improvements
-- [ ] Parallel file generation
+- [x] Parallel file generation (bounded worker pool in `scripts/sdk/parallel-generator.ts`)
 - [ ] Incremental generation (only changed operations)
 - [ ] Spec compilation and caching
 - [ ] Optimized normalization algorithms
