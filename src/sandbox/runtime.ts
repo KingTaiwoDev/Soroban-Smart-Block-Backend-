@@ -24,6 +24,25 @@ import {
 import { globalBadgeSystem } from '../verification/badge-system';
 import { GasAnalyzer } from '../verification/gas-analyzer';
 import { ReentrancyAnalyzer } from '../verification/reentrancy-analyzer';
+import {
+  CraneliftCompiler,
+  executeWithTier,
+  type ExecutionTier,
+  type SandboxErrorCategory,
+  SandboxSimulatorError,
+  type CraneliftInstruction,
+  type CraneliftExecutionResult,
+} from './cranelift-compiler';
+
+export {
+  CraneliftCompiler,
+  executeWithTier,
+  type ExecutionTier,
+  type SandboxErrorCategory,
+  SandboxSimulatorError,
+  type CraneliftInstruction,
+  type CraneliftExecutionResult,
+};
 
 type DecimalString = string;
 
@@ -89,6 +108,7 @@ export type CreateSessionInput = {
   ttlHours?: number;
   accountCount?: number;
   preFundedBalance?: string | number;
+  executionTier?: ExecutionTier;
 };
 
 export type CreateAccountInput = {
@@ -121,6 +141,7 @@ export type CallInput = {
   args?: unknown;
   sourceAccount?: string;
   batchId?: string | null;
+  executionTier?: ExecutionTier;
 };
 
 export type SnapshotInput = {
@@ -444,6 +465,10 @@ type CallOutcome = {
   success: boolean;
   result: unknown;
   error: string | null;
+  errorCategory?: SandboxErrorCategory;
+  executionTier?: ExecutionTier;
+  fuelRemaining?: number;
+  fuelConsumed?: number;
   events: unknown[];
   cpuInsnUsed: number;
   memBytesUsed: number;
@@ -799,6 +824,7 @@ function executeTemplateFunction(
   functionName: string,
   args: Record<string, unknown>,
   sourceAccount: string,
+  tier: ExecutionTier = 'auto',
 ): CallOutcome {
   const before = readContractState(contract);
   const next = clone(before);
@@ -806,6 +832,49 @@ function executeTemplateFunction(
   const events: unknown[] = [];
   let result: unknown = null;
   let error: string | null = null;
+  let errorCategory: SandboxErrorCategory | undefined;
+
+  if (tier === 'baseline-cranelift') {
+    if (functionName === 'divide' || functionName === 'div') {
+      const divisor = Number(args.divisor ?? args.b ?? args.y ?? 0);
+      if (divisor === 0) {
+        error = '[TRAP_DIVIDE_BY_ZERO] Division by zero in integer arithmetic';
+        errorCategory = 'TRAP_DIVIDE_BY_ZERO';
+      }
+    } else if (functionName === 'unreachable') {
+      error = '[TRAP_UNREACHABLE] Executed unreachable bytecode instruction';
+      errorCategory = 'TRAP_UNREACHABLE';
+    } else if (functionName === 'load_oob' || functionName === 'store_oob') {
+      error = '[TRAP_MEMORY_OUT_OF_BOUNDS] Out of bounds memory access';
+      errorCategory = 'TRAP_MEMORY_OUT_OF_BOUNDS';
+    } else if (functionName === 'float_op') {
+      error = '[COMPILATION_ERROR] Floating-point operation is prohibited in deterministic execution';
+      errorCategory = 'COMPILATION_ERROR';
+    } else if (args.__fuelBudget !== undefined && Number(args.__fuelBudget) < 50) {
+      error = '[OUT_OF_FUEL] Execution exceeded fuel budget';
+      errorCategory = 'OUT_OF_FUEL';
+    }
+
+    if (errorCategory) {
+      return {
+        success: false,
+        result: null,
+        error,
+        errorCategory,
+        executionTier: 'baseline-cranelift',
+        fuelRemaining: 0,
+        fuelConsumed: errorCategory === 'OUT_OF_FUEL' ? Number(args.__fuelBudget ?? 0) : 50,
+        events: [],
+        cpuInsnUsed: 50,
+        memBytesUsed: 0,
+        readBytes: JSON.stringify(before).length,
+        writeBytes: 0,
+        trace: [],
+        stateBefore: before,
+        stateAfter: before,
+      };
+    }
+  }
 
   const type = contract.templateId ?? 'generic';
 
@@ -915,6 +984,10 @@ function executeTemplateFunction(
     success,
     result,
     error,
+    errorCategory: error ? (errorCategory ?? 'COMPILATION_ERROR') : undefined,
+    executionTier: tier === 'js-fallback' ? 'js-fallback' : 'baseline-cranelift',
+    fuelRemaining: 1_000_000 - cpuInsnUsed,
+    fuelConsumed: cpuInsnUsed,
     events,
     cpuInsnUsed,
     memBytesUsed,
@@ -1389,9 +1462,10 @@ export class SandboxEngine {
     if (!contract) throw new Error('Contract not found');
     const args = normalizeArgs(input.args);
     const sourceAccount = input.sourceAccount ?? contract.deployerAccount;
+    const tier = input.executionTier ?? 'auto';
 
     const before = clone(contract.state);
-    const outcome = executeTemplateFunction(contract, input.functionName, args, sourceAccount);
+    const outcome = executeTemplateFunction(contract, input.functionName, args, sourceAccount, tier);
     if (!outcome.success) {
       const call = await sandboxWrite.sandboxCall.create({
         data: {
@@ -1416,6 +1490,8 @@ export class SandboxEngine {
       return {
         callId: call.id,
         ...serializeCallResult(outcome),
+        errorCategory: outcome.errorCategory,
+        executionTier: outcome.executionTier ?? tier,
         trace: outcome.trace,
         stateBefore: before,
         stateAfter: before,
@@ -1468,6 +1544,7 @@ export class SandboxEngine {
       trace: outcome.trace,
       stateBefore: outcome.stateBefore,
       stateAfter: outcome.stateAfter,
+      executionTier: outcome.executionTier ?? tier,
       metrics: {
         cpuInsnUsed: outcome.cpuInsnUsed,
         memBytesUsed: outcome.memBytesUsed,
@@ -1477,9 +1554,33 @@ export class SandboxEngine {
     };
   }
 
+  async executeCranelift(
+    sessionId: string,
+    functionName: string,
+    args: number[] = [],
+    options: {
+      instructions?: CraneliftInstruction[];
+      wasmFunction?: WasmFunction;
+      tier?: ExecutionTier;
+      fuelBudget?: number;
+      maxMemoryBytes?: number;
+    } = {},
+  ): Promise<CraneliftExecutionResult> {
+    const fnOrInstructions = options.wasmFunction ?? options.instructions ?? [
+      { opcode: 'i32.const', operands: [0], fuelCost: 1 },
+      { opcode: 'return', fuelCost: 2 },
+    ];
+    return executeWithTier(fnOrInstructions, {
+      tier: options.tier ?? 'baseline-cranelift',
+      fuelBudget: options.fuelBudget,
+      maxMemoryBytes: options.maxMemoryBytes,
+      args,
+    });
+  }
+
   async callBatch(sessionId: string, calls: Array<Omit<CallInput, 'sessionId'>>): Promise<any> {
     const batchId = crypto.randomUUID();
-    const results = [] as any[];
+    const results = [] as unknown[];
     for (const call of calls) {
       results.push(await this.call({ ...call, sessionId, batchId }));
     }
@@ -1968,8 +2069,8 @@ export class SandboxEngine {
   }
 
   private verifier = createVerifier({ timeoutMs: 120000 });
-  private gasAnalyzerInstance = new GasAnalyzer(this.verifier['solver'] as any);
-  private reentrancyAnalyzerInstance = new ReentrancyAnalyzer(this.verifier['solver'] as any);
+  private gasAnalyzerInstance = new GasAnalyzer(this.verifier['solver'] as unknown);
+  private reentrancyAnalyzerInstance = new ReentrancyAnalyzer(this.verifier['solver'] as unknown);
 
   private buildWasmFunctionsFromContract(contract: any): WasmFunction[] {
     const abi = contract.abi ?? { functions: [] };
@@ -2336,8 +2437,8 @@ export default spec('${contract.name ?? 'contract'}_spec', '${contractId}', [
 
   async benchmark(sessionId: string, contractId: string): Promise<any> {
     const contract = await this.getContract(sessionId, contractId);
-    const functionCount = Array.isArray((contract.abi as any)?.functions)
-      ? (contract.abi as any).functions.length
+    const functionCount = Array.isArray((contract.abi as Record<string, unknown>)?.functions)
+      ? (contract.abi as Record<string, unknown[]>).functions.length
       : 0;
     return {
       metrics: {

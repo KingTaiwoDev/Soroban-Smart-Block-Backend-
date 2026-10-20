@@ -10,7 +10,7 @@ import { uuidv7 } from '../utils/uuidv7';
 import { sensitiveReadLog } from '../middleware/sensitiveReadLog';
 import { featureFlags } from '../feature-flags';
 import { createBatchIdempotencyKey } from '../webhooks/batch-utils';
-import { signWebhookBody, TIMESTAMP_TOLERANCE_MS } from '../webhooks/webhookVerify';
+import { buildWebhookSignatureHeaders, TIMESTAMP_TOLERANCE_MS } from '../webhooks/webhookVerify';
 import {
   backoffMs,
   MAX_ATTEMPTS,
@@ -25,6 +25,16 @@ import {
   hashVerificationToken,
   VERIFICATION_TOKEN_TTL_MS,
 } from '../webhooks/verification';
+import {
+  validateAndCreateReplayJob,
+  getReplayJob,
+  listReplayJobs,
+  cancelReplayJob,
+  resumeReplayJob,
+  executeReplayStep,
+  CheckpointValidationError,
+  FilterMismatchError,
+} from '../webhooks/replay';
 
 export const webhooksRouter = Router();
 
@@ -338,20 +348,27 @@ webhooksRouter.get(
         },
       },
       headers: {
-        'X-Webhook-Signature':
-          'sha256=<hex HMAC-SHA256 of the raw request body, keyed by your signing secret>',
         'X-Webhook-Timestamp': 'unix epoch milliseconds',
+        'X-Webhook-Signature-V2':
+          'sha256=<hex HMAC-SHA256 of "<X-Webhook-Timestamp>." + raw request body, keyed by your signing secret>',
+        'X-Webhook-Signature':
+          'deprecated: sha256=<hex HMAC-SHA256 of the raw request body only (timestamp not covered)>',
       },
       verification: {
         algorithm: 'HMAC-SHA256',
-        signedPayload: 'the raw request body bytes (JSON string), exactly as received',
+        signatureHeader: 'X-Webhook-Signature-V2',
+        signedPayload:
+          'the X-Webhook-Timestamp value, a literal ".", then the raw request body bytes exactly as received',
         headerFormat: 'sha256=<hex>',
         timestampHeader: 'X-Webhook-Timestamp',
         toleranceMs: TIMESTAMP_TOLERANCE_MS,
         replayProtection:
           'Reject requests whose X-Webhook-Timestamp is outside the tolerance window and cache accepted signatures for the window to reject replays.',
+        legacy:
+          'X-Webhook-Signature (body only) is still sent for backwards compatibility but does not protect the timestamp; migrate to X-Webhook-Signature-V2.',
       },
       retryPolicy: {
+        maxAttempts: MAX_ATTEMPTS,
         immediateMaxAttempts: MAX_ATTEMPTS,
         backoffMs: [1, 2, 3, 4].map((attempt) => backoffMs(attempt)),
         batchMaxAttempts: null,
@@ -373,13 +390,16 @@ webhooksRouter.get(
       snippets: {
         typescript: `import crypto from 'crypto';
 
+// signature = X-Webhook-Signature-V2, timestamp = X-Webhook-Timestamp
 export function verifyWebhook(rawBody: Buffer, secret: string, signature: string, timestamp: string) {
   const ts = Number(timestamp);
-  if (!Number.isFinite(ts) || Math.abs(Date.now() - ts) > ${TIMESTAMP_TOLERANCE_MS}) {
+  if (!/^\\d+$/.test(timestamp) || Math.abs(Date.now() - ts) > ${TIMESTAMP_TOLERANCE_MS}) {
     throw new Error('Timestamp outside tolerance window');
   }
 
-  const expected = 'sha256=' + crypto.createHmac('sha256', secret).update(rawBody).digest('hex');
+  const expected =
+    'sha256=' +
+    crypto.createHmac('sha256', secret).update(timestamp + '.').update(rawBody).digest('hex');
   const a = Buffer.from(expected);
   const b = Buffer.from(signature);
   if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
@@ -388,12 +408,14 @@ export function verifyWebhook(rawBody: Buffer, secret: string, signature: string
 }`,
         python: `import hmac, hashlib, time
 
+# signature = X-Webhook-Signature-V2, timestamp = X-Webhook-Timestamp
 def verify_webhook(raw_body: bytes, secret: str, signature: str, timestamp: str, tolerance_ms: int = ${TIMESTAMP_TOLERANCE_MS}) -> bool:
     ts = int(timestamp)
     if abs(time.time() * 1000 - ts) > tolerance_ms:
         raise ValueError("Timestamp outside tolerance window")
 
-    expected = "sha256=" + hmac.new(secret.encode(), raw_body, hashlib.sha256).hexdigest()
+    signed = timestamp.encode() + b"." + raw_body
+    expected = "sha256=" + hmac.new(secret.encode(), signed, hashlib.sha256).hexdigest()
     if not hmac.compare_digest(expected, signature):
         raise ValueError("Invalid signature")
     return True`,
@@ -404,10 +426,26 @@ import (
     "crypto/sha256"
     "encoding/hex"
     "fmt"
+    "strconv"
+    "time"
 )
 
-func Verify(rawBody []byte, secret, signature string) error {
+// signature = X-Webhook-Signature-V2, timestamp = X-Webhook-Timestamp
+func Verify(rawBody []byte, secret, signature, timestamp string) error {
+    ts, err := strconv.ParseInt(timestamp, 10, 64)
+    if err != nil {
+        return fmt.Errorf("invalid timestamp")
+    }
+    skew := time.Now().UnixMilli() - ts
+    if skew < 0 {
+        skew = -skew
+    }
+    if skew > ${TIMESTAMP_TOLERANCE_MS} {
+        return fmt.Errorf("timestamp outside tolerance window")
+    }
+
     mac := hmac.New(sha256.New, []byte(secret))
+    mac.Write([]byte(timestamp + "."))
     mac.Write(rawBody)
     expected := "sha256=" + hex.EncodeToString(mac.Sum(nil))
     if !hmac.Equal([]byte(expected), []byte(signature)) {
@@ -705,7 +743,6 @@ webhooksRouter.post(
 
     const challenge = generateVerificationToken();
     const body = buildVerificationBody(sub.id, challenge);
-    const timestampMs = Date.now();
 
     // Persist only the digest of the challenge, with an expiry.
     await prisma.webhookSubscription.update({
@@ -723,8 +760,7 @@ webhooksRouter.post(
         body,
         {
           'Content-Type': 'application/json',
-          'X-Webhook-Timestamp': String(timestampMs),
-          'X-Webhook-Signature': signWebhookBody(body, sub.secret),
+          ...buildWebhookSignatureHeaders(body, sub.secret),
         },
         REQUEST_TIMEOUT_MS,
       );
@@ -872,7 +908,6 @@ webhooksRouter.get(
         ? { ...batchPayload, attempt: 1 }
         : { event, attempt: 1 };
     const rawBody = JSON.stringify(deliveryBody);
-    const timestampMs = Date.now();
 
     res.json({
       subscriptionId: sub.id,
@@ -884,14 +919,15 @@ webhooksRouter.get(
           ...(sub.deliveryStrategy === 'batch'
             ? { 'Idempotency-Key': batchPayload.idempotencyKey }
             : {}),
-          'X-Webhook-Timestamp': String(timestampMs),
-          'X-Webhook-Signature': signWebhookBody(rawBody, sub.secret),
+          ...buildWebhookSignatureHeaders(rawBody, sub.secret),
         },
         body: deliveryBody,
       },
       rawBody,
       signatureFormat: 'sha256=<hex>',
-      note: 'The signature is computed over rawBody. Verification snippets: GET /webhooks/sdk',
+      note:
+        'X-Webhook-Signature-V2 is computed over "<X-Webhook-Timestamp>." + rawBody; the legacy ' +
+        'X-Webhook-Signature over rawBody alone. Verification snippets: GET /webhooks/sdk',
     });
   }),
 );
@@ -951,3 +987,227 @@ webhooksRouter.get(
     res.json({ data: deliveries });
   }),
 );
+
+const replayRequestSchema = z.object({
+  fromLedger: z.number().int().min(1),
+  toLedger: z.number().int().min(1).optional(),
+  filters: z
+    .object({
+      contractAddress: z.string().nullable().optional(),
+      eventType: z.string().nullable().optional(),
+      topicSymbol: z.string().nullable().optional(),
+    })
+    .optional(),
+  idempotencyKey: z.string().optional(),
+});
+
+/**
+ * @swagger
+ * /webhooks/{id}/replay:
+ *   post:
+ *     summary: Replay webhook deliveries from a selected ledger checkpoint
+ *     description: >
+ *       Initiates an asynchronous, idempotent replay job for missed events starting
+ *       from a validated ledger checkpoint. Replayed events carry explicit replay
+ *       headers and envelope markers and are signed with the subscription's secret.
+ *     security:
+ *       - ApiKeyAuth: []
+ *     tags: [Webhooks]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [fromLedger]
+ *             properties:
+ *               fromLedger: { type: integer, minimum: 1 }
+ *               toLedger: { type: integer, minimum: 1 }
+ *               filters:
+ *                 type: object
+ *                 properties:
+ *                   contractAddress: { type: string, nullable: true }
+ *                   eventType: { type: string, nullable: true }
+ *                   topicSymbol: { type: string, nullable: true }
+ *               idempotencyKey: { type: string }
+ *     responses:
+ *       201:
+ *         description: Replay job created
+ *       200:
+ *         description: Existing replay job returned (idempotent request)
+ *       400:
+ *         description: Invalid checkpoint or filter mismatch
+ *       404:
+ *         description: Subscription not found or not owned by caller
+ *       409:
+ *         description: Replay job already in progress
+ */
+webhooksRouter.post(
+  '/:id/replay',
+  asyncHandler(async (req: Request, res: Response) => {
+    const sub = await prismaRead.webhookSubscription.findFirst({
+      where: { id: req.params.id, apiKeyId: req.apiKey!.id },
+    });
+    if (!sub) return res.status(404).json({ error: 'Subscription not found' });
+
+    const parsed = replayRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: parsed.error.flatten() });
+    }
+
+    const idempotencyKey =
+      parsed.data.idempotencyKey ?? (req.header('Idempotency-Key') || undefined);
+
+    try {
+      const { job, isDuplicate } = await validateAndCreateReplayJob(
+        {
+          subscriptionId: sub.id,
+          apiKeyId: req.apiKey!.id,
+          fromLedger: parsed.data.fromLedger,
+          toLedger: parsed.data.toLedger,
+          filters: parsed.data.filters,
+          idempotencyKey,
+        },
+        sub,
+      );
+
+      if (!isDuplicate) {
+        // Kick off execution asynchronously
+        setImmediate(() => {
+          executeReplayStep(job.id).catch((err) => {
+            logger.error('Background replay step failed', { jobId: job.id, error: String(err) });
+          });
+        });
+      }
+
+      const statusCode = isDuplicate ? 200 : 201;
+      return res.status(statusCode).json({ data: job });
+    } catch (err) {
+      if (err instanceof CheckpointValidationError || err instanceof FilterMismatchError) {
+        const status = (err as CheckpointValidationError).code === 'REPLAY_JOB_ALREADY_IN_PROGRESS' ? 409 : 400;
+        return res.status(status).json({
+          error: err.message,
+          code: (err as any).code,
+        });
+      }
+      throw err;
+    }
+  }),
+);
+
+/**
+ * @swagger
+ * /webhooks/{id}/replay:
+ *   get:
+ *     summary: List replay jobs for a webhook subscription
+ *     security:
+ *       - ApiKeyAuth: []
+ *     tags: [Webhooks]
+ */
+webhooksRouter.get(
+  '/:id/replay',
+  asyncHandler(async (req: Request, res: Response) => {
+    const sub = await prismaRead.webhookSubscription.findFirst({
+      where: { id: req.params.id, apiKeyId: req.apiKey!.id },
+      select: { id: true },
+    });
+    if (!sub) return res.status(404).json({ error: 'Subscription not found' });
+
+    const jobs = listReplayJobs(sub.id);
+    res.json({ data: jobs });
+  }),
+);
+
+/**
+ * @swagger
+ * /webhooks/{id}/replay/{jobId}:
+ *   get:
+ *     summary: Get progress of a specific replay job
+ *     security:
+ *       - ApiKeyAuth: []
+ *     tags: [Webhooks]
+ */
+webhooksRouter.get(
+  '/:id/replay/:jobId',
+  asyncHandler(async (req: Request, res: Response) => {
+    const sub = await prismaRead.webhookSubscription.findFirst({
+      where: { id: req.params.id, apiKeyId: req.apiKey!.id },
+      select: { id: true },
+    });
+    if (!sub) return res.status(404).json({ error: 'Subscription not found' });
+
+    const job = getReplayJob(req.params.jobId, sub.id);
+    if (!job) return res.status(404).json({ error: 'Replay job not found' });
+
+    res.json({ data: job });
+  }),
+);
+
+/**
+ * @swagger
+ * /webhooks/{id}/replay/{jobId}/resume:
+ *   post:
+ *     summary: Resume an interrupted replay job
+ *     security:
+ *       - ApiKeyAuth: []
+ *     tags: [Webhooks]
+ */
+webhooksRouter.post(
+  '/:id/replay/:jobId/resume',
+  asyncHandler(async (req: Request, res: Response) => {
+    const sub = await prismaRead.webhookSubscription.findFirst({
+      where: { id: req.params.id, apiKeyId: req.apiKey!.id },
+      select: { id: true },
+    });
+    if (!sub) return res.status(404).json({ error: 'Subscription not found' });
+
+    try {
+      const job = await resumeReplayJob(req.params.jobId, sub.id);
+      if (!job) return res.status(404).json({ error: 'Replay job not found' });
+
+      setImmediate(() => {
+        executeReplayStep(job.id).catch((err) => {
+          logger.error('Background resumed replay step failed', { jobId: job.id, error: String(err) });
+        });
+      });
+
+      res.json({ data: job });
+    } catch (err) {
+      if (err instanceof CheckpointValidationError) {
+        return res.status(400).json({ error: err.message, code: err.code });
+      }
+      throw err;
+    }
+  }),
+);
+
+/**
+ * @swagger
+ * /webhooks/{id}/replay/{jobId}/cancel:
+ *   post:
+ *     summary: Cancel a replay job
+ *     security:
+ *       - ApiKeyAuth: []
+ *     tags: [Webhooks]
+ */
+webhooksRouter.post(
+  '/:id/replay/:jobId/cancel',
+  asyncHandler(async (req: Request, res: Response) => {
+    const sub = await prismaRead.webhookSubscription.findFirst({
+      where: { id: req.params.id, apiKeyId: req.apiKey!.id },
+      select: { id: true },
+    });
+    if (!sub) return res.status(404).json({ error: 'Subscription not found' });
+
+    const job = await cancelReplayJob(req.params.jobId, sub.id);
+    if (!job) return res.status(404).json({ error: 'Replay job not found' });
+
+    res.json({ data: job });
+  }),
+);
+

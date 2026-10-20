@@ -393,7 +393,7 @@ export class SymbolicExecutor {
     return {
       ...state,
       constraints: predicates.map((p) => ({
-        condition: { kind: 'var', name: p, sort: 0 as any } as unknown as Expr,
+        condition: { kind: 'var', name: p, sort: 0 } as unknown as Expr,
         branch: 'true' as const,
       })),
     };

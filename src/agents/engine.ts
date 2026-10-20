@@ -54,9 +54,9 @@ export class AgentEngine {
         ownerAddress: params.ownerAddress,
         templateId: params.templateId,
         status: 'deployed',
-        permissions: params.permissions || template.defaultPermissions,
-        resourceLimits: limits,
-        config: params.config,
+        permissions: (params.permissions || template.defaultPermissions) as Record<string, unknown>,
+        resourceLimits: limits as Record<string, unknown>,
+        config: params.config as Record<string, unknown>,
         maxDrawdown: limits.maxDrawdownPercent,
         currentDrawdown: 0,
         totalGasUsed: 0,
@@ -235,12 +235,14 @@ export class AgentEngine {
         agentId,
         status: error ? 'failed' : 'success',
         trigger,
-        inputState,
-        decision: outputAction ? { action: outputAction.type, params: outputAction } : null,
-        outputAction,
+        inputState: inputState as Record<string, unknown>,
+        decision: outputAction
+          ? { action: outputAction.type, params: outputAction }
+          : null,
+        outputAction: outputAction as Record<string, unknown>,
         reasoning: steps.map((s) => ({ step: s.stepIndex, reasoning: s.reasoning })),
         gasUsed: totalGasUsed,
-        trace,
+        trace: trace as Record<string, unknown>,
         traceHash: finalStateHash,
         signature: trace.signature,
         error,
@@ -483,7 +485,7 @@ export class AgentEngine {
         type,
         severity,
         message,
-        data: data || {},
+        data: (data || {}) as Record<string, unknown>,
       },
     });
 
@@ -577,9 +579,9 @@ export class AgentEngine {
 
     // Update DCA config
     const updatedConfig = { ...config, buysExecuted: config.buysExecuted + 1 };
-    await agentWrite.agent.update({
-      where: { id: agent.id },
-      data: { config: updatedConfig },
+    await prismaWrite.agent.update({
+      where: { id: agent.id as string },
+      data: { config: updatedConfig as Record<string, unknown> },
     });
 
     return {

@@ -376,12 +376,12 @@ privacyRouter.get(
       }
 
       const details = await prismaRead.privacyProtocolDetail.findMany({
-        where: { protocol: protocol as any },
+        where: { protocol: protocol as string },
         orderBy: { timestamp: 'desc' },
         take: 100,
       });
 
-      const protocolFilter = protocol as any;
+      const protocolFilter = protocol as string;
 
       const txs = await prismaRead.privacyTransaction.findMany({
         where: { protocols: { has: protocolFilter } },
@@ -501,7 +501,7 @@ privacyRouter.get(
       const where: any = {};
 
       if (req.query.protocol) {
-        where.protocols = { has: req.query.protocol as any };
+        where.protocols = { has: req.query.protocol as string };
       }
       if (req.query.minScore) {
         where.privacyScore = { gte: Number(req.query.minScore) };
@@ -739,7 +739,7 @@ privacyRouter.get(
 
       const details = await prismaRead.privacyProtocolDetail.findMany({
         where: {
-          protocol: protocol as any,
+          protocol: protocol as string,
           timestamp: { gte: since },
         },
         orderBy: { timestamp: 'asc' },
@@ -1046,7 +1046,7 @@ privacyRouter.get(
 
       const snapshots = await prismaRead.anonymitySetSnapshot.findMany({
         where: {
-          protocol: protocol as any,
+          protocol: protocol as string,
           timestamp: { gte: since },
         },
         orderBy: { timestamp: 'asc' },
@@ -3169,7 +3169,7 @@ privacyRouter.get(
     try {
       const zkTxs = await prismaRead.privacyTransaction.findMany({
         where: {
-          protocols: { hasSome: ['ZK_SNARK', 'ZK_STARK', 'BULLETPROOF'] as any },
+          protocols: { hasSome: ['ZK_SNARK', 'ZK_STARK', 'BULLETPROOF'] as string[] },
         },
         take: 200,
         select: {
@@ -3187,14 +3187,14 @@ privacyRouter.get(
       for (const tx of zkTxs) {
         for (const p of tx.protocols) {
           if (p in benchmarks) {
-            (benchmarks as any)[p].count++;
-            (benchmarks as any)[p].avgScore += tx.privacyScore || 0;
+            (benchmarks as Record<string, { count: number; avgScore: number }>)[p].count++;
+            (benchmarks as Record<string, { count: number; avgScore: number }>)[p].avgScore += tx.privacyScore || 0;
           }
         }
       }
 
       for (const key of Object.keys(benchmarks)) {
-        const b = (benchmarks as any)[key];
+        const b = (benchmarks as Record<string, { count: number; avgScore: number }>)[key];
         if (b.count > 0) b.avgScore /= b.count;
       }
 

@@ -209,7 +209,7 @@ async function getUserOverride(identifier: string, endpoint: string): Promise<Ti
   if (cached && cached.expiresAt > Date.now()) return cached.config;
 
   try {
-    const prisma = prismaRead as any;
+    const prisma = prismaRead as unknown as Record<string, { findUnique: (args: unknown) => Promise<{ windowMs: number; max: number } | null> }>;
     const override = await prisma.rateLimitOverride.findUnique({
       where: { identifier_endpoint: { identifier, endpoint: endpoint || '/' } },
     });
@@ -274,7 +274,7 @@ function buildLimiters(store?: Store): Limiters {
       // Hook into response to add headers before sending
       res.json = function (body: any) {
         if (!res.headersSent) {
-          const rateLimit = (req as any).rateLimit;
+          const rateLimit = req.rateLimit;
           if (rateLimit) {
             const resetTimestamp = Math.ceil((Date.now() + tiers[tierName].windowMs) / 1000);
             setRateLimitHeaders(res, {
@@ -288,7 +288,7 @@ function buildLimiters(store?: Store): Limiters {
           }
         }
         return originalJson(body);
-      } as any;
+      } as unknown as typeof res.json;
 
       limiter(req, res, next);
     };
@@ -317,11 +317,11 @@ export async function initRateLimitStore(): Promise<void> {
     client.on('error', (err: unknown) => logger.warn(`[rate-limit] Redis error: ${String(err)}`));
     await client.connect();
 
-    setRateLimitRedisClient(client as any);
+    setRateLimitRedisClient(client as unknown as import('./tokenBucket').TokenBucketRedisClient);
     useTokenBucket = true;
 
     const store = new RedisStore({
-      sendCommand: (...args: string[]) => (client as any).sendCommand(args),
+      sendCommand: (...args: string[]) => (client as unknown as { sendCommand(args: string[]): Promise<unknown> }).sendCommand(args),
       prefix: 'rl:',
     });
     legacyLimiters = buildLimiters(store);

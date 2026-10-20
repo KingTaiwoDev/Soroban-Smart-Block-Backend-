@@ -44,7 +44,7 @@ export function validateQuery<T extends z.ZodTypeAny>(schema: T) {
     }
 
     // Store validated data in a typed property for downstream handlers
-    (req as any).validatedQuery = result.data;
+    req.validatedQuery = result.data;
     next();
   };
 }
@@ -69,7 +69,7 @@ export function validateBody<T extends z.ZodTypeAny>(schema: T) {
       return;
     }
 
-    (req as any).validatedBody = result.data;
+    req.validatedBody = result.data;
     next();
   };
 }
@@ -94,7 +94,7 @@ export function validateParams<T extends z.ZodTypeAny>(schema: T) {
       return;
     }
 
-    (req as any).validatedParams = result.data;
+    req.validatedParams = result.data;
     next();
   };
 }
@@ -133,8 +133,8 @@ export function validateQueryAndBody<Q extends z.ZodTypeAny, B extends z.ZodType
       return;
     }
 
-    (req as any).validatedQuery = queryResult.data;
-    (req as any).validatedBody = bodyResult.data;
+    req.validatedQuery = queryResult.data;
+    req.validatedBody = bodyResult.data;
     next();
   };
 }

@@ -154,7 +154,7 @@ async function scanPendingTransactions(): Promise<void> {
             name: p.patternName,
             description: String(p.details.mitigationGuide ?? ''),
             category: p.category,
-            riskRating: (p.details as any).riskRating ?? 'medium_risk',
+            riskRating: (p.details as Record<string, unknown>)?.riskRating as string ?? 'medium_risk',
             mitigationGuide: String(p.details.mitigationGuide ?? ''),
           },
         });

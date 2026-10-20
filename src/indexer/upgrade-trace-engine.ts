@@ -56,7 +56,7 @@ export async function analyzeUpgradeOrchestration(
 
   // Detect migration patterns in events
   for (const event of transaction.events) {
-    const decoded = event.decoded as any;
+    const decoded = event.decoded as Record<string, unknown> | null;
     if (
       event.eventType === 'custom' &&
       (event.topicSymbol?.toLowerCase().includes('migrate') ||

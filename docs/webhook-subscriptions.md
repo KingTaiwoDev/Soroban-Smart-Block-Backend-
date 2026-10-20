@@ -19,6 +19,11 @@ Base path: `/webhooks`
 | GET    | `/webhooks/:id/preview`    | Preview the exact body + signing headers                    |
 | GET    | `/webhooks/:id/deliveries` | Recent delivery attempts (last 50)                          |
 | GET    | `/webhooks/sdk`            | Integration guide + verification snippets                   |
+| POST   | `/webhooks/:id/replay`     | Request event replay from a ledger checkpoint               |
+| GET    | `/webhooks/:id/replay`     | List replay jobs for a subscription                         |
+| GET    | `/webhooks/:id/replay/:jobId` | Get progress and status of a replay job                  |
+| POST   | `/webhooks/:id/replay/:jobId/resume` | Resume an interrupted replay job                  |
+| POST   | `/webhooks/:id/replay/:jobId/cancel` | Cancel an in-flight replay job                     |
 
 ### Create
 
@@ -87,8 +92,8 @@ Prove you own the destination URL before relying on deliveries:
    }
    ```
 
-   It carries the same `X-Webhook-Signature` and `X-Webhook-Timestamp` headers
-   as a normal delivery.
+   It carries the same `X-Webhook-Timestamp`, `X-Webhook-Signature-V2` and
+   `X-Webhook-Signature` headers as a normal delivery.
 
 3. Respond with HTTP 2xx and echo the challenge back:
 
@@ -124,9 +129,10 @@ curl https://api.example.com/webhooks/$SUB_ID/preview \
   -H "X-Api-Key: $SOROBAN_API_KEY"
 ```
 
-Returns the sample `event`, the exact `rawBody`, and the `X-Webhook-Signature` /
-`X-Webhook-Timestamp` headers — with a real signature over the sample body — so
-you can unit-test your receiver before receiving live traffic.
+Returns the sample `event`, the exact `rawBody`, and the `X-Webhook-Timestamp`,
+`X-Webhook-Signature-V2` and `X-Webhook-Signature` headers — with real
+signatures over the sample body — so you can unit-test your receiver before
+receiving live traffic.
 
 ## Delivery envelope
 
@@ -148,8 +154,10 @@ you can unit-test your receiver before receiving live traffic.
 
 Headers:
 
-- `X-Webhook-Signature: sha256=<hex HMAC-SHA256 of the raw body>`
 - `X-Webhook-Timestamp: <unix epoch ms>`
+- `X-Webhook-Signature-V2: sha256=<hex HMAC-SHA256 of "<timestamp>." + raw body>`
+- `X-Webhook-Signature: sha256=<hex HMAC-SHA256 of the raw body>` (deprecated,
+  see [Compatibility](#compatibility-legacy-x-webhook-signature))
 
 Batch deliveries use this envelope instead:
 
@@ -162,7 +170,7 @@ Batch deliveries use this envelope instead:
 }
 ```
 
-The signature covers the complete raw JSON body. The request also includes
+The signatures cover the complete raw JSON body. The request also includes
 `Idempotency-Key` with the same value as `idempotencyKey`. Event membership and
 the key are stable across retries; `attempt` increases. Consumers should
 deduplicate by `idempotencyKey`. Events are ordered per contract by ledger
@@ -182,11 +190,25 @@ retention is not equivalent to checkpoint replayability.
 
 ## Verifying signatures
 
-Sign the **raw request body bytes** (before JSON parsing) with HMAC-SHA256 using
-your signing secret, then compare in constant time against the
-`X-Webhook-Signature` value. Reject requests whose `X-Webhook-Timestamp` is
-outside the tolerance window and cache accepted signatures for that window to
-reject replays.
+Each delivery is signed over the timestamp **and** the body, so a captured
+request cannot be replayed with a new `X-Webhook-Timestamp`:
+
+```
+signed_payload = X-Webhook-Timestamp + "." + raw_request_body_bytes
+X-Webhook-Signature-V2 = "sha256=" + hex(HMAC-SHA256(signing_secret, signed_payload))
+```
+
+Receivers should:
+
+1. Reject requests that are missing `X-Webhook-Timestamp` or
+   `X-Webhook-Signature-V2`.
+2. Reject timestamps more than the tolerance window (default 5 minutes,
+   `WEBHOOK_TIMESTAMP_TOLERANCE_MS`) away from their own clock.
+3. Recompute the HMAC over the **raw** body bytes (before JSON parsing) and
+   compare it in constant time (`crypto.timingSafeEqual` / `hmac.compare_digest`).
+4. Remember accepted `(timestamp, signature)` pairs for the window and reject
+   repeats. Retries are signed with a fresh timestamp, so they are not
+   repeats.
 
 TypeScript:
 
@@ -196,16 +218,18 @@ import crypto from 'crypto';
 export function verifyWebhook(
   rawBody: Buffer,
   secret: string,
-  signature: string,
-  timestamp: string,
+  signature: string, // X-Webhook-Signature-V2
+  timestamp: string, // X-Webhook-Timestamp
   toleranceMs = 5 * 60 * 1000,
 ) {
   const ts = Number(timestamp);
-  if (!Number.isFinite(ts) || Math.abs(Date.now() - ts) > toleranceMs) {
+  if (!/^\d+$/.test(timestamp) || Math.abs(Date.now() - ts) > toleranceMs) {
     throw new Error('Timestamp outside tolerance window');
   }
 
-  const expected = 'sha256=' + crypto.createHmac('sha256', secret).update(rawBody).digest('hex');
+  const expected =
+    'sha256=' +
+    crypto.createHmac('sha256', secret).update(`${timestamp}.`).update(rawBody).digest('hex');
   const a = Buffer.from(expected);
   const b = Buffer.from(signature);
   if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
@@ -213,6 +237,20 @@ export function verifyWebhook(
   }
 }
 ```
+
+Inside this codebase, `verifyTimestampedWebhookSignature` in
+`src/webhooks/webhookVerify.ts` implements all four steps.
+
+### Compatibility: legacy `X-Webhook-Signature`
+
+`X-Webhook-Signature` (HMAC of the body only) is still sent on every delivery,
+verification handshake, ping and preview, so existing receivers keep working
+unchanged. The timestamp is not part of that signature, so it does not stop
+replays: anyone who captured a delivery can resend it with a new
+`X-Webhook-Timestamp`. Migrate receivers to `X-Webhook-Signature-V2`. The legacy
+header will be removed in a future release, with notice in the changelog.
+Signing secrets are unchanged, so migrating needs no secret rotation. The same
+headers and rules apply on testnet, mainnet and devnet.
 
 Python and Go snippets, plus the full envelope reference, are served live from
 `GET /webhooks/sdk` so they stay in sync with the retry policy and tolerance
@@ -226,3 +264,20 @@ with capped exponential backoff so destination outages do not discard queued
 events. Retries stop for inactive subscriptions and for URLs blocked by the
 SSRF guard; those terminal outcomes are visible in delivery history. Inspect
 results via `GET /webhooks/:id/deliveries`.
+
+## Replay from checkpoint
+
+Recover missed events starting from a validated ledger sequence:
+
+```bash
+curl -X POST https://api.example.com/webhooks/$SUB_ID/replay \
+  -H "X-Api-Key: $SOROBAN_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"fromLedger":10500,"toLedger":11000,"idempotencyKey":"replay-recovery-1"}'
+```
+
+- **Validation:** `fromLedger` must be >= 1, `toLedger >= fromLedger`, and the range cannot exceed 10,000 ledgers.
+- **Idempotency:** Supplying an `idempotencyKey` prevents duplicate replay jobs.
+- **Progress Tracking:** Check status and events replayed via `GET /webhooks/:id/replay/:jobId`.
+- **Interruption & Resumption:** If interrupted, resume from the last processed checkpoint via `POST /webhooks/:id/replay/:jobId/resume`.
+- **Replay Markers:** Replayed payloads carry `replayed: true` and headers `X-Webhook-Replay: true` and `X-Webhook-Replay-Job-Id`. Signatures are computed over the exact replayed body.

@@ -31,10 +31,10 @@ export class FraudAlertSystem {
       create: {
         entityId,
         entityType: alertType === 'SMART_CONTRACT_EXPLOIT' ? 'CONTRACT' : 'WALLET',
-        features: features as any,
+        features: features as Record<string, unknown>,
       },
       update: {
-        features: features as any,
+        features: features as Record<string, unknown>,
         updatedAt: new Date(),
       },
     });
@@ -55,7 +55,7 @@ export class FraudAlertSystem {
         riskScore,
         severity,
         alertType,
-        explanation: explanation as any,
+        explanation: explanation as Record<string, unknown>,
         mitigationApplied: false,
       },
     });
@@ -142,7 +142,7 @@ export class FraudAlertSystem {
                 time: new Date().toISOString(),
                 event: 'Emergency contract halt and asset lock applied',
               },
-            ] as any,
+            ] as string[],
           },
         });
         break;

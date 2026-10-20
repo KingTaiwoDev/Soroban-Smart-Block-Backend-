@@ -359,7 +359,7 @@ export function startFuzzJob(
               where: { id },
               data: {
                 status: 'completed',
-                report: report as any,
+                report: report as Record<string, unknown>,
                 completedAt: new Date(),
               },
             })

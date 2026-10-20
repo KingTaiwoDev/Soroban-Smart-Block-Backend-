@@ -116,7 +116,7 @@ export function createTestContainer(options: TestContainerOptions = {}): TestCon
 
   // Apply custom overrides
   for (const [name, instance] of Object.entries(overrides)) {
-    testContainer.override(name as any, instance);
+    testContainer.override(name as string, instance);
   }
 
   return {
@@ -210,7 +210,7 @@ export function injectServices<T>(
 ): T {
   const args = Object.values(dependencies).map((depName) => {
     const getter = `get${depName.charAt(0).toUpperCase()}${depName.slice(1)}`;
-    const method = (container as any)[getter];
+    const method = (container as Record<string, unknown>)[getter];
     if (!method) {
       throw new Error(`Container has no method: ${getter}`);
     }

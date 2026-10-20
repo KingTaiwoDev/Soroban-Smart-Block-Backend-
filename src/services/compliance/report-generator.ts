@@ -255,7 +255,7 @@ export async function generateRegulatoryReport(params: {
     where: { id: report.id },
     data: {
       reportData: {
-        ...(report.reportData as any),
+        ...(report.reportData as Record<string, unknown>),
         jurisdiction: params.jurisdiction,
         regulatoryTemplate: params.template,
       },

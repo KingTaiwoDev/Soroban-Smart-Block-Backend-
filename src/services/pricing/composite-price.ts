@@ -18,7 +18,8 @@ export interface CompositePrice {
   priceChange7d: number | null;
   twap1h: number;
   twap24h: number;
-  breakdown: Array<{ source: string; price: number; confidence: number }>;
+  /** `stale` marks a last-known-good external fallback (see external-api-source). */
+  breakdown: Array<{ source: string; price: number; confidence: number; stale?: boolean }>;
 }
 
 export async function computeCompositePrice(
@@ -29,7 +30,7 @@ export async function computeCompositePrice(
   const cached = await cacheGet<CompositePrice>(cacheKey);
   if (cached) return cached;
 
-  const breakdown: Array<{ source: string; price: number; confidence: number }> = [];
+  const breakdown: CompositePrice['breakdown'] = [];
   let selectedPrice = 0;
   let selectedSource = 'none';
   let selectedConfidence = 0;
@@ -72,6 +73,7 @@ export async function computeCompositePrice(
       source: extPrice.source,
       price: extPrice.priceUsd,
       confidence: extPrice.confidence,
+      ...(extPrice.stale ? { stale: true } : {}),
     });
     marketCapUsd = extPrice.marketCapUsd ?? marketCapUsd;
     priceChange1h = extPrice.priceChange1h ?? priceChange1h;
@@ -110,7 +112,11 @@ export async function computeCompositePrice(
   // #917 — TTL resolved from the per-route registry (composite_price → 5s).
   await cacheSet(cacheKey, result);
 
-  if (selectedPrice > 0) {
+  // A stale external fallback is served but never persisted as a fresh quote.
+  const selectedIsStale = breakdown.some(
+    (b) => b.stale && b.source === selectedSource && b.price === selectedPrice,
+  );
+  if (selectedPrice > 0 && !selectedIsStale) {
     await persistPrice(tokenAddress, result, selectedSource);
   }
 

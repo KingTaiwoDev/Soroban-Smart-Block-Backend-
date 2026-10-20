@@ -53,6 +53,14 @@ export const contractAbiSubmissionOperations = new Counter({
   registers: [registry],
 });
 
+export const abiMarketplaceOperations = new Counter({
+  name: 'abi_marketplace_operations_total',
+  help: 'ABI marketplace workflow operations by operation and outcome',
+  labelNames: ['operation', 'outcome'],
+  registers: [registry],
+});
+
+
 export const gasFeeAlertApiOperations = new Counter({
   name: 'gas_fee_alert_api_operations_total',
   help: 'Gas fee alert API operations by operation and outcome',

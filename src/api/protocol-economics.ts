@@ -11,6 +11,8 @@ import { z } from 'zod';
 import { prismaRead as prisma } from '../db';
 import { runProtocolEconomics } from '../indexer/protocolEconomics';
 import { asyncHandler } from '../middleware/asyncHandler';
+import { config } from '../config';
+import { buildAnalyticsFreshness } from '../analytics/freshness';
 
 export const protocolEconomicsRouter = Router();
 
@@ -29,7 +31,8 @@ protocolEconomicsRouter.get(
       orderBy: { bucketStart: 'desc' },
       take: limit,
     });
-    res.json({ bucket, data });
+    const network = req.networkProfile?.name ?? config.stellarNetwork;
+    res.json({ bucket, data, freshness: buildAnalyticsFreshness(network, bucket, data[0]) });
   }),
 );
 

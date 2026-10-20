@@ -36,7 +36,7 @@ export interface CheckpointedRangeOptions {
   workEnd: number;
   batchSize: number;
   store: CatchUpCheckpointStore;
-  processRange: (start: number, end: number) => Promise<void>;
+  processRange: (start: number, end: number) => Promise<unknown>;
   isPaused?: () => Promise<boolean>;
 }
 

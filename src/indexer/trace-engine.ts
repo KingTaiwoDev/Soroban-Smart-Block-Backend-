@@ -235,7 +235,7 @@ export function buildTrace(
 export function extractDiagnosticEvents(
   result: SorobanRpc.Api.SimulateTransactionResponse,
 ): xdr.DiagnosticEvent[] {
-  const raw = (result as any).events;
+  const raw = (result as Record<string, unknown>).events;
   if (!Array.isArray(raw)) return [];
   return raw.filter((e): e is xdr.DiagnosticEvent => e instanceof xdr.DiagnosticEvent);
 }

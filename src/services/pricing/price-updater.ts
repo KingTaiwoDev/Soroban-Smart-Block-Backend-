@@ -106,7 +106,8 @@ export async function runExternalApiUpdate(): Promise<void> {
     for (const token of tokens) {
       try {
         const extPrice = await discoverExternalPrice(token.address, token.tokenSymbol);
-        if (extPrice) {
+        // Never persist a last-known-good fallback as if it were a fresh quote.
+        if (extPrice && !extPrice.stale) {
           const existing = await prismaRead.tokenPrice.findUnique({
             where: { tokenAddress: token.address },
           });

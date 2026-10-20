@@ -390,13 +390,13 @@ export async function processPrivacyDetection(
 
   const addresses = [...new Set([sourceAccount, ...result.participants])];
 
-  const cryptoPrimitives = result.cryptographicPrimitives as any;
+  const cryptoPrimitives = result.cryptographicPrimitives as Record<string, unknown>;
 
   await prisma.privacyTransaction.upsert({
     where: { txHash },
     update: {
-      protocols: result.protocols as any,
-      guarantees: result.guarantees as any,
+      protocols: result.protocols as string[],
+      guarantees: result.guarantees as string[],
       cryptographicPrimitives: cryptoPrimitives,
       anonymitySetSize: result.anonymitySetSize,
       totalValue: result.totalValue || totalTxValue,
@@ -409,8 +409,8 @@ export async function processPrivacyDetection(
     },
     create: {
       txHash,
-      protocols: result.protocols as any,
-      guarantees: result.guarantees as any,
+      protocols: result.protocols as string[],
+      guarantees: result.guarantees as string[],
       cryptographicPrimitives: cryptoPrimitives,
       anonymitySetSize: result.anonymitySetSize,
       totalValue: result.totalValue || totalTxValue,

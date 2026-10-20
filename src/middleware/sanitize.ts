@@ -184,12 +184,22 @@ export function validateAddressParam(paramName = 'address') {
  * Middleware that enforces a maximum request body size beyond what
  * express.json() provides. Use BEFORE express.json() in the middleware chain.
  * The limit parameter should match express.json({ limit }) for consistency.
+ *
+ * `multipartLimitBytes` applies to multipart/form-data requests, whose file
+ * parts are bounded per route by the upload middleware (#1238). Defaults to
+ * `limitBytes`.
  */
-export function requestSizeGuard(limitBytes = 1_048_576 /* 1 MB */) {
+export function requestSizeGuard(
+  limitBytes = 1_048_576 /* 1 MB */,
+  options: { multipartLimitBytes?: number } = {},
+) {
+  const multipartLimitBytes = options.multipartLimitBytes ?? limitBytes;
   return (req: Request, res: Response, next: NextFunction) => {
     const contentLength = parseInt(req.headers['content-length'] ?? '0', 10);
-    if (contentLength > limitBytes) {
-      return res.status(413).json({ error: `Request body too large (max ${limitBytes} bytes)` });
+    const isMultipart = /^multipart\/form-data/i.test(req.headers['content-type'] ?? '');
+    const limit = isMultipart ? multipartLimitBytes : limitBytes;
+    if (contentLength > limit) {
+      return res.status(413).json({ error: `Request body too large (max ${limit} bytes)` });
     }
     return next();
   };

@@ -10,6 +10,10 @@ import { prismaWrite, prismaRead } from '../db';
 import { logger } from '../logger';
 import { background } from '../utils/background';
 import { AuthPrincipal, ResourceContext } from './types';
+import {
+  AUDIT_INTEGRITY_VERSION,
+  computeAuditRecordChecksum,
+} from './audit-integrity';
 
 /**
  * Audit event types for RBAC operations
@@ -708,30 +712,7 @@ export class RbacAuditLogger {
     try {
       // Use existing AuditLog table format
       await prismaWrite.auditLog.createMany({
-        data: events.map(event => ({
-          id: event.id || crypto.randomUUID(),
-          actor: event.actor,
-          action: event.type,
-          target: event.target || event.action,
-          previousState: event.previousState || null,
-          newState: {
-            ...event.details,
-            severity: event.severity,
-            actorType: event.actorType,
-            targetType: event.targetType,
-            requestId: event.requestId,
-            sessionId: event.sessionId,
-            tenantId: event.tenantId,
-            ipAddress: event.ipAddress,
-            userAgent: event.userAgent,
-            source: event.source,
-            tags: event.tags,
-            checksum: event.checksum,
-            previousChecksum: event.previousChecksum,
-          },
-          reason: event.reason,
-          createdAt: event.timestamp,
-        })),
+        data: events.map((event) => this.toAuditLogRow(event)),
       });
 
       logger.debug('Audit events flushed to database', { count: events.length });
@@ -772,20 +753,47 @@ export class RbacAuditLogger {
   }
 
   /**
-   * Add integrity check to event
+   * Map an event to the `_audit_logs` row that is persisted for it.
+   */
+  private toAuditLogRow(event: AuditEvent) {
+    return {
+      id: event.id || crypto.randomUUID(),
+      actor: event.actor,
+      action: event.type,
+      target: event.target || event.action,
+      previousState: event.previousState || null,
+      newState: {
+        ...event.details,
+        severity: event.severity,
+        actorType: event.actorType,
+        targetType: event.targetType,
+        requestId: event.requestId,
+        sessionId: event.sessionId,
+        tenantId: event.tenantId,
+        ipAddress: event.ipAddress,
+        userAgent: event.userAgent,
+        source: event.source,
+        tags: event.tags,
+        ...(event.checksum
+          ? {
+              checksum: event.checksum,
+              previousChecksum: event.previousChecksum,
+              integrityVersion: AUDIT_INTEGRITY_VERSION,
+            }
+          : {}),
+      },
+      reason: event.reason,
+      createdAt: event.timestamp,
+    };
+  }
+
+  /**
+   * Add integrity check to event. The checksum covers the persisted row plus
+   * the previous checksum, so it can be re-verified from the database (#1244).
    */
   private addIntegrityCheck(event: AuditEvent): AuditEvent {
-    const eventContent = JSON.stringify({
-      type: event.type,
-      actor: event.actor,
-      target: event.target,
-      action: event.action,
-      details: event.details,
-      timestamp: event.timestamp,
-    });
-
-    event.checksum = crypto.createHash('sha256').update(eventContent).digest('hex');
     event.previousChecksum = this.lastEventChecksum;
+    event.checksum = computeAuditRecordChecksum(this.toAuditLogRow(event), event.previousChecksum);
     this.lastEventChecksum = event.checksum;
 
     return event;

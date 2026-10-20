@@ -200,7 +200,7 @@ class CronScheduler {
     }
 
     const jobInstance: JobInstance = {
-      job: null as any, // Will be assigned after task creation
+      job: null, // Will be assigned after task creation
       metadata: {
         id: jobConfig.id,
         cronExpression: jobConfig.cronExpression,

@@ -1,0 +1,16 @@
+[package]
+name = "wasmtime-sandbox"
+version = "0.1.0"
+edition = "2021"
+description = "Native Wasmtime JIT sandbox addon for Soroban Smart Block Explorer"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+# N-API bindings for Node.js native addons
+napi = { version = "2.16.8", default-features = false, features = ["napi4"] }
+napi-derive = "2.16.8"
+
+[build-dependencies]
+napi-build = "1.2.1"

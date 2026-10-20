@@ -170,7 +170,7 @@ export class NATSQueueService {
         max_msg_size: this.config.jetstream.maxMsgSize,
         max_age: nats.parseDuration(this.config.jetstream.maxAge),
         num_replicas: this.config.jetstream.replicas,
-        discard: this.config.jetstream.discard as any,
+        discard: this.config.jetstream.discard as nats.DiscardPolicy,
         duplicate_window: nats.parseDuration('10m'),
         storage: 'file',
       });

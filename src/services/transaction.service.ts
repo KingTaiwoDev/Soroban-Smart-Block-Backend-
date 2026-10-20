@@ -113,11 +113,7 @@ export class TransactionService {
 
       const hasNext = rows.length > limit;
       const data = hasNext ? rows.slice(0, limit) : rows;
-      const last = data[data.length - 1];
-      const nextCursor =
-        hasNext && typeof last?.id === 'string'
-          ? { ledgerSequence: last.ledgerSequence, id: last.id }
-          : null;
+      const nextCursor = hasNext ? (data[data.length - 1] as Record<string, unknown>).ledgerSequence as number : null;
 
       return { data, nextCursor, hasNext };
     }

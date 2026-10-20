@@ -1,5 +1,11 @@
 /**
- * SSRF protection for outbound webhook HTTP requests.
+ * Central outbound URL-fetch policy (SSRF protection) — #1237.
+ *
+ * Every server-side request to a user- or operator-supplied URL (webhook
+ * deliveries, alert sinks, notification channels, metadata fetches) must go
+ * through this module: `safePost` / `safeGet` for the request itself, and
+ * `checkOutboundUrl` / `isOutboundUrlAllowed` for synchronous validation at
+ * input time (e.g. zod schemas). See docs/outbound-url-policy.md.
  *
  * Protects against:
  *   - DNS rebinding attacks (TOCTOU via malicious nameservers)
@@ -110,19 +116,32 @@ function isBlockedIpv4(ip: string): boolean {
   return BLOCKED_IPV4_RANGES.some((r) => (n & r.mask) === r.base);
 }
 
-function isBlockedIpv6(ip: string): boolean {
-  // Normalise — strip zone IDs and brackets
-  const addr = ip
-    .replace(/^.*%.*$/, '')
+/** Strip URL brackets and any zone ID (`fe80::1%eth0`) from an IPv6 literal. */
+function normaliseIpv6(ip: string): string {
+  return ip
     .replace(/^\[|\]$/g, '')
+    .replace(/%.*$/, '')
     .toLowerCase();
+}
+
+function isBlockedIpv6(ip: string): boolean {
+  const addr = normaliseIpv6(ip);
 
   // Unspecified :: and loopback ::1
   if (addr === '::' || addr === '::1') return true;
 
-  // IPv4-mapped IPv6 ::ffff:a.b.c.d
-  const ipv4Mapped = addr.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
-  if (ipv4Mapped) return isBlockedIpv4(ipv4Mapped[1]);
+  // IPv4-mapped (::ffff:a.b.c.d) and deprecated IPv4-compatible (::a.b.c.d)
+  const ipv4Embedded = addr.match(/^::(?:ffff:)?(\d+\.\d+\.\d+\.\d+)$/);
+  if (ipv4Embedded) return isBlockedIpv4(ipv4Embedded[1]);
+
+  // Same addresses in hex form, as produced by WHATWG URL parsing
+  // (e.g. http://[::ffff:127.0.0.1]/ → hostname "[::ffff:7f00:1]").
+  const ipv4MappedHex = addr.match(/^::ffff:([0-9a-f]{1,4}):([0-9a-f]{1,4})$/);
+  if (ipv4MappedHex) {
+    const hi = parseInt(ipv4MappedHex[1], 16);
+    const lo = parseInt(ipv4MappedHex[2], 16);
+    return isBlockedIpv4(`${hi >> 8}.${hi & 0xff}.${lo >> 8}.${lo & 0xff}`);
+  }
 
   // Link-local fe80::/10
   if (/^fe[89ab][0-9a-f]:/i.test(addr)) return true;
@@ -142,7 +161,8 @@ function isBlockedIpv6(ip: string): boolean {
 /** Returns true if the given IP string (v4 or v6) should be blocked. */
 export function isBlockedIp(ip: string): boolean {
   if (net.isIPv4(ip)) return isBlockedIpv4(ip);
-  if (net.isIPv6(ip)) return isBlockedIpv6(ip);
+  const v6 = normaliseIpv6(ip);
+  if (net.isIPv6(v6)) return isBlockedIpv6(v6);
   return false; // not a recognised IP format — let DNS resolution handle it
 }
 
@@ -159,6 +179,72 @@ function isHttpAllowed(): boolean {
   return HTTP_ALLOWED_PROFILES.has(profile);
 }
 
+/** Hostnames that always point at internal infrastructure. */
+function isReservedHostname(hostname: string): boolean {
+  return (
+    hostname === 'localhost' ||
+    hostname.endsWith('.localhost') ||
+    hostname.endsWith('.local') ||
+    hostname.endsWith('.internal')
+  );
+}
+
+export type OutboundUrlCheck =
+  | { ok: true; url: URL; hostname: string }
+  | { ok: false; reason: string };
+
+/**
+ * Synchronous part of the outbound URL policy: URL syntax, protocol,
+ * embedded credentials, literal private/loopback/link-local IPs and reserved
+ * hostnames. No DNS lookup — `assertSafeUrl` performs that on top of this.
+ */
+export function checkOutboundUrl(rawUrl: string): OutboundUrlCheck {
+  let parsed: URL;
+  try {
+    parsed = new URL(rawUrl);
+  } catch {
+    return { ok: false, reason: `Malformed URL: ${rawUrl}` };
+  }
+
+  const proto = parsed.protocol;
+  if (proto === 'http:' && !isHttpAllowed()) {
+    return {
+      ok: false,
+      reason: 'Plain HTTP is not permitted for webhook destinations outside dev/local profiles',
+    };
+  }
+  if (!ALLOWED_PROTOCOLS.has(proto) && proto !== 'http:') {
+    return { ok: false, reason: `Protocol "${proto}" is not allowed for webhook destinations` };
+  }
+
+  if (parsed.username || parsed.password) {
+    return { ok: false, reason: 'URLs with embedded credentials are not allowed' };
+  }
+
+  // Strip IPv6 brackets and a trailing root dot ("localhost." === "localhost").
+  const hostname = parsed.hostname
+    .replace(/^\[|\]$/g, '')
+    .replace(/\.$/, '')
+    .toLowerCase();
+
+  if (!hostname) {
+    return { ok: false, reason: 'URL has no hostname' };
+  }
+  if (net.isIP(hostname) && isBlockedIp(hostname)) {
+    return { ok: false, reason: `IP address ${hostname} is in a blocked range` };
+  }
+  if (isReservedHostname(hostname)) {
+    return { ok: false, reason: `Hostname "${hostname}" is reserved for internal use` };
+  }
+
+  return { ok: true, url: parsed, hostname };
+}
+
+/** Boolean form of `checkOutboundUrl`, convenient for zod `.refine()`. */
+export function isOutboundUrlAllowed(rawUrl: string): boolean {
+  return checkOutboundUrl(rawUrl).ok;
+}
+
 /**
  * Resolve all A/AAAA records for `hostname` and throw if any is in a
  * blocked range. Caches results to prevent DNS rebinding attacks.
@@ -173,7 +259,7 @@ async function assertHostnameResolvesToPublicIp(hostname: string): Promise<strin
   }
 
   // Reject raw hostnames that look like internal names
-  if (hostname === 'localhost' || hostname.endsWith('.local') || hostname.endsWith('.internal')) {
+  if (isReservedHostname(hostname)) {
     throw new SsrfBlockedError(`Hostname "${hostname}" is reserved for internal use`);
   }
 
@@ -222,26 +308,9 @@ async function assertHostnameResolvesToPublicIp(hostname: string): Promise<strin
  *   - The URL is otherwise malformed
  */
 export async function assertSafeUrl(rawUrl: string): Promise<string[]> {
-  let parsed: URL;
-  try {
-    parsed = new URL(rawUrl);
-  } catch {
-    throw new SsrfBlockedError(`Malformed URL: ${rawUrl}`);
-  }
-
-  const proto = parsed.protocol;
-
-  if (proto === 'http:' && !isHttpAllowed()) {
-    throw new SsrfBlockedError(
-      'Plain HTTP is not permitted for webhook destinations outside dev/local profiles',
-    );
-  }
-
-  if (!ALLOWED_PROTOCOLS.has(proto) && !(proto === 'http:' && isHttpAllowed())) {
-    throw new SsrfBlockedError(`Protocol "${proto}" is not allowed for webhook destinations`);
-  }
-
-  return await assertHostnameResolvesToPublicIp(parsed.hostname);
+  const check = checkOutboundUrl(rawUrl);
+  if (!check.ok) throw new SsrfBlockedError(check.reason);
+  return await assertHostnameResolvesToPublicIp(check.hostname);
 }
 
 // ---------------------------------------------------------------------------
@@ -258,9 +327,10 @@ import type { LookupFunction } from 'net';
  * This prevents DNS rebinding between the pre-flight check and actual connection.
  */
 function createPinnedLookup(hostname: string, pinnedIps: string[]): LookupFunction {
+  const pinnedHost = hostname.replace(/\.$/, '').toLowerCase();
   return (lookupHostname, options, callback) => {
     // Only pin the specific hostname we validated
-    if (lookupHostname !== hostname) {
+    if (lookupHostname.replace(/\.$/, '').toLowerCase() !== pinnedHost) {
       // For other hostnames (shouldn't happen), fall back to default DNS
       return dns.lookup(lookupHostname, options, callback);
     }
@@ -298,11 +368,11 @@ export function buildSafeAxios(
     // Dedicated agents with pinned DNS lookup
     httpAgent: new HttpAgent({
       keepAlive: false,
-      lookup: lookup as any, // Node's types are slightly different but compatible
+      lookup: lookup as unknown as typeof import('dns').lookup, // Node's types are slightly different but compatible
     }),
     httpsAgent: new HttpsAgent({
       keepAlive: false,
-      lookup: lookup as any,
+      lookup: lookup as unknown as typeof import('dns').lookup,
     }),
   });
 }

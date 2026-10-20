@@ -146,8 +146,8 @@ export async function persistAnalysis(
       data: {
         txHash: f.txHash,
         contractAddress: f.contractAddress,
-        reentrancyType: f.reentrancyType as any,
-        severity: f.severity as any,
+        reentrancyType: f.reentrancyType as string,
+        severity: f.severity as string,
         likelihood: f.likelihood,
         loopPath: f.loopPath as object,
         entryPoint: f.entryPoint,

@@ -40,8 +40,8 @@ describe('requestTimeout middleware', () => {
       socket: {
         destroy: jest.fn(),
         destroyed: false,
-      } as any,
-    } as any;
+      } as unknown,
+    } as unknown;
 
     // Mock response
     res = {
@@ -55,7 +55,7 @@ describe('requestTimeout middleware', () => {
         return this;
       }),
       emit: jest.fn(),
-    } as any;
+    } as unknown;
 
     next = jest.fn();
   });
@@ -195,7 +195,7 @@ describe('requestTimeout middleware', () => {
       middleware(req as Request, res as Response, next);
 
       // Simulate response being sent
-      (res as any).headersSent = true;
+      (res as Record<string, unknown>).headersSent = true;
 
       jest.advanceTimersByTime(30000);
 
@@ -209,7 +209,7 @@ describe('requestTimeout middleware', () => {
       middleware(req as Request, res as Response, next);
 
       // Get the finish handler
-      const handlers = (res as any)._handlers;
+      const handlers = (res as Record<string, unknown>)._handlers;
       handlers.finish();
 
       // Advance time past timeout — should not trigger
@@ -223,7 +223,7 @@ describe('requestTimeout middleware', () => {
       const middleware = requestTimeout();
       middleware(req as Request, res as Response, next);
 
-      const handlers = (res as any)._handlers;
+      const handlers = (res as Record<string, unknown>)._handlers;
       handlers.close();
 
       jest.advanceTimersByTime(30000);
@@ -268,7 +268,7 @@ describe('requestTimeout middleware', () => {
     });
 
     it('should handle already destroyed socket', () => {
-      (req.socket as any).destroyed = true;
+      (req.socket as Record<string, unknown>).destroyed = true;
       req.path = '/api/v1/transactions';
       const middleware = requestTimeout();
 

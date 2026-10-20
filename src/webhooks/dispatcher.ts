@@ -18,7 +18,7 @@ import {
 } from '../metrics';
 import { processResponseBody } from './redaction';
 import { assertSafeUrl, safePost, SsrfBlockedError } from './ssrf-guard';
-import { signWebhookBody } from './webhookVerify';
+import { buildWebhookSignatureHeaders } from './webhookVerify';
 import { logger } from '../logger';
 import { uuidv7 } from '../utils/uuidv7';
 import { cleanupAllExpiredWebhookDeliveries } from './retention';
@@ -760,11 +760,10 @@ async function deliverOnce(
   else if (deliveryIdempotencyKey) headers['Idempotency-Key'] = deliveryIdempotencyKey;
 
   // Every subscription now has a secret (#481).
-  // Use signWebhookBody for constant-time-safe signing and add X-Webhook-Timestamp
-  // so the receiver can enforce a skew window and replay cache (#884).
-  const timestampMs = Date.now();
-  headers['X-Webhook-Timestamp'] = String(timestampMs);
-  headers['X-Webhook-Signature'] = signWebhookBody(body, secret);
+  // X-Webhook-Timestamp + timestamp-bound X-Webhook-Signature-V2 let the
+  // receiver enforce a replay window (#884, #1239); the legacy body-only
+  // X-Webhook-Signature is still sent for existing consumers.
+  Object.assign(headers, buildWebhookSignatureHeaders(body, secret));
 
   const expiresAt = new Date(Date.now() + responseRetentionDays * 24 * 60 * 60 * 1000);
 
@@ -1072,11 +1071,9 @@ export async function sendTestDelivery(params: {
   const { subscriptionId, url, secret, payload, storeResponseBody, responseRetentionDays } = params;
 
   const body = JSON.stringify({ event: payload, attempt: 1 });
-  const timestampMs = Date.now();
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    'X-Webhook-Timestamp': String(timestampMs),
-    'X-Webhook-Signature': signWebhookBody(body, secret),
+    ...buildWebhookSignatureHeaders(body, secret),
   };
   const expiresAt = new Date(Date.now() + responseRetentionDays * 24 * 60 * 60 * 1000);
 

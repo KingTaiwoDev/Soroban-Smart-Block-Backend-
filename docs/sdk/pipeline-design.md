@@ -31,16 +31,16 @@ The SDK generation pipeline is a production-grade system that automatically gene
 │  • Graceful degradation with circuit breakers                     │
 └────────────────────────┬────────────────────────────────────────┘
                          │
-         ┌───────────────┼───────────────┐
-         │               │               │
-         ▼               ▼               ▼
-┌─────────────────┐ ┌─────────────┐ ┌─────────────┐
-│ TypeScript     │ │ Python      │ │ Parity      │
-│ Emitter        │ │ Emitter     │ │ Matrix      │
-│                │ │             │ │ Generator   │
-└─────────────────┘ └─────────────┘ └─────────────┘
-         │               │               │
-         └───────────────┼───────────────┘
+         ┌───────────────┬───────────────┬───────────────┐
+         │               │               │               │
+         ▼               ▼               ▼               ▼
+┌─────────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
+│ TypeScript     │ │ Python      │ │ Go          │ │ Parity      │
+│ Emitter        │ │ Emitter     │ │ Emitter     │ │ Matrix      │
+│                │ │             │ │             │ │ Generator   │
+└─────────────────┘ └─────────────┘ └─────────────┘ └─────────────┘
+         │               │               │               │
+         └───────────────┴───────────────┴───────────────┘
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
@@ -258,6 +258,37 @@ npm run sdk:test:load
 npm run sdk:test:chaos
 ```
 
+### 9. Content-Addressed Generation Caching
+
+**Implementation**: `scripts/sdk/cache.ts`
+
+**Overview**:
+To avoid repeated code generation in local development and CI pipelines, generated SDK artifacts are cached using content-addressed hashing.
+
+**Cache Key Composition**:
+Cache keys are computed deterministically as the SHA-256 digest of:
+1. **Canonical OpenAPI specification content**: canonical JSON serialization of the OpenAPI document (`sha256(canonicalDoc)`)
+2. **Generator & toolchain versions**: generator version (`GENERATOR_VERSION`), Node.js runtime version (`process.version`)
+3. **Emitter source code**: content hashes of `scripts/sdk/generate.ts`, `emit-typescript.ts`, `emit-python.ts`, `emit-java.ts`, `surface.ts`, `parity.ts`
+4. **Configuration & feature flags**: active flag set
+
+**Byte-Identical Output Guarantee**:
+Every cached file entry stores its SHA-256 checksum in a manifest. A cache hit restores files whose hashes match clean generation byte-for-byte.
+
+**Corruption and Absence Diagnostics**:
+- **Cache Absence**: Emits `Diagnostic: Cache entry absent for key <key>; executing clean generation.`
+- **Cache Corruption** (checksum mismatch or malformed JSON): Emits `Diagnostic: Cache corruption detected: ... Falling back to clean run.` and executes a clean generation without halting the build.
+
+**Cache Invalidation & Local Cleanup**:
+- **Automatic Invalidation**: Any change to OpenAPI endpoints, models, parameters, emitter source code, or generator version changes the cache key, automatically invalidating stale cache entries.
+- **Manual Cleanup**:
+  ```bash
+  # Delete local cache directory
+  npm run sdk:cache:clean
+  # Or run generation bypassing cache
+  npm run sdk:generate -- --no-cache
+  ```
+
 ## SLO and Error Budgets
 
 **Service Level Objectives**:
@@ -355,6 +386,7 @@ npm run sdk:test:chaos
    npm run sdk:check          # Drift detection
    npm run sdk:breaking       # Semver validation
    npm run sdk:audit:security # Security audit
+   npm run sdk:quality:check  # OpenAPI quality baseline check
    ```
 
 ### Release Process
@@ -365,6 +397,7 @@ npm run sdk:test:chaos
    npm run sdk:check          # Verify no drift
    npm run sdk:breaking       # Check semver compliance
    npm run sdk:audit:security # Security audit
+   npm run sdk:quality:check  # OpenAPI quality baseline check
    npm run sdk:test:chaos     # Chaos tests
    npm run sdk:test:load      # Load tests
    npm run sdk:bench          # Performance benchmarks
@@ -518,14 +551,15 @@ npm run sdk:test:chaos
 ## Future Enhancements
 
 ### Planned Features
-- [ ] Additional language emitters (Go, Java, C#)
+- [x] Java language emitter (`packages/java-client`) with parity against OpenAPI contract
+- [ ] Additional language emitters (Go, C#)
 - [ ] Real-time spec monitoring and auto-generation
-- [ ] Advanced caching strategies
+- [x] Advanced caching strategies (content-addressed caching by OpenAPI content hash)
 - [ ] Distributed generation for large specs
 - [ ] Machine learning for spec quality analysis
 
 ### Performance Improvements
-- [ ] Parallel file generation
+- [x] Parallel file generation (bounded worker pool in `scripts/sdk/parallel-generator.ts`)
 - [ ] Incremental generation (only changed operations)
 - [ ] Spec compilation and caching
 - [ ] Optimized normalization algorithms

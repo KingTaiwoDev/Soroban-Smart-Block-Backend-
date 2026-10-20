@@ -575,7 +575,7 @@ contractRouter.get(
           abiFunctions.push({
             name,
             inputs: Object.entries((d.properties as Record<string, unknown>) ?? {}).map(
-              ([k, v]) => ({ name: k, type: (v as any)?.type ?? 'unknown' }),
+              ([k, v]) => ({ name: k, type: (v as Record<string, unknown>)?.type as string ?? 'unknown' }),
             ),
             simulatable: true,
           });

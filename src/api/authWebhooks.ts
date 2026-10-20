@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
-import { createHmac, randomBytes } from 'crypto';
+import { randomBytes } from 'crypto';
+import { buildWebhookSignatureHeaders } from '../webhooks/webhookVerify';
 import { prismaWrite as prisma } from '../db';
 import { requireAuth } from '../auth/middleware';
 import { asyncHandler } from '../middleware/asyncHandler';
@@ -25,14 +26,14 @@ export async function deliverWebhookEvent(
       ...payload,
       timestamp: new Date().toISOString(),
     });
-    const sig = createHmac('sha256', hook.secret).update(body).digest('hex');
+    const signatureHeaders = buildWebhookSignatureHeaders(body, hook.secret);
 
     // Route through SSRF guard — hook.url is user-supplied and must not be
     // allowed to target internal services (#893).
     safePost(
       hook.url,
       body,
-      { 'X-Webhook-Signature': `sha256=${sig}`, 'Content-Type': 'application/json' },
+      { ...signatureHeaders, 'Content-Type': 'application/json' },
       5000,
     ).catch((err) => {
       if (!(err instanceof SsrfBlockedError)) {
@@ -106,14 +107,14 @@ authWebhooksRouter.post(
       message: 'This is a test event from Soroban Explorer',
     };
     const body = JSON.stringify({ ...testPayload, timestamp: new Date().toISOString() });
-    const sig = createHmac('sha256', hook.secret).update(body).digest('hex');
+    const signatureHeaders = buildWebhookSignatureHeaders(body, hook.secret);
 
     try {
       // Route through SSRF guard — hook.url is user-supplied (#893).
       await safePost(
         hook.url,
         body,
-        { 'X-Webhook-Signature': `sha256=${sig}`, 'Content-Type': 'application/json' },
+        { ...signatureHeaders, 'Content-Type': 'application/json' },
         5000,
       );
       res.json({ success: true, status: 'delivered' });

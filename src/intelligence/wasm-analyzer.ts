@@ -42,15 +42,15 @@ function specTypeToString(t: xdr.ScSpecTypeDef): string {
     case 'scSpecTypeVoid':
       return 'void';
     case 'scSpecTypeOption':
-      return `option<${specTypeToString((t as any).option().valueType())}>`;
+      return `option<${specTypeToString((t as Record<string, () => unknown>).option().valueType() as unknown)}>`;
     case 'scSpecTypeVec':
-      return `vec<${specTypeToString((t as any).vec().elementType())}>`;
+      return `vec<${specTypeToString((t as Record<string, () => unknown>).vec().elementType() as unknown)}>`;
     case 'scSpecTypeMap':
-      return `map<${specTypeToString((t as any).map().keyType())},${specTypeToString((t as any).map().valueType())}>`;
+      return `map<${specTypeToString((t as Record<string, () => unknown>).map().keyType() as unknown)},${specTypeToString((t as Record<string, () => unknown>).map().valueType() as unknown)}>`;
     case 'scSpecTypeTuple':
       return `tuple`;
     case 'scSpecTypeUdt':
-      return `udt:${(t as any).udt().name().toString()}`;
+      return `udt:${(t as Record<string, () => unknown>).udt().name().toString()}`;
     default:
       return name;
   }

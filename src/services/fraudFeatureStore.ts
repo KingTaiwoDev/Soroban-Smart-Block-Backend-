@@ -111,7 +111,7 @@ export class FraudFeatureStore {
       let reads = 0;
       let writes = 0;
       if (tx.sorobanResources && typeof tx.sorobanResources === 'object') {
-        const resources = tx.sorobanResources as any;
+        const resources = tx.sorobanResources as Record<string, unknown> | null;
         if (resources.footprint) {
           reads = Array.isArray(resources.footprint.readOnly)
             ? resources.footprint.readOnly.length

@@ -1029,7 +1029,7 @@ export async function saveReputationToDb(address: string, scoreResult: ScoreResu
     await prismaWrite.reputationBadge.createMany({
       data: scoreResult.badges.map((b) => ({
         profileId: profile.id,
-        badgeType: (badgeTypeMap[b.id] || 'community_contributor') as any,
+        badgeType: (badgeTypeMap[b.id] || 'community_contributor') as string,
         title: b.name,
         description: b.description,
         metadata: { criteria: b.criteria },

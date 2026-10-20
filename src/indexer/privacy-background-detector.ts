@@ -139,7 +139,7 @@ async function runAnalyticsAggregation(period: string): Promise<void> {
   });
 
   for (const [protocol, count] of Object.entries(byProtocol)) {
-    const protoTxs = privateTxs.filter((t) => t.protocols.includes(protocol as any));
+    const protoTxs = privateTxs.filter((t) => t.protocols.includes(protocol as string));
     const protoAnonSets = protoTxs
       .filter((t) => t.anonymitySetSize !== null)
       .map((t) => t.anonymitySetSize!);
@@ -147,7 +147,7 @@ async function runAnalyticsAggregation(period: string): Promise<void> {
 
     await prismaWrite.privacyProtocolDetail.create({
       data: {
-        protocol: protocol as any,
+        protocol: protocol as string,
         timestamp: now,
         period,
         txCount: count,
@@ -186,13 +186,13 @@ async function captureAnonymitySetSnapshots(): Promise<void> {
     const setSize = Math.max(...sets);
 
     const prTx = privacyTxs.find(
-      (t) => t.protocols.includes(protocol as any) && t.anonymitySetSize !== null,
+      (t) => t.protocols.includes(protocol as string) && t.anonymitySetSize !== null,
     );
     const effectiveSetSize = prTx?.effectiveAnonymitySet ?? null;
 
     await prismaWrite.anonymitySetSnapshot.create({
       data: {
-        protocol: protocol as any,
+        protocol: protocol as string,
         setSize,
         effectiveSetSize,
         timestamp: now,

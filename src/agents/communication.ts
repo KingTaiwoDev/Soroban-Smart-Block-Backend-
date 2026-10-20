@@ -50,7 +50,7 @@ class AgentCommunicationBus {
         toAgentId: params.toAgentId,
         type: params.type,
         subject: params.subject,
-        body: params.body,
+        body: params.body as Record<string, unknown>,
         signature: payload.signature,
         responseToId: params.responseToId,
         status: 'pending',
@@ -201,7 +201,7 @@ class AgentDiscoveryRegistry {
           capabilities: params.capabilities,
           pricePerCall: params.pricePerCall || existing.pricePerCall,
           pricePerMonth: params.pricePerMonth || existing.pricePerMonth,
-          metadata: params.metadata || {},
+          metadata: (params.metadata || {}) as Record<string, unknown>,
         },
       });
     } else {
@@ -211,7 +211,7 @@ class AgentDiscoveryRegistry {
           capabilities: params.capabilities,
           pricePerCall: params.pricePerCall,
           pricePerMonth: params.pricePerMonth,
-          metadata: params.metadata || {},
+          metadata: (params.metadata || {}) as Record<string, unknown>,
         },
       });
     }

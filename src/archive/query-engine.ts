@@ -1,6 +1,6 @@
 import { prismaRead } from '../db';
 
-const prisma = prismaRead as any;
+const prisma = prismaRead as unknown as Record<string, { findMany: Function; findFirst: Function; count: Function }>;
 
 export interface StateAtLedger {
   contractAddress: string;

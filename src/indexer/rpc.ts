@@ -321,7 +321,7 @@ export async function getLedger(ledgerSequence: number): Promise<unknown> {
   const cached = await cacheGet<unknown>(cacheKey);
   if (cached !== null) return cached;
 
-  const rpcClient = rpc as any;
+  const rpcClient = rpc as unknown as Record<string, Function>;
   const ledger = await retry('getLedger', () => rpcClient.getLedger(ledgerSequence));
   const ttl = ledgerSequence === 0 ? null : 60 * 60 * 24;
   await cacheSet(cacheKey, ledger, ttl);
@@ -388,7 +388,7 @@ export async function fetchLedgerMetadata(sequence: number): Promise<{
   }
 
   // Second attempt: try RPC getLedger
-  const ledgerResult = (await getLedger(sequence)) as any;
+  const ledgerResult = (await getLedger(sequence)) as Record<string, unknown>;
   if (ledgerResult) {
     const hash = ledgerResult.id ?? ledgerResult.hash ?? '';
     const previousLedgerHash =

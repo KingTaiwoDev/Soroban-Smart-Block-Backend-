@@ -7,7 +7,13 @@ export {
   isFlashLoanSwap,
   type DexPrice,
 } from './dex-price-source';
-export { discoverExternalPrice, type ExternalPrice } from './external-api-source';
+export {
+  discoverExternalPrice,
+  getExternalPriceFeedStatus,
+  EXTERNAL_PRICE_FEED_POLICY,
+  type ExternalPrice,
+  type ExternalPriceFeedStatus,
+} from './external-api-source';
 export { computeCompositePrice, computeBatchPrices, type CompositePrice } from './composite-price';
 export {
   getStablecoinInfo,

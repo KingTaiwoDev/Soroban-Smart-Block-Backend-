@@ -35,15 +35,19 @@ import * as path from 'path';
 const LINT_TARGETS = ['src/**/*.ts', 'tests/**/*.ts'];
 
 /**
- * Rules that become a trending-but-non-blocking warnings pass. These are the
- * noisy classes #920 calls out explicitly — `any`-typing and the custom
- * phantom-Prisma-field linter — which would otherwise drown out the warning
- * types that actually indicate bugs (unused vars, eqeqeq, no-unsafe-*, …).
- * Keeping them reported-but-not-blocking lets them be paid down at leisure
- * while any *other* new warning still fails CI immediately.
+ * Rules that become a trending-but-non-blocking warnings pass.
+ *
+ * NOTE: `@typescript-eslint/no-explicit-any` was previously listed here as
+ * non-blocking debt (#920). It has been removed: all 288 `as any` casts in
+ * src/ were eliminated in #1115 and the rule was promoted from "warn" to
+ * "error" in .eslintrc.json. Any new `as any` now causes a hard ESLint error
+ * (severity 2) and fails CI without relying on the budget ratchet at all.
+ *
+ * `error-handling/no-phantom-prisma-field` remains non-blocking because the
+ * custom plugin flags generated Prisma model names that are not yet visible
+ * at lint time — those are schema-awareness false positives, not real bugs.
  */
 const NON_BLOCKING_RULES = new Set([
-  '@typescript-eslint/no-explicit-any',
   '@typescript-eslint/no-non-null-assertion',
   'error-handling/no-phantom-prisma-field',
 ]);

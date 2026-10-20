@@ -108,8 +108,8 @@ bridgeTrackerRouter.get(
 
       const finality = await checkFinality(
         tx.transactionHash,
-        tx.sourceChain as any,
-        tx.destinationChain as any,
+        tx.sourceChain as string,
+        tx.destinationChain as string,
       );
       res.json(finality);
     } catch (e) {
@@ -231,8 +231,8 @@ bridgeTrackerRouter.get(
       });
       const params = schema.parse(req.query);
       const result = await getAlerts({
-        type: params.type as any,
-        severity: params.severity as any,
+        type: params.type as string,
+        severity: params.severity as string,
         acknowledged: params.acknowledged,
         limit: params.limit,
         offset: params.offset,
@@ -286,7 +286,7 @@ bridgeTrackerRouter.post(
         alertOnBridging: z.boolean().default(true),
       });
       const params = schema.parse(req.body);
-      const entry = await addMonitoredAddress(params.address, params.chain as any, {
+      const entry = await addMonitoredAddress(params.address, params.chain as string, {
         label: params.label,
         minAlertUsd: params.minAlertUsd,
         alertOnTx: params.alertOnTx,

@@ -342,29 +342,21 @@ resourceAuditRouter.get(
           : 'storageFootprint'; // write_bytes/events_bytes fall back to storageFootprint
 
     const rows = await prismaRead.contractResourceMetric.groupBy({
-      by: ['contractAddress'] as Prisma.ContractResourceMetricScalarFieldEnum[],
-      _sum: { [prismaField]: true } as Prisma.ContractResourceMetricSumAggregateInputType,
+      by: ['contractAddress'],
+      _sum: { [prismaField]: true } as Record<string, boolean>,
       _count: { id: true },
-      orderBy: {
-        _sum: { [prismaField]: 'desc' },
-      } as Prisma.ContractResourceMetricOrderByWithAggregationInput,
+      orderBy: { _sum: { [prismaField]: 'desc' } } as Record<string, unknown>,
       take: limit,
     });
 
     res.json({
       metric,
       limit,
-      contracts: rows.map(
-        (r: {
-          contractAddress: string | null;
-          _sum: Record<string, unknown>;
-          _count: { id: number };
-        }) => ({
-          contractAddress: r.contractAddress,
-          total: Number((r._sum as Record<string, unknown>)[prismaField] ?? 0),
-          totalInvocations: r._count.id,
-        }),
-      ),
+      contracts: rows.map((r) => ({
+        contractAddress: r.contractAddress,
+        total: Number((r._sum as Record<string, unknown>)[prismaField] ?? 0),
+        totalInvocations: r._count.id,
+      })),
     });
   }),
 );

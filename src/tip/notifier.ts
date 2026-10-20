@@ -6,6 +6,7 @@ import axios from 'axios';
 import { createHmac } from 'crypto';
 import { PrismaClient } from '@prisma/client';
 import { logger } from '../logger';
+import { safePost } from '../webhooks/ssrf-guard';
 
 const db = new PrismaClient();
 
@@ -25,7 +26,7 @@ export async function dispatchNotifications(payload: NotificationPayload): Promi
     db.tipWebhook.findMany({ where: { active: true } }),
   ]);
 
-  const filtered = subs.filter((s) => matchesFilter(s.filters as any, payload));
+  const filtered = subs.filter((s) => matchesFilter(s.filters as Record<string, unknown>, payload));
 
   await Promise.allSettled([
     ...filtered.map((s) => dispatch(s.channel, s.target, payload)),
@@ -51,12 +52,33 @@ async function dispatch(channel: string, target: string, p: NotificationPayload)
 
 // ─── Channel senders ──────────────────────────────────────────────────────────
 
+/**
+ * POST JSON to a subscriber-supplied URL through the central outbound URL
+ * policy (#1237). Throws on policy violations and non-2xx responses, matching
+ * the previous axios behaviour so Promise.allSettled callers see failures.
+ */
+async function postJsonToSubscriber(
+  url: string,
+  payload: unknown,
+  headers: Record<string, string> = {},
+): Promise<void> {
+  const res = await safePost(
+    url,
+    JSON.stringify(payload),
+    { 'Content-Type': 'application/json', ...headers },
+    8_000,
+  );
+  if (res.status < 200 || res.status >= 300) {
+    throw new Error(`Subscriber endpoint responded with HTTP ${res.status}`);
+  }
+}
+
 async function sendSlack(webhookUrl: string, text: string): Promise<void> {
-  await axios.post(webhookUrl, { text }, { timeout: 8_000 });
+  await postJsonToSubscriber(webhookUrl, { text });
 }
 
 async function sendDiscord(webhookUrl: string, text: string): Promise<void> {
-  await axios.post(webhookUrl, { content: text }, { timeout: 8_000 });
+  await postJsonToSubscriber(webhookUrl, { content: text });
 }
 
 async function sendTelegram(chatId: string, text: string): Promise<void> {
@@ -89,10 +111,7 @@ async function sendWebhook(
 ): Promise<void> {
   const body = JSON.stringify(payload);
   const sig = createHmac('sha256', secret).update(body).digest('hex');
-  await axios.post(url, payload, {
-    headers: { 'X-TIP-Signature': `sha256=${sig}`, 'Content-Type': 'application/json' },
-    timeout: 8_000,
-  });
+  await postJsonToSubscriber(url, payload, { 'X-TIP-Signature': `sha256=${sig}` });
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

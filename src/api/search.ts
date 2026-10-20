@@ -241,7 +241,7 @@ async function reindexSource(source: any, _startIndex: number): Promise<number> 
     });
     indexed++;
   }
-  for (const imp of (source.imports as any[]) || []) {
+  for (const imp of (source.imports as unknown[]) || []) {
     await prismaWrite.searchIndexEntry.create({
       data: {
         contractAddress: source.contractAddress,
@@ -252,7 +252,7 @@ async function reindexSource(source: any, _startIndex: number): Promise<number> 
     });
     indexed++;
   }
-  for (const exp of (source.exports as any[]) || []) {
+  for (const exp of (source.exports as unknown[]) || []) {
     await prismaWrite.searchIndexEntry.create({
       data: {
         contractAddress: source.contractAddress,
@@ -263,7 +263,7 @@ async function reindexSource(source: any, _startIndex: number): Promise<number> 
     });
     indexed++;
   }
-  for (const evt of (source.events as any[]) || []) {
+  for (const evt of (source.events as unknown[]) || []) {
     await prismaWrite.searchIndexEntry.create({
       data: {
         contractAddress: source.contractAddress,
@@ -274,7 +274,7 @@ async function reindexSource(source: any, _startIndex: number): Promise<number> 
     });
     indexed++;
   }
-  for (const err of (source.errors as any[]) || []) {
+  for (const err of (source.errors as unknown[]) || []) {
     await prismaWrite.searchIndexEntry.create({
       data: {
         contractAddress: source.contractAddress,
@@ -285,7 +285,7 @@ async function reindexSource(source: any, _startIndex: number): Promise<number> 
     });
     indexed++;
   }
-  for (const stor of (source.storageVariables as any[]) || []) {
+  for (const stor of (source.storageVariables as unknown[]) || []) {
     await prismaWrite.searchIndexEntry.create({
       data: {
         contractAddress: source.contractAddress,

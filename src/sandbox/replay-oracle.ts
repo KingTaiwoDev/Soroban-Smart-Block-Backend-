@@ -83,7 +83,7 @@ export async function replayMainnet(txHash: string): Promise<ReplayResult> {
       continue;
     }
 
-    const hostFn = (op.args as any)?.hostFunction as string;
+    const hostFn = (op.args as Record<string, unknown>)?.hostFunction as string;
     if (UNSUPPORTED_HOST_FUNCTIONS.has(hostFn)) {
       steps.push({
         opIndex: op.index,

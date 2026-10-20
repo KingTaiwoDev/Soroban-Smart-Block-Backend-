@@ -56,7 +56,7 @@ export class DeliveryService extends EventEmitter {
       if (subscription.filters) {
         const matches = this.subscriptionManager.matchesFilters(
           message.data,
-          subscription.filters as any,
+          subscription.filters as Record<string, unknown>,
         );
         if (!matches) {
           return;

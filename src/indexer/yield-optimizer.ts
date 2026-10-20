@@ -166,8 +166,8 @@ export function inferYieldType(
 export function extractTokens(decoded: Record<string, unknown> | null): string[] {
   if (!decoded) return [];
   const d =
-    (decoded as any).data && typeof (decoded as any).data === 'object'
-      ? (decoded as any).data
+    (decoded as Record<string, unknown>).data && typeof (decoded as Record<string, unknown>).data === 'object'
+      ? (decoded as Record<string, unknown>).data
       : decoded;
 
   const out = new Set<string>();
@@ -647,7 +647,8 @@ function readNumericField(
   fallback: number,
 ): number {
   if (!obj) return fallback;
-  const root = (obj as any).data && typeof (obj as any).data === 'object' ? (obj as any).data : obj;
+  const objRec = obj as Record<string, unknown>;
+  const root = objRec.data && typeof objRec.data === 'object' ? objRec.data : obj;
   for (const k of keys) {
     const v = (root as Record<string, unknown>)[k];
     if (typeof v === 'number' && Number.isFinite(v)) return v as number;
@@ -661,7 +662,8 @@ function readNumericField(
 
 function hasNumericField(obj: Record<string, unknown> | null, keys: string[]): boolean {
   if (!obj) return false;
-  const root = (obj as any).data && typeof (obj as any).data === 'object' ? (obj as any).data : obj;
+  const objRec = obj as Record<string, unknown>;
+  const root = objRec.data && typeof objRec.data === 'object' ? objRec.data : obj;
   for (const k of keys) {
     const v = (root as Record<string, unknown>)[k];
     if (typeof v === 'number' && Number.isFinite(v)) return true;
@@ -672,7 +674,8 @@ function hasNumericField(obj: Record<string, unknown> | null, keys: string[]): b
 
 function readStringField(obj: Record<string, unknown> | null, keys: string[]): string | null {
   if (!obj) return null;
-  const root = (obj as any).data && typeof (obj as any).data === 'object' ? (obj as any).data : obj;
+  const objRec = obj as Record<string, unknown>;
+  const root = objRec.data && typeof objRec.data === 'object' ? objRec.data : obj;
   for (const k of keys) {
     const v = (root as Record<string, unknown>)[k];
     if (typeof v === 'string' && v.length > 0) return v;
@@ -686,7 +689,8 @@ function readIntField(
   fallback: number,
 ): number {
   if (!obj) return fallback;
-  const root = (obj as any).data && typeof (obj as any).data === 'object' ? (obj as any).data : obj;
+  const objRec = obj as Record<string, unknown>;
+  const root = objRec.data && typeof objRec.data === 'object' ? objRec.data : obj;
   for (const k of keys) {
     const v = (root as Record<string, unknown>)[k];
     if (typeof v === 'number' && Number.isFinite(v)) return Math.round(v as number);
@@ -711,7 +715,7 @@ export async function backfillYieldOpportunities(
     try {
       const scVal = xdr.ScVal.fromXDR(event.topics[0], 'base64');
       if (scVal.switch().name === 'scvSymbol') {
-        topicSymbol = (scVal as any).sym()?.toString() ?? null;
+        topicSymbol = (scVal as Record<string, () => unknown>).sym?.()?.toString() ?? null;
       }
     } catch {
       continue;

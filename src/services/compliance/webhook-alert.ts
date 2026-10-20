@@ -1,5 +1,5 @@
-import axios from 'axios';
 import { logger } from '../../logger';
+import { safePost, SsrfBlockedError } from '../../webhooks/ssrf-guard';
 import { recordAudit } from './audit';
 
 export type WebhookEventType =
@@ -90,10 +90,12 @@ export async function triggerComplianceWebhooks(
           headers['X-Webhook-Signature'] = webhook.secret;
         }
 
-        await axios.post(webhook.url, payload, {
-          headers,
-          timeout: 10000,
-        });
+        // Registered URLs are caller-supplied: deliver through the central
+        // outbound URL policy (#1237) instead of a raw axios call.
+        const response = await safePost(webhook.url, JSON.stringify(payload), headers, 10000);
+        if (response.status < 200 || response.status >= 300) {
+          throw new Error(`Webhook endpoint responded with HTTP ${response.status}`);
+        }
 
         logger.info(`Webhook delivered`, { webhookId: webhook.id, event, attempt: attempt + 1 });
         return;
@@ -105,6 +107,8 @@ export async function triggerComplianceWebhooks(
           attempt: attempt + 1,
           error: (err as Error).message,
         });
+        // Policy violations are permanent — retrying cannot succeed.
+        if (err instanceof SsrfBlockedError) break;
         if (attempt < 2) {
           await new Promise((resolve) => setTimeout(resolve, delays[attempt]));
         }

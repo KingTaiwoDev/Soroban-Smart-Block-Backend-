@@ -34,7 +34,7 @@ export function extractSorobanResources(resultMetaXdr: string): SorobanResources
 
   let sorobanMeta: any;
   try {
-    sorobanMeta = (meta as any).v3().sorobanMeta();
+    sorobanMeta = (meta as Record<string, () => unknown>).v3().sorobanMeta();
   } catch {
     return null;
   }
@@ -59,7 +59,7 @@ export function extractSorobanResources(resultMetaXdr: string): SorobanResources
   let minResourceFee: string | null = null;
 
   try {
-    const ext = (meta as any).v3().ext();
+    const ext = (meta as Record<string, () => unknown>).v3().ext();
     if (ext && ext.switch && ext.switch() === 1) {
       const v1 = ext.v1();
       const txChangesAfter = v1.totalNonRefundableResourceFeeCharged?.();
@@ -81,7 +81,7 @@ export function extractSorobanResources(resultMetaXdr: string): SorobanResources
 
   // Fallback: parse from the operations' changes in the meta
   try {
-    const ops = (meta as any).v3().operations();
+    const ops = (meta as Record<string, () => unknown>).v3().operations();
     if (Array.isArray(ops) && ops.length > 0) {
       // Resource data is in the sorobanMeta directly
     }

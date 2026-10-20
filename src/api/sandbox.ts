@@ -11,6 +11,7 @@ import type {
   SnapshotInput,
 } from '../sandbox/runtime';
 import { asyncHandler } from '../middleware/asyncHandler';
+import { decodeBase64Wasm, UploadValidationError } from '../middleware/uploadValidation';
 import { parseInput } from '../lib/parse-input';
 
 /**
@@ -332,6 +333,16 @@ sandboxRouter.get(
 sandboxRouter.post(
   '/templates',
   asyncHandler(async (req, res) => {
+    // Embedded Wasm is an upload boundary too (#1238): same size limit and
+    // magic-byte check as multipart Wasm uploads.
+    if (req.body?.wasmBase64 != null) {
+      try {
+        decodeBase64Wasm(req.body.wasmBase64);
+      } catch (error) {
+        if (!(error instanceof UploadValidationError)) throw error;
+        return res.status(error.status).json({ error: error.message, code: error.code });
+      }
+    }
     try {
       const created = await sandboxEngine.submitTemplate(req.body);
       res.status(201).json(created);

@@ -5,6 +5,8 @@ import { fetchContractSpec } from '../indexer/wasm-spec';
 import { asyncHandler } from '../middleware/asyncHandler';
 import { adminAuth } from '../middleware/adminAuth';
 
+import { getMarketplaceBestAbi } from '../services/abi-marketplace';
+
 export const abiRouter = Router({ mergeParams: true });
 
 const abiFunctionSchema = z.object({
@@ -20,7 +22,7 @@ const abiBodySchema = z.object({
 
 /**
  * GET /contracts/:address/abi
- * Priority: 1) on-chain Wasm spec  2) manually stored ABI
+ * Priority: 1) on-chain Wasm spec  2) manually stored ABI  3) community marketplace best ABI
  */
 abiRouter.get(
   '/',
@@ -35,7 +37,20 @@ abiRouter.get(
     const stored = await getCachedAbi(address);
     if (stored) return res.json({ source: 'manual', abi: stored });
 
-    res.status(404).json({ error: 'No ABI found. Upload one via PUT /contracts/:address/abi' });
+    // 3. Fall back to community-curated marketplace best ABI (#315)
+    const marketplaceBest = getMarketplaceBestAbi(address);
+    if (marketplaceBest) {
+      return res.json({
+        contract: address,
+        abi: marketplaceBest.abi,
+        quality: { score: marketplaceBest.qualityScore, status: marketplaceBest.status },
+        source: { type: 'community_marketplace', submissionId: marketplaceBest.id },
+        totalSubmissions: marketplaceBest.totalSubmissions,
+        bountyActive: marketplaceBest.bountyActive,
+      });
+    }
+
+    res.status(404).json({ error: 'No ABI found. Upload one via PUT /contracts/:address/abi or submit to /abi-marketplace/submissions' });
   }),
 );
 

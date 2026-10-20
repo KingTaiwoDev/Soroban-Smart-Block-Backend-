@@ -475,7 +475,7 @@ export function extractAuthData(rawXdr: string): ExtractedAuthData {
   } else if (envelope.switch().name === 'envelopeTypeTx') {
     operations = envelope.v1().tx().operations();
   } else {
-    operations = (envelope as any).v0().tx().operations();
+    operations = (envelope as Record<string, () => { tx(): { operations(): unknown[] } }>).v0().tx().operations();
   }
 
   const signers = new Set<string>();

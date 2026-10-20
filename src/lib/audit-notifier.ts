@@ -20,6 +20,7 @@
 import crypto from 'crypto';
 import { prismaRead, prismaWrite } from '../db';
 import { logger } from '../logger';
+import { safePost } from '../webhooks/ssrf-guard';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -55,21 +56,23 @@ function signWebhookPayload(body: string, secret: string): string {
   return 'sha256=' + crypto.createHmac('sha256', secret).update(body).digest('hex');
 }
 
-// ── HTTP delivery helper (Axios from existing deps) ───────────────────────────
+// ── HTTP delivery helper ──────────────────────────────────────────────────────
+// Subscriber-supplied URLs go through the central outbound URL policy (#1237).
 
 async function httpPost(
   url: string,
   body: Record<string, unknown>,
   headers: Record<string, string> = {},
 ): Promise<{ status: number; body: string }> {
-  const axios = (await import('axios')).default;
   const json = JSON.stringify(body);
 
-  const response = await axios.post(url, json, {
-    headers: { 'Content-Type': 'application/json', ...headers },
-    timeout: 10_000,
-    validateStatus: () => true, // never throw on HTTP errors
-  });
+  // safePost never throws on HTTP status; it throws SsrfBlockedError on policy violations.
+  const response = await safePost(
+    url,
+    json,
+    { 'Content-Type': 'application/json', ...headers },
+    10_000,
+  );
 
   return {
     status: response.status,

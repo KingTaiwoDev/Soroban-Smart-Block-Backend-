@@ -215,7 +215,7 @@ reentrancyRouter.get(
       });
     }
 
-    const graph = { vertices: vertices as any, edges: edges as any };
+    const graph = { vertices: vertices as unknown[], edges: edges as unknown[] };
 
     res.json({
       txHash,
@@ -457,7 +457,7 @@ reentrancyRouter.get(
 
     const findings = await prismaRead.reentrancyFinding.findMany({
       where: {
-        severity: severity as any,
+        severity: severity as string,
         detectedAt: { gte: since },
       },
       orderBy: { detectedAt: 'desc' },
@@ -486,7 +486,7 @@ reentrancyRouter.get(
         type: f.reentrancyType,
         severity: f.severity,
         likelihood: f.likelihood,
-        loopLength: (f.loopPath as any[]).length,
+        loopLength: (f.loopPath as unknown[]).length,
         valueAtRisk: f.valueAtRisk,
         usdValueAtRisk: f.usdValueAtRisk,
         description: f.description,
@@ -522,7 +522,7 @@ reentrancyRouter.get(
     });
 
     const loopFindings = findings
-      .filter((f) => (f.loopPath as any[]).length >= minLength)
+      .filter((f) => (f.loopPath as unknown[]).length >= minLength)
       .slice(0, limit);
 
     res.json({
@@ -534,7 +534,7 @@ reentrancyRouter.get(
         type: f.reentrancyType,
         severity: f.severity,
         likelihood: f.likelihood,
-        loopLength: (f.loopPath as any[]).length,
+        loopLength: (f.loopPath as unknown[]).length,
         loopPath: f.loopPath,
         description: f.description,
         detectedAt: f.detectedAt,
@@ -747,8 +747,8 @@ reentrancyRouter.post(
         });
 
         const graph = {
-          vertices: existingVertices as any,
-          edges: existingEdges as any,
+          vertices: existingVertices as unknown[],
+          edges: existingEdges as unknown[],
         };
         const findings = detectReentrancy(body.txHash, graph);
 

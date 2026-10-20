@@ -523,7 +523,7 @@ async function readArchiveFile(
     data = await decompressGzip(raw);
   } else if (compression === 'zstd') {
     try {
-      const init = (globalThis as any).ZstdInit;
+      const init = (globalThis as Record<string, unknown>).ZstdInit as ((arg?: unknown) => Promise<{ decompress(data: Uint8Array): Uint8Array }>) | undefined;
       if (init) {
         const zstd = await init();
         data = Buffer.from(zstd.decompress(raw));
@@ -661,7 +661,7 @@ export async function fetchFromColdStorage(
           case 'archive':
             return fetchFromArchive(ledgerSeq, dataType);
           default:
-            return [] as any[];
+            return [] as unknown[];
         }
       };
       return fetchWithCircuitBreaker(tier, fn);

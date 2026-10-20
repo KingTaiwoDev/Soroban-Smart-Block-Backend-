@@ -317,7 +317,7 @@ export function exists_(vars: SortedVar[], body: Expr): QuantifierExpr {
 }
 
 export function ite_(cond: Expr, then: Expr, else_: Expr): IteExpr {
-  const thenSort = 'sort' in then ? ((then as any).sort as Sort) : Sort.Int;
+  const thenSort = 'sort' in then ? ((then as Record<string, unknown>).sort as Sort) : Sort.Int;
   return { kind: 'ite', cond, then, else_, sort: thenSort };
 }
 

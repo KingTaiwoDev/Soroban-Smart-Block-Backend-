@@ -57,6 +57,14 @@ export const FEATURE_FLAG_DEFINITIONS: FlagDefinition[] = [
     defaultEnabled: false,
   },
   {
+    key: 'abiMarketplace',
+    description:
+      'Community-driven ABI marketplace with on-chain simulation, reputation-weighted voting, escrow bounties, and interface discovery.',
+    envVar: 'ENABLE_ABI_MARKETPLACE',
+    defaultEnabled: true,
+  },
+
+  {
     key: 'privacyWs',
     description:
       'Privacy WebSocket broadcaster (/ws/v1/privacy and /ws/v1/privacy/alerts); streams privacy-protocol transactions and anomaly alerts.',
@@ -122,6 +130,14 @@ export const FEATURE_FLAG_DEFINITIONS: FlagDefinition[] = [
       'In-browser API console (/api/try) that builds and executes requests against /api/v1 from the OpenAPI spec. Kill switch: /api/try returns 404 FEATURE_DISABLED.',
     envVar: 'ENABLE_TRY_IT',
     defaultEnabled: true,
+  },
+  {
+    key: 'enterpriseSso',
+    description:
+      'Enterprise SSO / OIDC login (PLT09 / #1030). Enables OIDC provider registration, org auto-provisioning, and the /auth/sso/* routes. Requires sso_providers, sso_orgs, sso_sessions, and sso_audit_events tables.',
+    envVar: 'ENABLE_ENTERPRISE_SSO',
+    requiredTables: ['sso_providers', 'sso_orgs', 'sso_sessions', 'sso_audit_events'],
+    defaultEnabled: false,
   },
 ];
 

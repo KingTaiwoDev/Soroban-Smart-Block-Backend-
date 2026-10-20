@@ -16,7 +16,12 @@
 import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { asyncHandler } from '../middleware/asyncHandler';
-import { executeQuery, estimateQueryCost } from '../analytics/query-engine/query-router';
+import {
+  AnalyticsBudgetError,
+  executeQuery,
+  estimateQueryCost,
+  type QueryResult,
+} from '../analytics/query-engine/query-router';
 import {
   DASHBOARD_TEMPLATES,
   getTemplate,
@@ -44,8 +49,10 @@ const QuerySchema = z.object({
   params: z.record(z.union([z.string(), z.number()])).optional(),
   /** Target query engine.  Auto-selected if omitted. */
   engine: z.enum(['athena', 'trino']).optional(),
-  /** Hard limit on bytes scanned (0 = no limit). */
+  /** Limit on bytes scanned (0 = server budget; larger values are clamped). */
   maxScanBytes: z.number().int().min(0).optional(),
+  /** Limit on rows returned (clamped to the server budget). */
+  maxRows: z.number().int().min(1).optional(),
   /** Query timeout in milliseconds (default 30 000, max 300 000). */
   timeoutMs: z.number().int().min(1000).max(300_000).default(30_000),
   /** If true, return cost estimate only — do not execute the query. */
@@ -89,7 +96,10 @@ const QuerySchema = z.object({
  *                 description: Target query engine (auto-selected if omitted)
  *               maxScanBytes:
  *                 type: integer
- *                 description: Hard limit on bytes scanned
+ *                 description: Limit on bytes scanned (clamped to ANALYTICS_MAX_SCAN_BYTES)
+ *               maxRows:
+ *                 type: integer
+ *                 description: Limit on rows returned (clamped to ANALYTICS_MAX_ROWS)
  *               timeoutMs:
  *                 type: integer
  *                 default: 30000
@@ -101,7 +111,9 @@ const QuerySchema = z.object({
  *       200:
  *         description: Query result or cost estimate
  *       400:
- *         description: Invalid request or SQL too expensive
+ *         description: Invalid request, or scan/row budget exceeded (SCAN_BUDGET_EXCEEDED, ROW_BUDGET_EXCEEDED)
+ *       504:
+ *         description: Query exceeded its execution timeout (QUERY_TIMEOUT)
  */
 analyticsQueryRouter.post(
   '/',
@@ -147,12 +159,22 @@ analyticsQueryRouter.post(
       };
     }
 
-    const { result } = await executeQuery({
-      sql,
-      engine: body.engine ?? estimate.recommendedEngine,
-      maxScanBytes: body.maxScanBytes,
-      timeoutMs: body.timeoutMs,
-    });
+    let result: QueryResult;
+    try {
+      ({ result } = await executeQuery({
+        sql,
+        engine: body.engine ?? estimate.recommendedEngine,
+        maxScanBytes: body.maxScanBytes,
+        maxRows: body.maxRows,
+        timeoutMs: body.timeoutMs,
+      }));
+    } catch (err) {
+      if (err instanceof AnalyticsBudgetError) {
+        res.status(err.statusCode).json({ error: err.message, code: err.code, limit: err.limit });
+        return;
+      }
+      throw err;
+    }
 
     res.json({
       ...response,

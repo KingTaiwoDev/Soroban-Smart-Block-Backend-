@@ -7,7 +7,7 @@
  */
 import { Router, Request, Response } from 'express';
 import { asyncHandler } from '../middleware/asyncHandler';
-import multer from 'multer';
+import { singleFileUpload, UPLOAD_LIMITS } from '../middleware/uploadValidation';
 import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs';
@@ -55,23 +55,10 @@ function buildQuotaMiddleware(req: Request, res: Response, next: (err?: any) => 
   next();
 }
 
-// Multer for archive uploads (max 50 MB)
-const upload = multer({
-  dest: os.tmpdir(),
-  limits: { fileSize: 50 * 1024 * 1024 },
-  fileFilter: (_req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase();
-    if (
-      ['.gz', '.tgz', '.zip'].includes(ext) ||
-      file.mimetype === 'application/gzip' ||
-      file.mimetype === 'application/zip'
-    ) {
-      cb(null, true);
-    } else {
-      cb(new Error('Only .tar.gz and .zip archives are allowed'));
-    }
-  },
-});
+// Archive uploads (max 50 MB) share the upload-boundary policy (#1238):
+// size limits, filename/extension/MIME pre-checks and magic-byte validation.
+// req.file.mimetype is the detected archive type afterwards.
+const upload = singleFileUpload('source', 'archive');
 
 // ── Periodic stale temp-file cleanup ─────────────────────────────────────────
 // Remove Multer-uploaded files older than 1 hour that were never processed
@@ -117,7 +104,7 @@ compilerRouter.get('/', (_req: Request, res: Response) => {
     service: 'Compiler API',
     description: 'On-demand Soroban smart contract compilation and source verification',
     supportedToolchains: ['soroban-cli@0.9.4', 'stellar-cli@21.0.0', 'cargo-contract@4.0.0'],
-    maxArchiveSizeMB: 50,
+    maxArchiveSizeMB: UPLOAD_LIMITS.sourceArchiveBytes / (1024 * 1024),
     endpoints: [
       'GET  /compiler',
       'POST /compiler/compile',
@@ -159,7 +146,7 @@ compilerRouter.get('/', (_req: Request, res: Response) => {
 compilerRouter.post(
   '/compile',
   buildQuotaMiddleware,
-  upload.single('source'),
+  upload,
   asyncHandler(async (req: Request, res: Response) => {
     if (!req.file) {
       return res
@@ -232,7 +219,7 @@ compilerRouter.post(
 compilerRouter.post(
   '/verify',
   buildQuotaMiddleware,
-  upload.single('source'),
+  upload,
   asyncHandler(async (req: Request, res: Response) => {
     if (!req.file) {
       return res.status(400).json({ error: 'Source archive is required' });

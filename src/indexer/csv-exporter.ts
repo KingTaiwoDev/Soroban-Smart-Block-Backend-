@@ -91,7 +91,7 @@ async function streamTransactions(
     if (rows.length === 0) break;
 
     for (const row of rows) {
-      out.write(rowToCsv(TX_HEADERS, row as any) + '\n');
+      out.write(rowToCsv(TX_HEADERS, row as Record<string, unknown>) + '\n');
     }
 
     total += rows.length;
@@ -122,7 +122,7 @@ async function streamEvents(filters: Record<string, unknown>, out: Writable): Pr
     if (rows.length === 0) break;
 
     for (const row of rows) {
-      out.write(rowToCsv(EVENT_HEADERS, row as any) + '\n');
+      out.write(rowToCsv(EVENT_HEADERS, row as Record<string, unknown>) + '\n');
     }
 
     total += rows.length;
@@ -228,7 +228,7 @@ async function streamWalletHistory(
 
     for (const row of rows) {
       const record = { type: 'soroban', ...row };
-      out.write(rowToCsv(WALLET_HISTORY_HEADERS, record as any) + '\n');
+      out.write(rowToCsv(WALLET_HISTORY_HEADERS, record as Record<string, unknown>) + '\n');
     }
 
     total += rows.length;

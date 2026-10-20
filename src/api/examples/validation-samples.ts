@@ -40,7 +40,7 @@ sampleValidationRouter.get(
   validateQuery(listQuerySchema),
   asyncHandler(async (req: Request, res: Response) => {
     // Access validated query from middleware
-    const query = (req as any).validatedQuery as z.infer<typeof listQuerySchema>;
+    const query = req.validatedQuery as z.infer<typeof listQuerySchema>;
 
     const skip = (query.page - 1) * query.limit;
 
@@ -68,7 +68,7 @@ sampleValidationRouter.get(
   '/items/:id',
   validateParams(getItemParamsSchema),
   asyncHandler(async (req: Request, res: Response) => {
-    const params = (req as any).validatedParams as z.infer<typeof getItemParamsSchema>;
+    const params = req.validatedParams as z.infer<typeof getItemParamsSchema>;
 
     // Retrieve the item using params.id
     res.json({ id: params.id, name: 'Item name' });
@@ -89,7 +89,7 @@ sampleValidationRouter.post(
   '/items',
   validateBody(createItemSchema),
   asyncHandler(async (req: Request, res: Response) => {
-    const body = (req as any).validatedBody as z.infer<typeof createItemSchema>;
+    const body = req.validatedBody as z.infer<typeof createItemSchema>;
 
     // All fields are guaranteed to pass the schema
     res.status(201).json({ id: 'new-id', ...body });
@@ -113,8 +113,8 @@ sampleValidationRouter.post(
   '/items/batch',
   validateQueryAndBody(batchCreateQuerySchema, batchCreateBodySchema),
   asyncHandler(async (req: Request, res: Response) => {
-    const query = (req as any).validatedQuery as z.infer<typeof batchCreateQuerySchema>;
-    const body = (req as any).validatedBody as z.infer<typeof batchCreateBodySchema>;
+    const query = req.validatedQuery as z.infer<typeof batchCreateQuerySchema>;
+    const body = req.validatedBody as z.infer<typeof batchCreateBodySchema>;
 
     if (query.dryRun) {
       return res.json({ mode: 'dryRun', count: body.items.length });
@@ -135,7 +135,7 @@ sampleValidationRouter.get(
   '/contracts',
   validateQuery(cursorListSchema),
   asyncHandler(async (req: Request, res: Response) => {
-    const query = (req as any).validatedQuery as z.infer<typeof cursorListSchema>;
+    const query = req.validatedQuery as z.infer<typeof cursorListSchema>;
 
     // Build WHERE clause from filters
     const where: Prisma.ContractWhereInput = {
@@ -186,8 +186,8 @@ sampleValidationRouter.get(
   validateParams(z.object({ address: stellarAddress })),
   validateQuery(z.object({ limit: z.coerce.number().int().min(1).max(100).default(20) })),
   asyncHandler(async (req: Request, res: Response) => {
-    const params = (req as any).validatedParams as { address: string };
-    const query = (req as any).validatedQuery as { limit: number };
+    const params = req.validatedParams as { address: string };
+    const query = req.validatedQuery as { limit: number };
 
     // Fetch transactions for the validated Stellar address
     res.json({
@@ -208,7 +208,7 @@ sampleValidationRouter.get(
   '/transactions',
   validateQuery(txListQuerySchema),
   asyncHandler(async (req: Request, res: Response) => {
-    const query = (req as any).validatedQuery as z.infer<typeof txListQuerySchema>;
+    const query = req.validatedQuery as z.infer<typeof txListQuerySchema>;
 
     const where = {
       ...(query.contract && { contractAddress: query.contract }),
@@ -242,7 +242,7 @@ sampleValidationRouter.patch(
   '/items/batch',
   validateBody(batchUpdateSchema),
   asyncHandler(async (req: Request, res: Response) => {
-    const body = (req as any).validatedBody as z.infer<typeof batchUpdateSchema>;
+    const body = req.validatedBody as z.infer<typeof batchUpdateSchema>;
 
     res.json({
       updated: body.ids.length,
@@ -268,7 +268,7 @@ sampleValidationRouter.get(
   '/advanced-search',
   validateQuery(advancedFilterSchema),
   asyncHandler(async (req: Request, res: Response) => {
-    const query = (req as any).validatedQuery as z.infer<typeof advancedFilterSchema>;
+    const query = req.validatedQuery as z.infer<typeof advancedFilterSchema>;
 
     res.json({
       filters: query,
@@ -290,7 +290,7 @@ sampleValidationRouter.get(
   '/contract/:contractAddress/function/:functionName',
   validateParams(multiParamSchema),
   asyncHandler(async (req: Request, res: Response) => {
-    const params = (req as any).validatedParams as z.infer<typeof multiParamSchema>;
+    const params = req.validatedParams as z.infer<typeof multiParamSchema>;
 
     res.json({
       contract: params.contractAddress,

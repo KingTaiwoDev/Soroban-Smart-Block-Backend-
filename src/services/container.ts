@@ -109,7 +109,7 @@ class ServiceContainer {
    * @param instance Service instance to use
    */
   public override<T = any>(name: ServiceName, instance: T): void {
-    this.services[name] = instance as any;
+    this.services[name] = instance as unknown;
   }
 
   /**

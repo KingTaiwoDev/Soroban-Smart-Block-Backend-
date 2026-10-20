@@ -5,6 +5,21 @@ import { TokenBucketResult } from '../middleware/tokenBucket';
 import { Role, Tier } from '../auth/rbac';
 import { SupportedLanguage } from '../i18n/engine';
 
+/** Compression stats attached by the compression middleware. */
+export interface CompressionStats {
+  originalSize: number;
+  compressedSize: number;
+  encoding: string;
+}
+
+/** Rate-limit info as provided by express-rate-limit (subset). */
+export interface RateLimitInfo {
+  limit: number;
+  current: number;
+  remaining: number;
+  resetTime?: Date;
+}
+
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
@@ -75,6 +90,29 @@ declare global {
       t?: (key: string, values?: Record<string, unknown>) => string;
       /** i18n bound async translator */
       tAsync?: (key: string, values?: Record<string, unknown>) => Promise<string>;
+      /**
+       * Validated query parameters — set by validateQuery() middleware.
+       * Downstream handlers can safely cast to `z.infer<typeof schema>`.
+       */
+      validatedQuery?: unknown;
+      /**
+       * Validated request body — set by validateBody() middleware.
+       * Downstream handlers can safely cast to `z.infer<typeof schema>`.
+       */
+      validatedBody?: unknown;
+      /**
+       * Validated path parameters — set by validateParams() middleware.
+       * Downstream handlers can safely cast to `z.infer<typeof schema>`.
+       */
+      validatedParams?: unknown;
+      /** Negotiated compression encoding — set by the compression middleware. */
+      compressionEncoding?: string;
+      /** Compression statistics — set by the compression middleware. */
+      compressionStats?: CompressionStats;
+      /** Rate-limit metadata — set by express-rate-limit or tiered rate-limit middleware. */
+      rateLimit?: RateLimitInfo;
+      /** Timeout label — set by the request-timeout middleware for logging. */
+      timeoutLabel?: string;
     }
   }
 }

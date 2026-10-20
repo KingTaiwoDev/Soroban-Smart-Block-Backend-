@@ -165,7 +165,7 @@ async function analyzeAndPersist(
         name: p.patternName,
         description: String(p.details.mitigationGuide ?? ''),
         category: p.category,
-        riskRating: typeof riskRating === 'string' ? riskRating : 'medium_risk',
+        riskRating: (p.details as Record<string, unknown>)?.riskRating as string ?? 'medium_risk',
         mitigationGuide: String(p.details.mitigationGuide ?? ''),
       },
     });
@@ -1992,7 +1992,7 @@ composabilityRouter.get(
     const riskLevel = req.query.riskLevel as string | undefined;
     const limit = Math.min(200, parseInt((req.query.limit as string) ?? '100', 10));
     const txs = await prismaRead.composedTransaction.findMany({
-      where: riskLevel ? { riskLevel: riskLevel as any } : undefined,
+      where: riskLevel ? { riskLevel: riskLevel as string } : undefined,
       select: { txHash: true, callGraph: true, riskLevel: true, safetyScore: true },
       take: limit,
       orderBy: { createdAt: 'desc' },

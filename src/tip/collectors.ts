@@ -137,7 +137,7 @@ export async function ingestOnChainAlerts(): Promise<number> {
   });
 
   // Flash-loan alerts
-  const flashTxs = await (prisma as any).transaction.findMany({
+  const flashTxs = await (prisma as unknown as Record<string, { findMany: Function }>).transaction.findMany({
     where: { flashLoanAlert: true },
     select: { hash: true, contractAddress: true, ledgerCloseTime: true },
     take: 100,

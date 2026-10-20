@@ -1,0 +1,12 @@
+{
+  "protocolVersion": 21,
+  "source": "Synthetic SDK-generated Soroban event fixture; no production addresses or payloads.",
+  "cases": [
+    {
+      "id": "p21-custom-swap-string-data",
+      "topics": ["AAAADwAAAARzd2Fw", "AAAADgAAAAZwb29sLTcAAA=="],
+      "data": "AAAADgAAAAxwb29sLXJlZnJlc2g=",
+      "expected": { "eventType": "swap", "topicSymbol": "swap" }
+    }
+  ]
+}

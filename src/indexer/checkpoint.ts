@@ -1,5 +1,6 @@
 import { prismaWrite } from '../db';
 import { uuidv7 } from '../utils/uuidv7';
+import { assertCursorCommitInvariant } from './invariants';
 
 export interface IndexedRangeRecords {
   network: string;
@@ -21,6 +22,14 @@ export async function commitCatchUpCheckpoint(
   completed: boolean,
   indexedRecords?: IndexedRangeRecords,
 ): Promise<void> {
+  assertCursorCommitInvariant({
+    rangeStart,
+    rangeEnd,
+    lastCommittedLedger,
+    completed,
+    ledgerSequences: indexedRecords?.ledgerSequences,
+  });
+
   await prismaWrite.$transaction(async (tx) => {
     if (indexedRecords) {
       if (indexedRecords.network !== network) {

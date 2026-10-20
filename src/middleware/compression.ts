@@ -77,8 +77,8 @@ export function compressionMiddleware(userConfig?: CompressionConfig) {
     }
 
     // Store selected encoding and stats on request for later use
-    (req as any).compressionEncoding = selectedEncoding;
-    (req as any).compressionStats = {
+    req.compressionEncoding = selectedEncoding;
+    req.compressionStats = {
       originalSize: 0,
       compressedSize: 0,
       encoding: selectedEncoding,
@@ -106,9 +106,9 @@ export function compressionMiddleware(userConfig?: CompressionConfig) {
       }
 
       // Apply compression
-      compressResponse(res, serialized, selectedEncoding, config, (req as any).compressionStats);
+      compressResponse(res, serialized, selectedEncoding, config, req.compressionStats);
 
-      return res as any;
+      return res as unknown as Response;
     };
 
     /**
@@ -143,13 +143,13 @@ export function compressionMiddleware(userConfig?: CompressionConfig) {
         const size = buffer.length;
 
         if (size >= config.threshold && config.filter(contentType)) {
-          compressResponse(res, buffer, selectedEncoding, config, (req as any).compressionStats);
-          return res as any;
+          compressResponse(res, buffer, selectedEncoding, config, req.compressionStats);
+          return res as unknown as Response;
         }
       }
 
       // No compression - fall back to original
-      return originalEnd(chunk, actualEncoding as any, actualCallback);
+      return originalEnd(chunk, actualEncoding as BufferEncoding | undefined, actualCallback);
     };
 
     next();
@@ -256,6 +256,6 @@ export function getCompressionStats(req: Request): {
   encoding: string;
 } {
   return (
-    (req as any).compressionStats || { originalSize: 0, compressedSize: 0, encoding: 'identity' }
+    req.compressionStats || { originalSize: 0, compressedSize: 0, encoding: 'identity' }
   );
 }

@@ -103,7 +103,7 @@ export async function readContract(contractAddress: string, req: ReadRequest): P
       };
     }
 
-    const retval: xdr.ScVal | undefined = (simResult as any).result?.retval;
+    const retval: xdr.ScVal | undefined = (simResult as Record<string, unknown>).result?.retval as xdr.ScVal | undefined;
     const resultXdr = retval ? retval.toXDR('base64') : '';
     const decoded = retval ? decodeScVal(retval) : null;
     return { functionName: req.functionName, result: decoded, resultXdr, success: true };
@@ -151,7 +151,7 @@ export async function buildSignableTransaction(
     const assembled = SorobanRpc.assembleTransaction(tx, simResult).build();
     const unsignedXdr = assembled.toXDR();
 
-    const resources = (simResult as any).transactionData?.resources?.();
+    const resources = (simResult as Record<string, unknown>).transactionData?.resources?.();
     const estimatedResources = resources
       ? {
           cpuInstructions: Number(resources.instructions ?? 0),
@@ -161,8 +161,8 @@ export async function buildSignableTransaction(
         }
       : undefined;
 
-    const minFee = (simResult as any).minResourceFee;
-    const retval: xdr.ScVal | undefined = (simResult as any).result?.retval;
+    const minFee = (simResult as Record<string, unknown>).minResourceFee;
+    const retval: xdr.ScVal | undefined = (simResult as Record<string, unknown>).result?.retval as xdr.ScVal | undefined;
     const simulationResult = retval ? decodeScVal(retval) : null;
 
     return {

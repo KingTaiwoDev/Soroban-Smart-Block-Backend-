@@ -402,7 +402,7 @@ export async function analyzeCluster(addresses: string[]): Promise<{
       if (p.totalValue) {
         totalValueBig += parseDecimalToBigInt(p.totalValue, 7);
       }
-      totalRisk += (p as any).riskScore || 0;
+      totalRisk += (p as Record<string, unknown>).riskScore as number || 0;
     }
   }
 

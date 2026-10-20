@@ -10,6 +10,7 @@ import { asyncHandler } from '../middleware/asyncHandler';
 import { adminAuth } from '../middleware/adminAuth';
 import { adminService } from '../services/admin.service';
 import { getIndexerPauseState, setIndexerPaused } from '../indexer/worker-control';
+import { auditActor, recordAdminAudit } from '../lib/admin-audit';
 
 export const adminRouter = Router();
 
@@ -24,16 +25,30 @@ adminRouter.get(
 adminRouter.post(
   '/indexer/pause',
   adminAuth,
-  asyncHandler(async (_req: Request, res: Response) => {
-    res.json(await setIndexerPaused(true));
+  asyncHandler(async (req: Request, res: Response) => {
+    const state = await setIndexerPaused(true);
+    void recordAdminAudit({
+      actor: auditActor(req, 'admin'),
+      action: 'admin.indexer.pause',
+      target: 'indexer',
+      newState: { ...state },
+    });
+    res.json(state);
   }),
 );
 
 adminRouter.post(
   '/indexer/resume',
   adminAuth,
-  asyncHandler(async (_req: Request, res: Response) => {
-    res.json(await setIndexerPaused(false));
+  asyncHandler(async (req: Request, res: Response) => {
+    const state = await setIndexerPaused(false);
+    void recordAdminAudit({
+      actor: auditActor(req, 'admin'),
+      action: 'admin.indexer.resume',
+      target: 'indexer',
+      newState: { ...state },
+    });
+    res.json(state);
   }),
 );
 

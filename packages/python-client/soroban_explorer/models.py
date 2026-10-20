@@ -223,7 +223,8 @@ EcosystemComposabilityIndex = TypedDict(
 Error = TypedDict(
     "Error",
     {
-        "error": str,
+        "code": str,
+        "error": object,
     },
     total=False,
 )

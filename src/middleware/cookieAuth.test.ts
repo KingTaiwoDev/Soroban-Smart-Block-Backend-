@@ -58,8 +58,8 @@ describe('Session Cookie Authentication', () => {
       const tamperedCookie = `${payload}.tampered_signature_data`;
 
       const middleware = sessionCookieAuth();
-      const req = { cookies: { soroban_session: tamperedCookie } } as any;
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as any;
+      const req = { cookies: { soroban_session: tamperedCookie } } as unknown;
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown;
       const next = jest.fn();
 
       middleware(req, res, next);
@@ -73,8 +73,8 @@ describe('Session Cookie Authentication', () => {
       const cookie = createSessionCookie(testSession, testSecret);
 
       const middleware = sessionCookieAuth();
-      const req = { cookies: { soroban_session: cookie } } as any;
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as any;
+      const req = { cookies: { soroban_session: cookie } } as unknown;
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown;
       const next = jest.fn();
 
       // Verify with wrong secret
@@ -95,12 +95,12 @@ describe('Session Cookie Authentication', () => {
 
       // Temporarily override COOKIE_SECRET for this test
       const originalSecret = COOKIE_CONFIG.secret;
-      (COOKIE_CONFIG as any).secret = testSecret;
+      (COOKIE_CONFIG as Record<string, unknown>).secret = testSecret;
 
       try {
         const middleware = sessionCookieAuth();
-        const req = { cookies: { soroban_session: cookie } } as any;
-        const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as any;
+        const req = { cookies: { soroban_session: cookie } } as unknown;
+        const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown;
         const next = jest.fn();
 
         middleware(req, res, next);
@@ -110,7 +110,7 @@ describe('Session Cookie Authentication', () => {
           expect.objectContaining({ message: expect.stringContaining('expired') }),
         );
       } finally {
-        (COOKIE_CONFIG as any).secret = originalSecret;
+        (COOKIE_CONFIG as Record<string, unknown>).secret = originalSecret;
       }
     });
   });
@@ -118,8 +118,8 @@ describe('Session Cookie Authentication', () => {
   describe('Middleware Behavior', () => {
     it('should pass through if no cookies', () => {
       const middleware = sessionCookieAuth();
-      const req = { cookies: undefined } as any;
-      const res = {} as any;
+      const req = { cookies: undefined } as unknown;
+      const res = {} as unknown;
       const next = jest.fn();
 
       middleware(req, res, next);
@@ -130,8 +130,8 @@ describe('Session Cookie Authentication', () => {
 
     it('should pass through if session cookie not present', () => {
       const middleware = sessionCookieAuth();
-      const req = { cookies: { other_cookie: 'value' } } as any;
-      const res = {} as any;
+      const req = { cookies: { other_cookie: 'value' } } as unknown;
+      const res = {} as unknown;
       const next = jest.fn();
 
       middleware(req, res, next);
@@ -142,13 +142,13 @@ describe('Session Cookie Authentication', () => {
 
     it('should attach valid session to request', () => {
       const originalSecret = COOKIE_CONFIG.secret;
-      (COOKIE_CONFIG as any).secret = testSecret;
+      (COOKIE_CONFIG as Record<string, unknown>).secret = testSecret;
 
       try {
         const cookie = createSessionCookie(testSession, testSecret);
         const middleware = sessionCookieAuth();
-        const req = { cookies: { soroban_session: cookie } } as any;
-        const res = {} as any;
+        const req = { cookies: { soroban_session: cookie } } as unknown;
+        const res = {} as unknown;
         const next = jest.fn();
 
         middleware(req, res, next);
@@ -158,13 +158,13 @@ describe('Session Cookie Authentication', () => {
         expect(req.session!.userId).toBe('user_xyz789');
         expect(req.session!.tier).toBe('pro');
       } finally {
-        (COOKIE_CONFIG as any).secret = originalSecret;
+        (COOKIE_CONFIG as Record<string, unknown>).secret = originalSecret;
       }
     });
 
     it('should return 400 for invalid JSON in payload', () => {
       const originalSecret = COOKIE_CONFIG.secret;
-      (COOKIE_CONFIG as any).secret = testSecret;
+      (COOKIE_CONFIG as Record<string, unknown>).secret = testSecret;
 
       try {
         // Create invalid payload (not valid JSON when decoded)
@@ -173,23 +173,23 @@ describe('Session Cookie Authentication', () => {
         const cookie = `${invalidPayload}.${sig}`;
 
         const middleware = sessionCookieAuth();
-        const req = { cookies: { soroban_session: cookie } } as any;
-        const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as any;
+        const req = { cookies: { soroban_session: cookie } } as unknown;
+        const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown;
         const next = jest.fn();
 
         middleware(req, res, next);
 
         expect(res.status).toHaveBeenCalledWith(400);
       } finally {
-        (COOKIE_CONFIG as any).secret = originalSecret;
+        (COOKIE_CONFIG as Record<string, unknown>).secret = originalSecret;
       }
     });
   });
 
   describe('Authorization Helpers', () => {
     it('requireSession: passes if session present', () => {
-      const req = { session: testSession } as any;
-      const res = {} as any;
+      const req = { session: testSession } as unknown;
+      const res = {} as unknown;
       const next = jest.fn();
 
       requireSession(req, res, next);
@@ -198,8 +198,8 @@ describe('Session Cookie Authentication', () => {
     });
 
     it('requireSession: rejects if session missing', () => {
-      const req = {} as any;
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as any;
+      const req = {} as unknown;
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown;
       const next = jest.fn();
 
       requireSession(req, res, next);
@@ -210,8 +210,8 @@ describe('Session Cookie Authentication', () => {
     });
 
     it('requireSessionTier: passes if tier sufficient', () => {
-      const req = { session: { ...testSession, tier: 'pro' } } as any;
-      const res = {} as any;
+      const req = { session: { ...testSession, tier: 'pro' } } as unknown;
+      const res = {} as unknown;
       const next = jest.fn();
 
       const middleware = requireSessionTier('developer'); // Requires developer or higher
@@ -221,8 +221,8 @@ describe('Session Cookie Authentication', () => {
     });
 
     it('requireSessionTier: rejects if tier insufficient', () => {
-      const req = { session: { ...testSession, tier: 'free' } } as any;
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as any;
+      const req = { session: { ...testSession, tier: 'free' } } as unknown;
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown;
       const next = jest.fn();
 
       const middleware = requireSessionTier('pro'); // Requires pro
@@ -234,8 +234,8 @@ describe('Session Cookie Authentication', () => {
     });
 
     it('requirePermission: passes if permission present', () => {
-      const req = { session: { ...testSession, permissions: ['admin', 'read'] } } as any;
-      const res = {} as any;
+      const req = { session: { ...testSession, permissions: ['admin', 'read'] } } as unknown;
+      const res = {} as unknown;
       const next = jest.fn();
 
       const middleware = requirePermission('admin');
@@ -245,8 +245,8 @@ describe('Session Cookie Authentication', () => {
     });
 
     it('requirePermission: rejects if permission missing', () => {
-      const req = { session: { ...testSession, permissions: ['read'] } } as any;
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as any;
+      const req = { session: { ...testSession, permissions: ['read'] } } as unknown;
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown;
       const next = jest.fn();
 
       const middleware = requirePermission('admin');
@@ -258,8 +258,8 @@ describe('Session Cookie Authentication', () => {
     });
 
     it('dualAuth: passes if apiKey present', () => {
-      const req = { apiKey: { id: 'key_123' } } as any;
-      const res = {} as any;
+      const req = { apiKey: { id: 'key_123' } } as unknown;
+      const res = {} as unknown;
       const next = jest.fn();
 
       dualAuth(req, res, next);
@@ -268,8 +268,8 @@ describe('Session Cookie Authentication', () => {
     });
 
     it('dualAuth: passes if session present', () => {
-      const req = { session: testSession } as any;
-      const res = {} as any;
+      const req = { session: testSession } as unknown;
+      const res = {} as unknown;
       const next = jest.fn();
 
       dualAuth(req, res, next);
@@ -278,8 +278,8 @@ describe('Session Cookie Authentication', () => {
     });
 
     it('dualAuth: rejects if neither auth method present', () => {
-      const req = {} as any;
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as any;
+      const req = {} as unknown;
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown;
       const next = jest.fn();
 
       dualAuth(req, res, next);
@@ -294,7 +294,7 @@ describe('Session Cookie Authentication', () => {
     it('setSessionCookie: sets cookie with correct options', () => {
       const res = {
         cookie: jest.fn(),
-      } as any;
+      } as unknown;
 
       setSessionCookie(res, testSession);
 
@@ -311,7 +311,7 @@ describe('Session Cookie Authentication', () => {
     it('clearSessionCookie: clears cookie', () => {
       const res = {
         clearCookie: jest.fn(),
-      } as any;
+      } as unknown;
 
       clearSessionCookie(res);
 
@@ -322,7 +322,7 @@ describe('Session Cookie Authentication', () => {
   describe('Edge Cases', () => {
     it('should handle missing required session fields', () => {
       const originalSecret = COOKIE_CONFIG.secret;
-      (COOKIE_CONFIG as any).secret = testSecret;
+      (COOKIE_CONFIG as Record<string, unknown>).secret = testSecret;
 
       try {
         const incompleteSession = { sessionId: 'sess_123' }; // Missing userId and tier
@@ -331,8 +331,8 @@ describe('Session Cookie Authentication', () => {
         const invalidCookie = `${cookie}.${sig}`;
 
         const middleware = sessionCookieAuth();
-        const req = { cookies: { soroban_session: invalidCookie } } as any;
-        const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as any;
+        const req = { cookies: { soroban_session: invalidCookie } } as unknown;
+        const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown;
         const next = jest.fn();
 
         middleware(req, res, next);
@@ -342,14 +342,14 @@ describe('Session Cookie Authentication', () => {
           expect.objectContaining({ message: expect.stringContaining('required fields') }),
         );
       } finally {
-        (COOKIE_CONFIG as any).secret = originalSecret;
+        (COOKIE_CONFIG as Record<string, unknown>).secret = originalSecret;
       }
     });
 
     it('should handle non-string cookie value', () => {
       const middleware = sessionCookieAuth();
-      const req = { cookies: { soroban_session: 123 } } as any;
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as any;
+      const req = { cookies: { soroban_session: 123 } } as unknown;
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown;
       const next = jest.fn();
 
       middleware(req, res, next);

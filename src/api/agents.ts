@@ -628,8 +628,8 @@ agentRouter.post(
     const escalation = await prismaWrite.agentEscalation.create({
       data: {
         agentId,
-        context: context as any,
-        proposedActions: proposedActions as any,
+        context: context as Record<string, unknown>,
+        proposedActions: proposedActions as unknown[],
       },
     });
 
@@ -667,7 +667,7 @@ agentRouter.post(
       where: { id: req.params.id },
       data: {
         status,
-        resolution: resolution as any,
+        resolution: resolution as Record<string, unknown>,
         resolvedBy: req.user!.address,
         resolvedAt: new Date(),
       },

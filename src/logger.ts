@@ -1,5 +1,6 @@
 import { traceStorage } from './middleware/correlation';
 import { trace } from '@opentelemetry/api';
+import { redactSensitiveText, redactSensitiveObject } from './utils/structuredErrorReporter';
 
 type LogLevel = 'info' | 'warn' | 'error' | 'debug';
 const IS_PROD = process.env.NODE_ENV === 'production';
@@ -40,11 +41,13 @@ function toMeta(meta: LogMeta): Record<string, unknown> {
 }
 
 function log(level: LogLevel, message: string | Record<string, unknown>, meta?: LogMeta): void {
-  const messageText =
-    typeof message === 'string' ? message : String(message.message ?? safeJson(message));
+  const messageText = redactSensitiveText(
+    typeof message === 'string' ? message : String(message.message ?? safeJson(message)),
+  );
 
-  const metaObj =
+  const rawMeta =
     typeof message === 'string' ? toMeta(meta) : toMeta({ ...message, ...toMeta(meta) });
+  const metaObj = redactSensitiveObject(rawMeta);
 
   const ctx = traceStorage.getStore();
   const activeSpanContext = trace.getActiveSpan()?.spanContext();

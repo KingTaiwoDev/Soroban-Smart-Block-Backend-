@@ -320,7 +320,7 @@ export async function trackBn254GasExemption(
   // Skip if no BN254 operations detected
   if (ops.length === 0) return null;
 
-  const cpuInstructions = Number((sorobanResources as any)?.cpuInstructions ?? 0);
+  const cpuInstructions = Number((sorobanResources as Record<string, unknown>)?.cpuInstructions ?? 0);
   const msmComplexity = estimateMsmComplexity(functionName, cpuInstructions);
   const { estimatedWasmFee, stroopSavings, savingsPct } = calculateSavings(
     ops,

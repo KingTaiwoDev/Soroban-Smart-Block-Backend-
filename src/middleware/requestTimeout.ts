@@ -157,7 +157,7 @@ export function requestTimeout(): (req: Request, res: Response, next: NextFuncti
     const { timeout, label } = resolveTimeout(path);
 
     // Attach timeout label to request for logging/debugging
-    (res as any).timeoutLabel = label;
+    res.timeoutLabel = label;
 
     // Enforce timeout via socket destruction if response hasn't started
     const timeoutHandle = setTimeout(() => {

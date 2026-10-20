@@ -100,13 +100,14 @@ export class TenantIsolationService {
       };
     }
 
-    // Validate principal has access to the requested tenant
-    if (principal.tenantId && principal.tenantId !== targetTenantId) {
+    // Validate principal has access to the requested tenant. A non-admin
+    // principal without a tenant must not be able to select one (e.g. via the
+    // X-Tenant-ID header or ?tenantId=) and read or write its data.
+    if (principal.tenantId !== targetTenantId) {
       // Check if there's a hierarchical relationship
-      const hasHierarchicalAccess = await this.checkHierarchicalAccess(
-        principal.tenantId,
-        targetTenantId
-      );
+      const hasHierarchicalAccess =
+        !!principal.tenantId &&
+        (await this.checkHierarchicalAccess(principal.tenantId, targetTenantId));
 
       if (!hasHierarchicalAccess) {
         return {

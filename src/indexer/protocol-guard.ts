@@ -42,7 +42,7 @@ export async function getProtocolVersion(): Promise<number> {
 
   try {
     const info = await rpc.getLatestLedger();
-    const version = Number((info as any).protocolVersion ?? (info as any).protocol_version ?? 0);
+    const version = Number((info as Record<string, unknown>).protocolVersion ?? (info as Record<string, unknown>).protocol_version ?? 0);
     if (version > 0) {
       cachedProtocolVersion = version;
       lastVersionCheck = now;

@@ -12,6 +12,8 @@ import { runGasAnalytics } from '../indexer/gasAnalytics';
 import { z } from 'zod';
 import { protocolEconomicsRouter } from './protocol-economics';
 import { asyncHandler } from '../middleware/asyncHandler';
+import { config } from '../config';
+import { buildAnalyticsFreshness } from '../analytics/freshness';
 
 /**
  * @swagger
@@ -61,6 +63,16 @@ const querySchema = z.object({
  *                       avgFeeCharged: { type: string }
  *                       totalFeeCharged: { type: string }
  *                       txCount: { type: integer }
+ *                 freshness:
+ *                   type: object
+ *                   description: Network the snapshots belong to and how current they are
+ *                   properties:
+ *                     network: { type: string, example: mainnet }
+ *                     bucket: { type: string, example: day }
+ *                     dataAsOf: { type: string, format: date-time, nullable: true }
+ *                     ageSeconds: { type: integer, nullable: true }
+ *                     maxAgeSeconds: { type: integer }
+ *                     stale: { type: boolean }
  *       400:
  *         description: Invalid query parameters
  *         content:
@@ -79,7 +91,12 @@ analyticsRouter.get(
       take: limit,
     });
 
-    res.json({ bucket, data: snapshots });
+    const network = req.networkProfile?.name ?? config.stellarNetwork;
+    res.json({
+      bucket,
+      data: snapshots,
+      freshness: buildAnalyticsFreshness(network, bucket, snapshots[0]),
+    });
   }),
 );
 

@@ -71,17 +71,17 @@ const SEP41_FUNCTIONS: ResolvedFunction[] = [
 
 function parseJsonSchemaFunctions(schema: Record<string, unknown>): ResolvedFunction[] {
   const fns: ResolvedFunction[] = [];
-  const defs = (schema as any).definitions ?? {};
+  const defs = ((schema as Record<string, unknown>).definitions ?? {}) as Record<string, unknown>;
   for (const [key, def] of Object.entries(defs)) {
     if (typeof def !== 'object' || def === null) continue;
-    const d = def as any;
+    const d = def as Record<string, unknown>;
     if (d.type !== 'object' || !d.properties) continue;
     const inputs = Object.entries(d.properties as Record<string, any>).map(([name, prop]) => ({
       name,
       type:
         typeof prop === 'object' && prop.$ref
           ? (String(prop.$ref).split('/').pop() ?? 'unknown')
-          : ((prop as any).type ?? 'unknown'),
+          : ((prop as Record<string, unknown>).type as string ?? 'unknown'),
     }));
     fns.push({ name: key, inputs, outputs: [], source: 'on-chain' });
   }

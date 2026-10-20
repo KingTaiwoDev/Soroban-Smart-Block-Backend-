@@ -345,7 +345,7 @@ export class MlopsService {
       await prismaWrite.modelDriftMetrics.create({
         data: {
           modelId: model.id,
-          featureDrifts: featureDrifts as any,
+          featureDrifts: featureDrifts as Record<string, unknown>,
           predictionDrift,
           driftThresholdExceeded,
         },
@@ -375,7 +375,7 @@ export class MlopsService {
 
     // Simulate loading training data from FeatureStoreEntry
     const featureEntries = await prismaRead.featureStoreEntry.findMany({ take: 500 });
-    const trainingData: TransactionFeatures[] = featureEntries.map((e) => e.features as any);
+    const trainingData: TransactionFeatures[] = featureEntries.map((e) => e.features as unknown as TransactionFeatures);
 
     try {
       // Retrain the specific model class
@@ -391,11 +391,11 @@ export class MlopsService {
 
       // Update Model Registry Metrics
       const updatedMetrics = {
-        accuracy: Math.min(0.99, model.metrics ? (model.metrics as any).accuracy + 0.005 : 0.95),
-        precision: Math.min(0.99, model.metrics ? (model.metrics as any).precision + 0.003 : 0.95),
-        recall: Math.min(0.99, model.metrics ? (model.metrics as any).recall + 0.006 : 0.95),
-        f1Score: Math.min(0.99, model.metrics ? (model.metrics as any).f1Score + 0.004 : 0.95),
-        inferenceTimeMs: model.metrics ? (model.metrics as any).inferenceTimeMs : 15,
+        accuracy: Math.min(0.99, model.metrics ? (model.metrics as Record<string, number>).accuracy + 0.005 : 0.95),
+        precision: Math.min(0.99, model.metrics ? (model.metrics as Record<string, number>).precision + 0.003 : 0.95),
+        recall: Math.min(0.99, model.metrics ? (model.metrics as Record<string, number>).recall + 0.006 : 0.95),
+        f1Score: Math.min(0.99, model.metrics ? (model.metrics as Record<string, number>).f1Score + 0.004 : 0.95),
+        inferenceTimeMs: model.metrics ? (model.metrics as Record<string, number>).inferenceTimeMs : 15,
       };
 
       await prismaWrite.modelRegistryEntry.update({

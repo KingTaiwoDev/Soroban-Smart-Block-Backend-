@@ -34,7 +34,7 @@ function extractWriteKeys(rawXdr: string, contractAddress: string | null): strin
       if (!invokeOp) continue;
       const sorobanData = invokeOp.auth?.() ?? [];
       // Extract footprint from the operation's soroban resource data
-      const resources = (invokeOp as any).resources?.();
+      const resources = (invokeOp as Record<string, () => unknown>).resources?.();
       const footprint = resources?.footprint?.();
       const rwKeys: any[] = footprint?.readWrite?.() ?? [];
       for (const key of rwKeys) {

@@ -28,6 +28,8 @@ export interface QualityCheckResult {
 
 export interface EtlLineageRecord {
   jobId: string;
+  /** Stellar network the job ingested (`network_id`); optional for records written before #1245. */
+  network?: string;
   jobStartedAt: string;
   jobCompletedAt: string;
   sourceTables: string[];

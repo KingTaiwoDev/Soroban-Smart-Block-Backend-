@@ -311,7 +311,7 @@ export class Verifier {
     const witness: string[] = [];
     if (solverResult.model) {
       for (const [name, mv] of Object.entries(solverResult.model)) {
-        witness.push(`${name} = ${(mv as any).value}`);
+        witness.push(`${name} = ${(mv as Record<string, unknown>).value}`);
       }
     }
     if (symbolicResults.length > 0) {

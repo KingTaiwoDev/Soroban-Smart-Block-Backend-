@@ -752,8 +752,8 @@ reputationRouter.post(
       create: {
         profileId: profile.id,
         credentialId: vc.id,
-        context: vc['@context'] as any,
-        type: vc.type as any,
+        context: vc['@context'] as string[],
+        type: vc.type as string[],
         issuer: typeof vc.issuer === 'string' ? vc.issuer : vc.issuer.id,
         issuanceDate: new Date(vc.issuanceDate),
         expirationDate: vc.expirationDate ? new Date(vc.expirationDate) : null,
@@ -766,8 +766,8 @@ reputationRouter.post(
         proofValue: vc.proof.proofValue,
       },
       update: {
-        context: vc['@context'] as any,
-        type: vc.type as any,
+        context: vc['@context'] as string[],
+        type: vc.type as string[],
         issuer: typeof vc.issuer === 'string' ? vc.issuer : vc.issuer.id,
         issuanceDate: new Date(vc.issuanceDate),
         expirationDate: vc.expirationDate ? new Date(vc.expirationDate) : null,
@@ -1678,14 +1678,14 @@ reputationRouter.post(
       challenge: dispute.challenge,
       evidenceHash: dispute.evidenceHash,
       quorumVotes: dispute.quorumVotes,
-      status: dispute.status as any,
+      status: dispute.status as string,
       createdAt: dispute.createdAt.toISOString(),
     };
 
     const mappedVotes = dispute.votes.map((v) => ({
       caseId: v.disputeId,
       voter: v.voter,
-      vote: v.vote as any,
+      vote: v.vote as string,
       weight: v.weight,
       signature: v.signature || undefined,
       transactionHash: v.transactionHash || undefined,

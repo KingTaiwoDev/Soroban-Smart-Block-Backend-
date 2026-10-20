@@ -148,27 +148,7 @@ rateLimitAdminRouter.get(
   adminAuth,
   asyncHandler(async (_req: Request, res: Response) => {
     try {
-      const prisma = prismaRead as any;
-
-      if (prisma.enterpriseTierConfig) {
-        const rows = await prisma.enterpriseTierConfig.findMany({
-          orderBy: { createdAt: 'asc' },
-        });
-
-        const tiers = rows.map((row: any) => ({
-          orgId: row.orgId,
-          maxPerMinute: row.maxPerMinute,
-          maxBurst: row.maxBurst,
-          windowMs: row.windowMs,
-          label: row.label,
-          featureFlags: row.featureFlags,
-          graceDegradation: row.graceDegradation as GraceDegradationStrategy,
-        }));
-
-        return res.json({ success: true, tiers });
-      }
-
-      // Fallback for pre-migration or legacy overrides
+      const prisma = prismaRead as unknown as Record<string, { findUnique: Function; findMany: Function; count: Function }>;
       const rows = await prisma.rateLimitOverride.findMany({
         where: { identifier: { startsWith: 'ent:' } },
         orderBy: { createdAt: 'asc' },
@@ -299,34 +279,7 @@ rateLimitAdminRouter.get(
     }
 
     try {
-      const prisma = prismaRead as any;
-
-      if (prisma.enterpriseTierConfig) {
-        const record = await prisma.enterpriseTierConfig.findUnique({
-          where: { orgId },
-        });
-
-        if (!record) {
-          return res.status(404).json({
-            error: 'No custom enterprise tier found for this org',
-            orgId,
-            defaults: ENTERPRISE_DEFAULTS,
-          });
-        }
-
-        const config: EnterpriseTierConfig = {
-          maxPerMinute: record.maxPerMinute,
-          maxBurst: record.maxBurst,
-          windowMs: record.windowMs,
-          label: record.label,
-          featureFlags: record.featureFlags,
-          graceDegradation: record.graceDegradation as GraceDegradationStrategy,
-        };
-
-        return res.json({ success: true, orgId, config });
-      }
-
-      // Fallback for pre-migration
+      const prisma = prismaRead as unknown as Record<string, { findUnique: Function; findMany: Function; count: Function }>;
       const rows = await prisma.rateLimitOverride.findMany({
         where: { identifier: `ent:${orgId}` },
       });
@@ -368,7 +321,11 @@ rateLimitAdminRouter.delete(
     }
 
     try {
-      const prisma = prismaWrite as any;
+      const prisma = prismaWrite as unknown as Record<string, { upsert: Function; update: Function; delete: Function; create: Function }>;
+      // Delete all rows for this org (endpoint field varies by encoding).
+      await prisma.rateLimitOverride.deleteMany({
+        where: { identifier: `ent:${orgId}` },
+      });
 
       if (prisma.enterpriseTierConfig) {
         await prisma.enterpriseTierConfig.deleteMany({

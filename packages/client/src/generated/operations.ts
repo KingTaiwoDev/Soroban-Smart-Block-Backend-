@@ -4,7 +4,7 @@ import type * as Models from './models';
 
 export const SPEC_VERSION = "1.0.0" as const;
 /** SHA-256 (first 16 hex chars) of the normalized API surface this file was generated from. */
-export const SPEC_FINGERPRINT = "5fc6b3bd018fca34" as const;
+export const SPEC_FINGERPRINT = "4c0ba0fdc2224255" as const;
 
 export type ParamType = 'string' | 'integer' | 'number' | 'boolean' | 'array' | 'object';
 
@@ -76,90 +76,6 @@ export const OPERATIONS = {
     deprecated: false,
     tags: ["Admin"],
     summary: "Reject a pending contract ABI submission",
-  },
-  getAdvancedEvents: {
-    method: 'GET',
-    path: "/advanced-events",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Advanced Events"],
-    summary: "Advanced Events service overview",
-  },
-  getAdvancedEventsAggregations: {
-    method: 'GET',
-    path: "/advanced-events/aggregations",
-    pathParams: [],
-    query: [
-      { name: "period", type: 'string', required: false, enum: ["1h","24h","7d","30d"] },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Advanced Events"],
-    summary: "Get aggregated event statistics across the network",
-  },
-  getAdvancedEventsContractsByContractId: {
-    method: 'GET',
-    path: "/advanced-events/contracts/{contractId}",
-    pathParams: ["contractId"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Advanced Events"],
-    summary: "Get advanced event analysis for a specific contract",
-  },
-  postAdvancedEventsQuery: {
-    method: 'POST',
-    path: "/advanced-events/query",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Advanced Events"],
-    summary: "Query events with advanced filters",
-  },
-  getAdvancedEventsReplayByTxHash: {
-    method: 'GET',
-    path: "/advanced-events/replay/{txHash}",
-    pathParams: ["txHash"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Advanced Events"],
-    summary: "Replay all events emitted by a specific transaction",
-  },
-  getAdvancedEventsSubscriptions: {
-    method: 'GET',
-    path: "/advanced-events/subscriptions",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Advanced Events"],
-    summary: "List active event subscriptions",
-  },
-  postAdvancedEventsSubscriptions: {
-    method: 'POST',
-    path: "/advanced-events/subscriptions",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Advanced Events"],
-    summary: "Subscribe to events matching a filter",
-  },
-  deleteAdvancedEventsSubscriptionsById: {
-    method: 'DELETE',
-    path: "/advanced-events/subscriptions/{id}",
-    pathParams: ["id"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Advanced Events"],
-    summary: "Cancel an event subscription",
   },
   getAgents: {
     method: 'GET',
@@ -263,9 +179,9 @@ export const OPERATIONS = {
     tags: ["Agents"],
     summary: "Get verification status for an execution",
   },
-  postAgentsVerificationByExecutionId: {
+  postAgentsVerificationByExecutionIdVerify: {
     method: 'POST',
-    path: "/agents/verification/{executionId}",
+    path: "/agents/verification/{executionId}/verify",
     pathParams: ["executionId"],
     query: [],
     body: 'required',
@@ -284,16 +200,6 @@ export const OPERATIONS = {
     tags: ["Agents"],
     summary: "Execute the agent (trigger single run)",
   },
-  getAnalyticsDashboardByType: {
-    method: 'GET',
-    path: "/analytics/dashboard/{type}",
-    pathParams: ["type"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Analytics Data Lake"],
-    summary: "Fast dashboard data from PostgreSQL materialized views (Redis-cached)",
-  },
   getAnalyticsGas: {
     method: 'GET',
     path: "/analytics/gas",
@@ -307,16 +213,6 @@ export const OPERATIONS = {
     tags: ["Analytics"],
     summary: "List gas analytics snapshots",
   },
-  getAnalyticsLineage: {
-    method: 'GET',
-    path: "/analytics/lineage",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Analytics Data Lake"],
-    summary: "List recent ETL job lineage records",
-  },
   postAnalyticsQuery: {
     method: 'POST',
     path: "/analytics/query",
@@ -328,6 +224,16 @@ export const OPERATIONS = {
     tags: ["Analytics Data Lake"],
     summary: "Execute a SQL query against the Iceberg data lake",
   },
+  getAnalyticsQueryDashboardByType: {
+    method: 'GET',
+    path: "/analytics/query/dashboard/{type}",
+    pathParams: ["type"],
+    query: [],
+    body: 'none',
+    deprecated: false,
+    tags: ["Analytics Data Lake"],
+    summary: "Fast dashboard data from PostgreSQL materialized views (Redis-cached)",
+  },
   postAnalyticsQueryEstimate: {
     method: 'POST',
     path: "/analytics/query/estimate",
@@ -338,6 +244,16 @@ export const OPERATIONS = {
     tags: ["Analytics Data Lake"],
     summary: "Estimate cost and engine recommendation for a SQL query",
   },
+  getAnalyticsQueryLineage: {
+    method: 'GET',
+    path: "/analytics/query/lineage",
+    pathParams: [],
+    query: [],
+    body: 'none',
+    deprecated: false,
+    tags: ["Analytics Data Lake"],
+    summary: "List recent ETL job lineage records",
+  },
   getAnalyticsQueryTemplates: {
     method: 'GET',
     path: "/analytics/query/templates",
@@ -347,95 +263,6 @@ export const OPERATIONS = {
     deprecated: false,
     tags: ["Analytics Data Lake"],
     summary: "List pre-built dashboard SQL templates",
-  },
-  getApiV1ContractsProtocolByProtocolKey: {
-    method: 'GET',
-    path: "/api/v1/contracts/protocol/{protocolKey}",
-    pathParams: ["protocolKey"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Contracts"],
-    summary: "List every network deployment grouped under one protocol key",
-  },
-  getApiV1GraphContractCalls: {
-    method: 'GET',
-    path: "/api/v1/graph/contract-calls",
-    pathParams: [],
-    query: [
-      { name: "address", type: 'string', required: false },
-      { name: "direction", type: 'string', required: false, enum: ["upstream","downstream","both"] },
-      { name: "includeInactive", type: 'boolean', required: false },
-      { name: "maxDepth", type: 'integer', required: false, minimum: 1, maximum: 10 },
-      { name: "maxEdges", type: 'integer', required: false },
-      { name: "maxNodes", type: 'integer', required: false },
-      { name: "minWeight", type: 'integer', required: false },
-      { name: "refresh", type: 'boolean', required: false },
-      { name: "timeoutMs", type: 'integer', required: false },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Graph"],
-    summary: "Weighted contract-to-contract call graph for visualization",
-  },
-  getApiV1MevPredictions: {
-    method: 'GET',
-    path: "/api/v1/mev/predictions",
-    pathParams: [],
-    query: [
-      { name: "limit", type: 'integer', required: false, maximum: 100 },
-      { name: "lookbackMinutes", type: 'integer', required: false, maximum: 1440 },
-      { name: "minScore", type: 'number', required: false, minimum: 0, maximum: 100 },
-      { name: "preview", type: 'string', required: false, enum: ["true","false"] },
-      { name: "sensitivity", type: 'string', required: false },
-      { name: "stage", type: 'string', required: false, enum: ["pending","recent","all"] },
-      { name: "types", type: 'string', required: false },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["MEV"],
-    summary: "Ranked forward-looking MEV predictions",
-  },
-  getApiV1MevPredictionsConfig: {
-    method: 'GET',
-    path: "/api/v1/mev/predictions/config",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["MEV"],
-    summary: "Prediction engine configuration",
-  },
-  postApiV1MevPredictionsIngest: {
-    method: 'POST',
-    path: "/api/v1/mev/predictions/ingest",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["MEV"],
-    summary: "Ingest pending transactions and score them",
-  },
-  getApiV1MevPredictionsPending: {
-    method: 'GET',
-    path: "/api/v1/mev/predictions/pending",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["MEV"],
-    summary: "List buffered pending transactions",
-  },
-  deleteApiV1MevPredictionsPending: {
-    method: 'DELETE',
-    path: "/api/v1/mev/predictions/pending",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["MEV"],
-    summary: "Clear the pending transaction buffer",
   },
   getAssetsMetrics: {
     method: 'GET',
@@ -515,134 +342,6 @@ export const OPERATIONS = {
     tags: ["Batch Operations"],
     summary: "Fetch multiple transactions by hash (batch operation)",
   },
-  getBn254: {
-    method: 'GET',
-    path: "/bn254",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["BN254"],
-    summary: "BN254 elliptic curve service overview",
-  },
-  postBn254PairingCheck: {
-    method: 'POST',
-    path: "/bn254/pairing-check",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["BN254"],
-    summary: "Perform a BN254 pairing check (e(A,B) == e(C,D))",
-  },
-  getBn254Params: {
-    method: 'GET',
-    path: "/bn254/params",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["BN254"],
-    summary: "Get BN254 curve parameters",
-  },
-  postBn254PointAdd: {
-    method: 'POST',
-    path: "/bn254/point-add",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["BN254"],
-    summary: "Add two G1 points on the BN254 curve",
-  },
-  postBn254ScalarMul: {
-    method: 'POST',
-    path: "/bn254/scalar-mul",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["BN254"],
-    summary: "Scalar multiplication of a G1 point",
-  },
-  postBn254VerifyGroth16: {
-    method: 'POST',
-    path: "/bn254/verify-groth16",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["BN254"],
-    summary: "Verify a Groth16 zero-knowledge proof",
-  },
-  postBn254VerifyPlonk: {
-    method: 'POST',
-    path: "/bn254/verify-plonk",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["BN254"],
-    summary: "Verify a PLONK zero-knowledge proof",
-  },
-  getCheckedArithmetic: {
-    method: 'GET',
-    path: "/checked-arithmetic",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Checked Arithmetic"],
-    summary: "Overview of the checked arithmetic service",
-  },
-  postCheckedArithmeticCompute: {
-    method: 'POST',
-    path: "/checked-arithmetic/compute",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Checked Arithmetic"],
-    summary: "Perform a single checked arithmetic operation",
-  },
-  postCheckedArithmeticComputeBatch: {
-    method: 'POST',
-    path: "/checked-arithmetic/compute/batch",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Checked Arithmetic"],
-    summary: "Perform multiple checked arithmetic operations in batch",
-  },
-  getCheckedArithmeticLimits: {
-    method: 'GET',
-    path: "/checked-arithmetic/limits",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Checked Arithmetic"],
-    summary: "Get integer limits for each supported bit width",
-  },
-  postCheckedArithmeticValidate: {
-    method: 'POST',
-    path: "/checked-arithmetic/validate",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Checked Arithmetic"],
-    summary: "Validate an arithmetic expression for overflow safety",
-  },
   getCompiler: {
     method: 'GET',
     path: "/compiler",
@@ -694,6 +393,99 @@ export const OPERATIONS = {
     deprecated: false,
     tags: ["Compiler"],
     summary: "Verify source code matches a deployed contract's WASM hash",
+  },
+  getComplianceRwa: {
+    method: 'GET',
+    path: "/compliance/rwa",
+    pathParams: [],
+    query: [],
+    body: 'none',
+    deprecated: false,
+    tags: ["RWA Compliance"],
+    summary: "RWA compliance service overview",
+  },
+  getComplianceRwaAssets: {
+    method: 'GET',
+    path: "/compliance/rwa/assets",
+    pathParams: [],
+    query: [],
+    body: 'none',
+    deprecated: false,
+    tags: ["RWA Compliance"],
+    summary: "List RWA-compliant assets",
+  },
+  getComplianceRwaAssetsByAssetId: {
+    method: 'GET',
+    path: "/compliance/rwa/assets/{assetId}",
+    pathParams: ["assetId"],
+    query: [],
+    body: 'none',
+    deprecated: false,
+    tags: ["RWA Compliance"],
+    summary: "Get compliance metadata for an RWA asset",
+  },
+  postComplianceRwaAssetsByAssetIdCheck: {
+    method: 'POST',
+    path: "/compliance/rwa/assets/{assetId}/check",
+    pathParams: ["assetId"],
+    query: [],
+    body: 'required',
+    contentType: "application/json",
+    deprecated: false,
+    tags: ["RWA Compliance"],
+    summary: "Check if a transfer is compliant for an RWA asset",
+  },
+  getComplianceRwaHoldersByAddress: {
+    method: 'GET',
+    path: "/compliance/rwa/holders/{address}",
+    pathParams: ["address"],
+    query: [],
+    body: 'none',
+    deprecated: false,
+    tags: ["RWA Compliance"],
+    summary: "Get compliance status for an asset holder",
+  },
+  postComplianceRwaHoldersByAddressVerify: {
+    method: 'POST',
+    path: "/compliance/rwa/holders/{address}/verify",
+    pathParams: ["address"],
+    query: [],
+    body: 'required',
+    contentType: "application/json",
+    deprecated: false,
+    tags: ["RWA Compliance"],
+    summary: "Submit KYC/AML verification for a holder",
+  },
+  getComplianceRwaJurisdictions: {
+    method: 'GET',
+    path: "/compliance/rwa/jurisdictions",
+    pathParams: [],
+    query: [],
+    body: 'none',
+    deprecated: false,
+    tags: ["RWA Compliance"],
+    summary: "List supported jurisdictions and their compliance requirements",
+  },
+  getComplianceRwaReports: {
+    method: 'GET',
+    path: "/compliance/rwa/reports",
+    pathParams: [],
+    query: [],
+    body: 'none',
+    deprecated: false,
+    tags: ["RWA Compliance"],
+    summary: "Get regulatory compliance reports",
+  },
+  postComplianceRwaReportsSchedule: {
+    method: 'POST',
+    path: "/compliance/rwa/reports/schedule",
+    pathParams: [],
+    query: [],
+    body: 'required',
+    contentType: "application/json",
+    deprecated: false,
+    tags: ["RWA Compliance"],
+    summary: "Schedule recurring RWA compliance report generation and delivery",
   },
   getComplianceTokenLabelsByTokenId: {
     method: 'GET',
@@ -1104,6 +896,16 @@ export const OPERATIONS = {
     tags: ["Contract Licenses"],
     summary: "Register or update license metadata (authenticated)",
   },
+  getContractsProtocolByProtocolKey: {
+    method: 'GET',
+    path: "/contracts/protocol/{protocolKey}",
+    pathParams: ["protocolKey"],
+    query: [],
+    body: 'none',
+    deprecated: false,
+    tags: ["Contracts"],
+    summary: "List every network deployment grouped under one protocol key",
+  },
   getContractsByAddress: {
     method: 'GET',
     path: "/contracts/{address}",
@@ -1135,6 +937,7 @@ export const OPERATIONS = {
       { name: "cursor", type: 'string', required: false },
       { name: "limit", type: 'integer', required: false, minimum: 1, maximum: 100 },
       { name: "page", type: 'integer', required: false, minimum: 1 },
+      { name: "pagination", type: 'string', required: false, enum: ["cursor"] },
       { name: "topic", type: 'string', required: false },
       { name: "type", type: 'string', required: false },
     ],
@@ -1142,6 +945,90 @@ export const OPERATIONS = {
     deprecated: false,
     tags: ["Events"],
     summary: "List decoded contract events",
+  },
+  getEventsAdvanced: {
+    method: 'GET',
+    path: "/events/advanced",
+    pathParams: [],
+    query: [],
+    body: 'none',
+    deprecated: false,
+    tags: ["Advanced Events"],
+    summary: "Advanced Events service overview",
+  },
+  getEventsAdvancedAggregations: {
+    method: 'GET',
+    path: "/events/advanced/aggregations",
+    pathParams: [],
+    query: [
+      { name: "period", type: 'string', required: false, enum: ["1h","24h","7d","30d"] },
+    ],
+    body: 'none',
+    deprecated: false,
+    tags: ["Advanced Events"],
+    summary: "Get aggregated event statistics across the network",
+  },
+  getEventsAdvancedContractsByContractId: {
+    method: 'GET',
+    path: "/events/advanced/contracts/{contractId}",
+    pathParams: ["contractId"],
+    query: [],
+    body: 'none',
+    deprecated: false,
+    tags: ["Advanced Events"],
+    summary: "Get advanced event analysis for a specific contract",
+  },
+  postEventsAdvancedQuery: {
+    method: 'POST',
+    path: "/events/advanced/query",
+    pathParams: [],
+    query: [],
+    body: 'required',
+    contentType: "application/json",
+    deprecated: false,
+    tags: ["Advanced Events"],
+    summary: "Query events with advanced filters",
+  },
+  getEventsAdvancedReplayByTxHash: {
+    method: 'GET',
+    path: "/events/advanced/replay/{txHash}",
+    pathParams: ["txHash"],
+    query: [],
+    body: 'none',
+    deprecated: false,
+    tags: ["Advanced Events"],
+    summary: "Replay all events emitted by a specific transaction",
+  },
+  getEventsAdvancedSubscriptions: {
+    method: 'GET',
+    path: "/events/advanced/subscriptions",
+    pathParams: [],
+    query: [],
+    body: 'none',
+    deprecated: false,
+    tags: ["Advanced Events"],
+    summary: "List active event subscriptions",
+  },
+  postEventsAdvancedSubscriptions: {
+    method: 'POST',
+    path: "/events/advanced/subscriptions",
+    pathParams: [],
+    query: [],
+    body: 'required',
+    contentType: "application/json",
+    deprecated: false,
+    tags: ["Advanced Events"],
+    summary: "Subscribe to events matching a filter",
+  },
+  deleteEventsAdvancedSubscriptionsById: {
+    method: 'DELETE',
+    path: "/events/advanced/subscriptions/{id}",
+    pathParams: ["id"],
+    query: [],
+    body: 'none',
+    deprecated: false,
+    tags: ["Advanced Events"],
+    summary: "Cancel an event subscription",
   },
   getEventsById: {
     method: 'GET',
@@ -1217,6 +1104,26 @@ export const OPERATIONS = {
     deprecated: false,
     tags: ["Factory Tracker"],
     summary: "Get factory deployment statistics",
+  },
+  getGraphContractCalls: {
+    method: 'GET',
+    path: "/graph/contract-calls",
+    pathParams: [],
+    query: [
+      { name: "address", type: 'string', required: false },
+      { name: "direction", type: 'string', required: false, enum: ["upstream","downstream","both"] },
+      { name: "includeInactive", type: 'boolean', required: false },
+      { name: "maxDepth", type: 'integer', required: false, minimum: 1, maximum: 10 },
+      { name: "maxEdges", type: 'integer', required: false },
+      { name: "maxNodes", type: 'integer', required: false },
+      { name: "minWeight", type: 'integer', required: false },
+      { name: "refresh", type: 'boolean', required: false },
+      { name: "timeoutMs", type: 'integer', required: false },
+    ],
+    body: 'none',
+    deprecated: false,
+    tags: ["Graph"],
+    summary: "Weighted contract-to-contract call graph for visualization",
   },
   getGraphContractsByAddressDownstream: {
     method: 'GET',
@@ -1811,6 +1718,65 @@ export const OPERATIONS = {
     tags: ["MEV"],
     summary: "Aggregate MEV overview",
   },
+  getMevPredictions: {
+    method: 'GET',
+    path: "/mev/predictions",
+    pathParams: [],
+    query: [
+      { name: "limit", type: 'integer', required: false, maximum: 100 },
+      { name: "lookbackMinutes", type: 'integer', required: false, maximum: 1440 },
+      { name: "minScore", type: 'number', required: false, minimum: 0, maximum: 100 },
+      { name: "preview", type: 'string', required: false, enum: ["true","false"] },
+      { name: "sensitivity", type: 'string', required: false },
+      { name: "stage", type: 'string', required: false, enum: ["pending","recent","all"] },
+      { name: "types", type: 'string', required: false },
+    ],
+    body: 'none',
+    deprecated: false,
+    tags: ["MEV"],
+    summary: "Ranked forward-looking MEV predictions",
+  },
+  getMevPredictionsConfig: {
+    method: 'GET',
+    path: "/mev/predictions/config",
+    pathParams: [],
+    query: [],
+    body: 'none',
+    deprecated: false,
+    tags: ["MEV"],
+    summary: "Prediction engine configuration",
+  },
+  postMevPredictionsIngest: {
+    method: 'POST',
+    path: "/mev/predictions/ingest",
+    pathParams: [],
+    query: [],
+    body: 'required',
+    contentType: "application/json",
+    deprecated: false,
+    tags: ["MEV"],
+    summary: "Ingest pending transactions and score them",
+  },
+  getMevPredictionsPending: {
+    method: 'GET',
+    path: "/mev/predictions/pending",
+    pathParams: [],
+    query: [],
+    body: 'none',
+    deprecated: false,
+    tags: ["MEV"],
+    summary: "List buffered pending transactions",
+  },
+  deleteMevPredictionsPending: {
+    method: 'DELETE',
+    path: "/mev/predictions/pending",
+    pathParams: [],
+    query: [],
+    body: 'none',
+    deprecated: false,
+    tags: ["MEV"],
+    summary: "Clear the pending transaction buffer",
+  },
   postMevProtectTx: {
     method: 'POST',
     path: "/mev/protect-tx",
@@ -1947,104 +1913,6 @@ export const OPERATIONS = {
     tags: ["Network"],
     summary: "Get active network configuration",
   },
-  getOracleFeeds: {
-    method: 'GET',
-    path: "/oracle-feeds",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Oracle Feeds"],
-    summary: "Oracle feeds service overview",
-  },
-  getOracleFeedsAssets: {
-    method: 'GET',
-    path: "/oracle-feeds/assets",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Oracle Feeds"],
-    summary: "List all available oracle price feed assets",
-  },
-  getOracleFeedsAssetsByAssetPairHistory: {
-    method: 'GET',
-    path: "/oracle-feeds/assets/{assetPair}/history",
-    pathParams: ["assetPair"],
-    query: [
-      { name: "from", type: 'string', required: false },
-      { name: "limit", type: 'number', required: false },
-      { name: "to", type: 'string', required: false },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Oracle Feeds"],
-    summary: "Get historical price data for an asset pair",
-  },
-  getOracleFeedsAssetsByAssetPairOhlcv: {
-    method: 'GET',
-    path: "/oracle-feeds/assets/{assetPair}/ohlcv",
-    pathParams: ["assetPair"],
-    query: [
-      { name: "limit", type: 'number', required: false },
-      { name: "resolution", type: 'string', required: false, enum: ["1m","5m","15m","1h","4h","1d"] },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Oracle Feeds"],
-    summary: "Get OHLCV (open/high/low/close/volume) candle data",
-  },
-  getOracleFeedsAssetsByAssetPairPrice: {
-    method: 'GET',
-    path: "/oracle-feeds/assets/{assetPair}/price",
-    pathParams: ["assetPair"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Oracle Feeds"],
-    summary: "Get current price for an asset pair",
-  },
-  getOracleFeedsProviders: {
-    method: 'GET',
-    path: "/oracle-feeds/providers",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Oracle Feeds"],
-    summary: "List oracle data providers",
-  },
-  postOracleFeedsSubscribe: {
-    method: 'POST',
-    path: "/oracle-feeds/subscribe",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Oracle Feeds"],
-    summary: "Subscribe to price feed updates",
-  },
-  getOracleFeedsSubscriptions: {
-    method: 'GET',
-    path: "/oracle-feeds/subscriptions",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Oracle Feeds"],
-    summary: "List active feed subscriptions",
-  },
-  deleteOracleFeedsSubscriptionsById: {
-    method: 'DELETE',
-    path: "/oracle-feeds/subscriptions/{id}",
-    pathParams: ["id"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Oracle Feeds"],
-    summary: "Cancel a feed subscription",
-  },
   getOraclesAudit: {
     method: 'GET',
     path: "/oracles/audit",
@@ -2132,6 +2000,104 @@ export const OPERATIONS = {
     deprecated: false,
     tags: ["Oracle Audit"],
     summary: "Validate an oracle price submission against reference data",
+  },
+  getOraclesFeeds: {
+    method: 'GET',
+    path: "/oracles/feeds",
+    pathParams: [],
+    query: [],
+    body: 'none',
+    deprecated: false,
+    tags: ["Oracle Feeds"],
+    summary: "Oracle feeds service overview",
+  },
+  getOraclesFeedsAssets: {
+    method: 'GET',
+    path: "/oracles/feeds/assets",
+    pathParams: [],
+    query: [],
+    body: 'none',
+    deprecated: false,
+    tags: ["Oracle Feeds"],
+    summary: "List all available oracle price feed assets",
+  },
+  getOraclesFeedsAssetsByAssetPairHistory: {
+    method: 'GET',
+    path: "/oracles/feeds/assets/{assetPair}/history",
+    pathParams: ["assetPair"],
+    query: [
+      { name: "from", type: 'string', required: false },
+      { name: "limit", type: 'number', required: false },
+      { name: "to", type: 'string', required: false },
+    ],
+    body: 'none',
+    deprecated: false,
+    tags: ["Oracle Feeds"],
+    summary: "Get historical price data for an asset pair",
+  },
+  getOraclesFeedsAssetsByAssetPairOhlcv: {
+    method: 'GET',
+    path: "/oracles/feeds/assets/{assetPair}/ohlcv",
+    pathParams: ["assetPair"],
+    query: [
+      { name: "limit", type: 'number', required: false },
+      { name: "resolution", type: 'string', required: false, enum: ["1m","5m","15m","1h","4h","1d"] },
+    ],
+    body: 'none',
+    deprecated: false,
+    tags: ["Oracle Feeds"],
+    summary: "Get OHLCV (open/high/low/close/volume) candle data",
+  },
+  getOraclesFeedsAssetsByAssetPairPrice: {
+    method: 'GET',
+    path: "/oracles/feeds/assets/{assetPair}/price",
+    pathParams: ["assetPair"],
+    query: [],
+    body: 'none',
+    deprecated: false,
+    tags: ["Oracle Feeds"],
+    summary: "Get current price for an asset pair",
+  },
+  getOraclesFeedsProviders: {
+    method: 'GET',
+    path: "/oracles/feeds/providers",
+    pathParams: [],
+    query: [],
+    body: 'none',
+    deprecated: false,
+    tags: ["Oracle Feeds"],
+    summary: "List oracle data providers",
+  },
+  postOraclesFeedsSubscribe: {
+    method: 'POST',
+    path: "/oracles/feeds/subscribe",
+    pathParams: [],
+    query: [],
+    body: 'required',
+    contentType: "application/json",
+    deprecated: false,
+    tags: ["Oracle Feeds"],
+    summary: "Subscribe to price feed updates",
+  },
+  getOraclesFeedsSubscriptions: {
+    method: 'GET',
+    path: "/oracles/feeds/subscriptions",
+    pathParams: [],
+    query: [],
+    body: 'none',
+    deprecated: false,
+    tags: ["Oracle Feeds"],
+    summary: "List active feed subscriptions",
+  },
+  deleteOraclesFeedsSubscriptionsById: {
+    method: 'DELETE',
+    path: "/oracles/feeds/subscriptions/{id}",
+    pathParams: ["id"],
+    query: [],
+    body: 'none',
+    deprecated: false,
+    tags: ["Oracle Feeds"],
+    summary: "Cancel a feed subscription",
   },
   getPrivacyAnonymitySets: {
     method: 'GET',
@@ -2592,83 +2558,6 @@ export const OPERATIONS = {
     tags: ["Privacy"],
     summary: "ZK verifier detail for a contract",
   },
-  getProtocol26: {
-    method: 'GET',
-    path: "/protocol26",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Protocol 26"],
-    summary: "Protocol 26 state extension service overview",
-  },
-  getProtocol26ArchiveStats: {
-    method: 'GET',
-    path: "/protocol26/archive/stats",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Protocol 26"],
-    summary: "Get archival statistics for the network",
-  },
-  getProtocol26ContractsByContractIdEntries: {
-    method: 'GET',
-    path: "/protocol26/contracts/{contractId}/entries",
-    pathParams: ["contractId"],
-    query: [
-      { name: "nearExpiry", type: 'boolean', required: false },
-      { name: "type", type: 'string', required: false, enum: ["persistent","temporary","all"] },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Protocol 26"],
-    summary: "List persistent and temporary storage entries for a contract",
-  },
-  postProtocol26ContractsByContractIdExtendTtl: {
-    method: 'POST',
-    path: "/protocol26/contracts/{contractId}/extend-ttl",
-    pathParams: ["contractId"],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Protocol 26"],
-    summary: "Extend the TTL for a contract's state entries",
-  },
-  getProtocol26ContractsByContractIdTtl: {
-    method: 'GET',
-    path: "/protocol26/contracts/{contractId}/ttl",
-    pathParams: ["contractId"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Protocol 26"],
-    summary: "Get TTL information for a contract's state entries",
-  },
-  getProtocol26Expiring: {
-    method: 'GET',
-    path: "/protocol26/expiring",
-    pathParams: [],
-    query: [
-      { name: "ledgersThreshold", type: 'number', required: false },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Protocol 26"],
-    summary: "List contracts with state entries expiring soon",
-  },
-  postProtocol26FootprintOptimize: {
-    method: 'POST',
-    path: "/protocol26/footprint/optimize",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Protocol 26"],
-    summary: "Optimize a transaction footprint for Protocol 26 state access",
-  },
   postRampExecute: {
     method: 'POST',
     path: "/ramp/execute",
@@ -2779,718 +2668,6 @@ export const OPERATIONS = {
     deprecated: false,
     tags: ["Render"],
     summary: "List available built-in render templates",
-  },
-  getReputationAttestationsByAddress: {
-    method: 'GET',
-    path: "/reputation/attestations/{address}",
-    pathParams: ["address"],
-    query: [
-      { name: "chainData", type: 'string', required: false },
-      { name: "verified", type: 'string', required: false, enum: ["true"] },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "List attestations from inline chain data (legacy stateless endpoint)",
-  },
-  getReputationBadgesByAddress: {
-    method: 'GET',
-    path: "/reputation/badges/{address}",
-    pathParams: ["address"],
-    query: [
-      { name: "chainData", type: 'string', required: false },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Get earned badges from inline chain data (legacy stateless endpoint)",
-  },
-  postReputationCredentialsVerify: {
-    method: 'POST',
-    path: "/reputation/credentials/verify",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Check whether a JSON payload matches the W3C VC format",
-  },
-  getReputationCredentialsByAddress: {
-    method: 'GET',
-    path: "/reputation/credentials/{address}",
-    pathParams: ["address"],
-    query: [
-      { name: "chainData", type: 'string', required: false },
-      { name: "verified", type: 'string', required: false, enum: ["true"] },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "List verifiable credentials from inline chain data (legacy stateless endpoint)",
-  },
-  postReputationDisputes: {
-    method: 'POST',
-    path: "/reputation/disputes",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Open a reputation dispute against an address",
-  },
-  getReputationDisputesById: {
-    method: 'GET',
-    path: "/reputation/disputes/{id}",
-    pathParams: ["id"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Get a dispute by id, including all votes",
-  },
-  postReputationDisputesByIdResolve: {
-    method: 'POST',
-    path: "/reputation/disputes/{id}/resolve",
-    pathParams: ["id"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Resolve a dispute by tallying its votes",
-  },
-  postReputationDisputesByIdVote: {
-    method: 'POST',
-    path: "/reputation/disputes/{id}/vote",
-    pathParams: ["id"],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Cast a vote on a reputation dispute",
-  },
-  postReputationEndorse: {
-    method: 'POST',
-    path: "/reputation/endorse",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Record an endorsement from one address to another",
-  },
-  postReputationEndorsements: {
-    method: 'POST',
-    path: "/reputation/endorsements",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Compute weighted endorsements from inline data (legacy stateless endpoint)",
-  },
-  postReputationGovernanceDelegate: {
-    method: 'POST',
-    path: "/reputation/governance/delegate",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Delegate voting power to another address",
-  },
-  postReputationGovernanceVote: {
-    method: 'POST',
-    path: "/reputation/governance/vote",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Cast or update a governance vote for a proposal",
-  },
-  getReputationGovernanceVotingPowerByAddress: {
-    method: 'GET',
-    path: "/reputation/governance/voting-power/{address}",
-    pathParams: ["address"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Get the effective voting power for an address",
-  },
-  postReputationIdentityLink: {
-    method: 'POST',
-    path: "/reputation/identity/link",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Verify a set of cross-chain identity links (legacy stateless endpoint)",
-  },
-  postReputationIdentityScore: {
-    method: 'POST',
-    path: "/reputation/identity/score",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Compute a cross-identity reputation score (legacy stateless endpoint)",
-  },
-  getReputationLeaderboard: {
-    method: 'GET',
-    path: "/reputation/leaderboard",
-    pathParams: [],
-    query: [
-      { name: "limit", type: 'integer', required: false, minimum: 1, maximum: 100 },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Get reputation leaderboard (overall)",
-  },
-  getReputationLeaderboardByCategory: {
-    method: 'GET',
-    path: "/reputation/leaderboard/{category}",
-    pathParams: ["category"],
-    query: [
-      { name: "limit", type: 'integer', required: false, minimum: 1, maximum: 100 },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Get reputation leaderboard for a specific category",
-  },
-  getReputationLeaderboardsByCategory: {
-    method: 'GET',
-    path: "/reputation/leaderboards/{category}",
-    pathParams: ["category"],
-    query: [
-      { name: "chainData", type: 'string', required: false },
-      { name: "limit", type: 'integer', required: false, minimum: 1, maximum: 100 },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Get a leaderboard from inline chain data (legacy stateless endpoint)",
-  },
-  postReputationLink: {
-    method: 'POST',
-    path: "/reputation/link",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Link a cross-chain address to a canonical reputation profile",
-  },
-  deleteReputationLinkById: {
-    method: 'DELETE',
-    path: "/reputation/link/{id}",
-    pathParams: ["id"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Remove a linked cross-chain identity by its record id",
-  },
-  postReputationNftsMintByBadgeType: {
-    method: 'POST',
-    path: "/reputation/nfts/mint/{badgeType}",
-    pathParams: ["badgeType"],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Mint a Soulbound reputation NFT for an address",
-  },
-  getReputationNftsByAddress: {
-    method: 'GET',
-    path: "/reputation/nfts/{address}",
-    pathParams: ["address"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "List all reputation NFTs for an address",
-  },
-  getReputationNftsByAddressByBadgeTypeVerify: {
-    method: 'GET',
-    path: "/reputation/nfts/{address}/{badgeType}/verify",
-    pathParams: ["address", "badgeType"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Verify whether an address holds a specific Soulbound NFT badge",
-  },
-  getReputationOracleCountsByAddress: {
-    method: 'GET',
-    path: "/reputation/oracle-counts/{address}",
-    pathParams: ["address"],
-    query: [
-      { name: "chainData", type: 'string', required: false },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Count valid attestations and credentials from inline chain data (legacy stateless endpoint)",
-  },
-  getReputationOracleProof: {
-    method: 'GET',
-    path: "/reputation/oracle/proof",
-    pathParams: [],
-    query: [
-      { name: "address", type: 'string', required: true },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Get the verifiable proof for an address's reputation score",
-  },
-  postReputationOracleQuery: {
-    method: 'POST',
-    path: "/reputation/oracle/query",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Query the reputation oracle for a full response",
-  },
-  getReputationOracleByAddress: {
-    method: 'GET',
-    path: "/reputation/oracle/{address}",
-    pathParams: ["address"],
-    query: [
-      { name: "chainData", type: 'string', required: false },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Get an oracle response from inline chain data (legacy stateless endpoint)",
-  },
-  postReputationScore: {
-    method: 'POST',
-    path: "/reputation/score",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Compute a reputation score (legacy stateless endpoint)",
-  },
-  getReputationSdkJs: {
-    method: 'GET',
-    path: "/reputation/sdk/js",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Download the Reputation JavaScript SDK",
-  },
-  postReputationSdkRegister: {
-    method: 'POST',
-    path: "/reputation/sdk/register",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Register a dApp to receive a Reputation SDK API key",
-  },
-  getReputationSearch: {
-    method: 'GET',
-    path: "/reputation/search",
-    pathParams: [],
-    query: [
-      { name: "q", type: 'string', required: true },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Search reputation profiles by address or domain",
-  },
-  getReputationSybilByAddress: {
-    method: 'GET',
-    path: "/reputation/sybil/{address}",
-    pathParams: ["address"],
-    query: [
-      { name: "chainData", type: 'string', required: false },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Get Sybil risk from inline chain data (legacy stateless endpoint)",
-  },
-  getReputationTrustNetworkInfluenceByAddress: {
-    method: 'GET',
-    path: "/reputation/trust-network/influence/{address}",
-    pathParams: ["address"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Get the influence score for an address in the trust network",
-  },
-  getReputationTrustNetworkByAddress: {
-    method: 'GET',
-    path: "/reputation/trust-network/{address}",
-    pathParams: ["address"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Get the trust graph for an address",
-  },
-  getReputationTrustNetworkByAddressPathByTarget: {
-    method: 'GET',
-    path: "/reputation/trust-network/{address}/path/{target}",
-    pathParams: ["address", "target"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Find the shortest trust path between two addresses",
-  },
-  postReputationTrustPath: {
-    method: 'POST',
-    path: "/reputation/trust/path",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Find a trust path from inline chain data (legacy stateless endpoint)",
-  },
-  postReputationVerifyCrossChain: {
-    method: 'POST',
-    path: "/reputation/verify-cross-chain",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Record a verified cross-chain reputation signal for an address",
-  },
-  getReputationByAddress: {
-    method: 'GET',
-    path: "/reputation/{address}",
-    pathParams: ["address"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Compute and return the full reputation score for an address",
-  },
-  postReputationByAddressAttest: {
-    method: 'POST',
-    path: "/reputation/{address}/attest",
-    pathParams: ["address"],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Submit an on-chain or off-chain attestation for an address",
-  },
-  getReputationByAddressAttestations: {
-    method: 'GET',
-    path: "/reputation/{address}/attestations",
-    pathParams: ["address"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "List all stored attestations for an address",
-  },
-  getReputationByAddressAttestationsByIdVerify: {
-    method: 'GET',
-    path: "/reputation/{address}/attestations/{id}/verify",
-    pathParams: ["address", "id"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Verify a stored attestation by its uid",
-  },
-  getReputationByAddressBadges: {
-    method: 'GET',
-    path: "/reputation/{address}/badges",
-    pathParams: ["address"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Get earned reputation badges for an address",
-  },
-  getReputationByAddressCredentials: {
-    method: 'GET',
-    path: "/reputation/{address}/credentials",
-    pathParams: ["address"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "List stored verifiable credentials for an address",
-  },
-  postReputationByAddressCredentials: {
-    method: 'POST',
-    path: "/reputation/{address}/credentials",
-    pathParams: ["address"],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Submit a W3C Verifiable Credential for an address",
-  },
-  getReputationByAddressCrossChain: {
-    method: 'GET',
-    path: "/reputation/{address}/cross-chain",
-    pathParams: ["address"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Get per-chain reputation scores for an address",
-  },
-  getReputationByAddressEndorsementsReceived: {
-    method: 'GET',
-    path: "/reputation/{address}/endorsements/received",
-    pathParams: ["address"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "List endorsements received by an address",
-  },
-  getReputationByAddressHistory: {
-    method: 'GET',
-    path: "/reputation/{address}/history",
-    pathParams: ["address"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Get reputation score history for an address",
-  },
-  getReputationByAddressLinks: {
-    method: 'GET',
-    path: "/reputation/{address}/links",
-    pathParams: ["address"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "List all linked cross-chain identities for an address",
-  },
-  getReputationByAddressSignals: {
-    method: 'GET',
-    path: "/reputation/{address}/signals",
-    pathParams: ["address"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Get the raw signal breakdown for an address",
-  },
-  getReputationByAddressSummary: {
-    method: 'GET',
-    path: "/reputation/{address}/summary",
-    pathParams: ["address"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Get a brief reputation summary for an address",
-  },
-  getReputationByAddressSybilScore: {
-    method: 'GET',
-    path: "/reputation/{address}/sybil-score",
-    pathParams: ["address"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Reputation"],
-    summary: "Get the Sybil risk assessment for an address",
-  },
-  getResourceAudit: {
-    method: 'GET',
-    path: "/resource-audit",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Resource Audit"],
-    summary: "Resource audit service overview",
-  },
-  getResourceAuditContractsByContractId: {
-    method: 'GET',
-    path: "/resource-audit/contracts/{contractId}",
-    pathParams: ["contractId"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Resource Audit"],
-    summary: "Get resource usage for a specific contract",
-  },
-  getResourceAuditContractsByContractIdHistory: {
-    method: 'GET',
-    path: "/resource-audit/contracts/{contractId}/history",
-    pathParams: ["contractId"],
-    query: [
-      { name: "days", type: 'number', required: false },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Resource Audit"],
-    summary: "Get historical resource usage over time for a contract",
-  },
-  getResourceAuditNetworkSummary: {
-    method: 'GET',
-    path: "/resource-audit/network/summary",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Resource Audit"],
-    summary: "Get network-wide resource consumption summary",
-  },
-  postResourceAuditSimulate: {
-    method: 'POST',
-    path: "/resource-audit/simulate",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Resource Audit"],
-    summary: "Simulate resource cost for a hypothetical contract call",
-  },
-  getResourceAuditTopConsumers: {
-    method: 'GET',
-    path: "/resource-audit/top-consumers",
-    pathParams: [],
-    query: [
-      { name: "limit", type: 'number', required: false },
-      { name: "metric", type: 'string', required: false, enum: ["compute_units","read_bytes","write_bytes","events_bytes","fees"] },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Resource Audit"],
-    summary: "Get top resource-consuming contracts",
-  },
-  getRwaCompliance: {
-    method: 'GET',
-    path: "/rwa-compliance",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["RWA Compliance"],
-    summary: "RWA compliance service overview",
-  },
-  getRwaComplianceAssets: {
-    method: 'GET',
-    path: "/rwa-compliance/assets",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["RWA Compliance"],
-    summary: "List RWA-compliant assets",
-  },
-  getRwaComplianceAssetsByAssetId: {
-    method: 'GET',
-    path: "/rwa-compliance/assets/{assetId}",
-    pathParams: ["assetId"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["RWA Compliance"],
-    summary: "Get compliance metadata for an RWA asset",
-  },
-  postRwaComplianceAssetsByAssetIdCheck: {
-    method: 'POST',
-    path: "/rwa-compliance/assets/{assetId}/check",
-    pathParams: ["assetId"],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["RWA Compliance"],
-    summary: "Check if a transfer is compliant for an RWA asset",
-  },
-  getRwaComplianceHoldersByAddress: {
-    method: 'GET',
-    path: "/rwa-compliance/holders/{address}",
-    pathParams: ["address"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["RWA Compliance"],
-    summary: "Get compliance status for an asset holder",
-  },
-  postRwaComplianceHoldersByAddressVerify: {
-    method: 'POST',
-    path: "/rwa-compliance/holders/{address}/verify",
-    pathParams: ["address"],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["RWA Compliance"],
-    summary: "Submit KYC/AML verification for a holder",
-  },
-  getRwaComplianceJurisdictions: {
-    method: 'GET',
-    path: "/rwa-compliance/jurisdictions",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["RWA Compliance"],
-    summary: "List supported jurisdictions and their compliance requirements",
-  },
-  getRwaComplianceReports: {
-    method: 'GET',
-    path: "/rwa-compliance/reports",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["RWA Compliance"],
-    summary: "Get regulatory compliance reports",
-  },
-  postRwaComplianceReportsSchedule: {
-    method: 'POST',
-    path: "/rwa-compliance/reports/schedule",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["RWA Compliance"],
-    summary: "Schedule recurring RWA compliance report generation and delivery",
   },
   getSacTrustlines: {
     method: 'GET',
@@ -4509,79 +3686,6 @@ export const OPERATIONS = {
     tags: ["Search"],
     summary: "Ranked autocomplete suggestions across every resource type",
   },
-  getSigners: {
-    method: 'GET',
-    path: "/signers",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Signers"],
-    summary: "Signers service overview",
-  },
-  getSignersAccountsByAddress: {
-    method: 'GET',
-    path: "/signers/accounts/{address}",
-    pathParams: ["address"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Signers"],
-    summary: "Get signer configuration for an account",
-  },
-  getSignersAccountsByAddressHistory: {
-    method: 'GET',
-    path: "/signers/accounts/{address}/history",
-    pathParams: ["address"],
-    query: [
-      { name: "limit", type: 'number', required: false },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Signers"],
-    summary: "Get signer change history for an account",
-  },
-  getSignersAccountsByAddressSigners: {
-    method: 'GET',
-    path: "/signers/accounts/{address}/signers",
-    pathParams: ["address"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Signers"],
-    summary: "List all signers for an account",
-  },
-  getSignersAccountsByAddressThresholds: {
-    method: 'GET',
-    path: "/signers/accounts/{address}/thresholds",
-    pathParams: ["address"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Signers"],
-    summary: "Get signing thresholds for an account",
-  },
-  getSignersKeyByPublicKey: {
-    method: 'GET',
-    path: "/signers/key/{publicKey}",
-    pathParams: ["publicKey"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Signers"],
-    summary: "Get all accounts where this key is a signer",
-  },
-  postSignersVerify: {
-    method: 'POST',
-    path: "/signers/verify",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Signers"],
-    summary: "Verify if a signer key can authorize a transaction at a given threshold",
-  },
   postSimulate: {
     method: 'POST',
     path: "/simulate",
@@ -4816,322 +3920,6 @@ export const OPERATIONS = {
     tags: ["Systemic"],
     summary: "Simulate cascade failure from a protocol collapse",
   },
-  getTax: {
-    method: 'GET',
-    path: "/tax",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Tax"],
-    summary: "Tax reporting service overview",
-  },
-  getTaxAccountsByAddressCostBasis: {
-    method: 'GET',
-    path: "/tax/accounts/{address}/cost-basis",
-    pathParams: ["address"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Tax"],
-    summary: "Get current cost basis for holdings",
-  },
-  getTaxAccountsByAddressGains: {
-    method: 'GET',
-    path: "/tax/accounts/{address}/gains",
-    pathParams: ["address"],
-    query: [
-      { name: "method", type: 'string', required: false, enum: ["FIFO","LIFO","HIFO","average_cost"] },
-      { name: "year", type: 'number', required: false },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Tax"],
-    summary: "Get capital gains/losses for an account",
-  },
-  getTaxAccountsByAddressIncome: {
-    method: 'GET',
-    path: "/tax/accounts/{address}/income",
-    pathParams: ["address"],
-    query: [
-      { name: "year", type: 'number', required: false },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Tax"],
-    summary: "Get income events (staking rewards, airdrops, yield)",
-  },
-  postTaxAccountsByAddressReport: {
-    method: 'POST',
-    path: "/tax/accounts/{address}/report",
-    pathParams: ["address"],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Tax"],
-    summary: "Generate a tax report for download",
-  },
-  getTaxAccountsByAddressSummary: {
-    method: 'GET',
-    path: "/tax/accounts/{address}/summary",
-    pathParams: ["address"],
-    query: [
-      { name: "year", type: 'number', required: false },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Tax"],
-    summary: "Get tax summary for an account",
-  },
-  getTaxRates: {
-    method: 'GET',
-    path: "/tax/rates",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Tax"],
-    summary: "Get indicative tax rates by jurisdiction",
-  },
-  getTipAdvisories: {
-    method: 'GET',
-    path: "/tip/advisories",
-    pathParams: [],
-    query: [
-      { name: "limit", type: 'integer', required: false },
-      { name: "page", type: 'integer', required: false },
-      { name: "search", type: 'string', required: false },
-      { name: "severity", type: 'string', required: false, enum: ["critical","high","medium","low","info"] },
-      { name: "status", type: 'string', required: false, enum: ["open","under_review","resolved","disputed"] },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Threat Intelligence"],
-    summary: "List threat advisories",
-  },
-  postTipAdvisories: {
-    method: 'POST',
-    path: "/tip/advisories",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Threat Intelligence"],
-    summary: "Submit a new threat advisory",
-  },
-  getTipAdvisoriesById: {
-    method: 'GET',
-    path: "/tip/advisories/{id}",
-    pathParams: ["id"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Threat Intelligence"],
-    summary: "Get a threat advisory by id",
-  },
-  patchTipAdvisoriesById: {
-    method: 'PATCH',
-    path: "/tip/advisories/{id}",
-    pathParams: ["id"],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Threat Intelligence"],
-    summary: "Update an advisory's status, severity, mitigations, or resolved timestamp",
-  },
-  deleteTipAdvisoriesById: {
-    method: 'DELETE',
-    path: "/tip/advisories/{id}",
-    pathParams: ["id"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Threat Intelligence"],
-    summary: "Delete a threat advisory",
-  },
-  postTipAdvisoriesByIdComments: {
-    method: 'POST',
-    path: "/tip/advisories/{id}/comments",
-    pathParams: ["id"],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Threat Intelligence"],
-    summary: "Post a community comment on an advisory",
-  },
-  postTipAdvisoriesByIdRescore: {
-    method: 'POST',
-    path: "/tip/advisories/{id}/rescore",
-    pathParams: ["id"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Threat Intelligence"],
-    summary: "Recompute the severity score for an advisory",
-  },
-  postTipAdvisoriesByIdReviews: {
-    method: 'POST',
-    path: "/tip/advisories/{id}/reviews",
-    pathParams: ["id"],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Threat Intelligence"],
-    summary: "Submit a review decision for an advisory",
-  },
-  getTipAnalyticsSeverity: {
-    method: 'GET',
-    path: "/tip/analytics/severity",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Threat Intelligence"],
-    summary: "Advisory count grouped by severity",
-  },
-  getTipAnalyticsStatus: {
-    method: 'GET',
-    path: "/tip/analytics/status",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Threat Intelligence"],
-    summary: "Advisory count grouped by status",
-  },
-  getTipAnalyticsTopContracts: {
-    method: 'GET',
-    path: "/tip/analytics/top-contracts",
-    pathParams: [],
-    query: [
-      { name: "limit", type: 'integer', required: false, maximum: 50 },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Threat Intelligence"],
-    summary: "Contracts most frequently cited in advisories",
-  },
-  getTipAnalyticsTrend: {
-    method: 'GET',
-    path: "/tip/analytics/trend",
-    pathParams: [],
-    query: [
-      { name: "days", type: 'integer', required: false, maximum: 365 },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Threat Intelligence"],
-    summary: "Daily advisory creation trend",
-  },
-  postTipCorrelate: {
-    method: 'POST',
-    path: "/tip/correlate",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Threat Intelligence"],
-    summary: "Run advisory deduplication and correlation",
-  },
-  getTipFeedsJson: {
-    method: 'GET',
-    path: "/tip/feeds/json",
-    pathParams: [],
-    query: [
-      { name: "limit", type: 'integer', required: false, maximum: 200 },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Threat Intelligence"],
-    summary: "JSON feed of recent non-disputed advisories",
-  },
-  getTipFeedsRss: {
-    method: 'GET',
-    path: "/tip/feeds/rss",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Threat Intelligence"],
-    summary: "RSS 2.0 feed of recent non-disputed advisories",
-  },
-  getTipSources: {
-    method: 'GET',
-    path: "/tip/sources",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Threat Intelligence"],
-    summary: "List vulnerability feed sources",
-  },
-  getTipSubscriptions: {
-    method: 'GET',
-    path: "/tip/subscriptions",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Threat Intelligence"],
-    summary: "List all TIP notification subscriptions",
-  },
-  postTipSubscriptions: {
-    method: 'POST',
-    path: "/tip/subscriptions",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Threat Intelligence"],
-    summary: "Create or reactivate a TIP notification subscription",
-  },
-  deleteTipSubscriptionsById: {
-    method: 'DELETE',
-    path: "/tip/subscriptions/{id}",
-    pathParams: ["id"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Threat Intelligence"],
-    summary: "Delete a TIP subscription",
-  },
-  getTipWebhooks: {
-    method: 'GET',
-    path: "/tip/webhooks",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Threat Intelligence"],
-    summary: "List registered TIP webhooks",
-  },
-  postTipWebhooks: {
-    method: 'POST',
-    path: "/tip/webhooks",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Threat Intelligence"],
-    summary: "Register or update a TIP webhook",
-  },
-  deleteTipWebhooksById: {
-    method: 'DELETE',
-    path: "/tip/webhooks/{id}",
-    pathParams: ["id"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Threat Intelligence"],
-    summary: "Delete a TIP webhook",
-  },
   postTokenMetadataBatch: {
     method: 'POST',
     path: "/token-metadata/batch",
@@ -5222,11 +4010,12 @@ export const OPERATIONS = {
     query: [
       { name: "account", type: 'string', required: false },
       { name: "contract", type: 'string', required: false },
-      { name: "cursor", type: 'integer', required: false, minimum: 0 },
+      { name: "cursor", type: 'string', required: false },
       { name: "ledgerMax", type: 'integer', required: false, minimum: 0 },
       { name: "ledgerMin", type: 'integer', required: false, minimum: 0 },
       { name: "limit", type: 'integer', required: false, minimum: 1, maximum: 100 },
       { name: "page", type: 'integer', required: false, minimum: 1 },
+      { name: "pagination", type: 'string', required: false, enum: ["cursor"] },
       { name: "status", type: 'string', required: false },
     ],
     body: 'none',
@@ -5244,109 +4033,15 @@ export const OPERATIONS = {
     tags: ["Transactions"],
     summary: "Get a single transaction by hash",
   },
-  getTreasury: {
+  getTransactionsByHashXdr: {
     method: 'GET',
-    path: "/treasury",
-    pathParams: [],
+    path: "/transactions/{hash}/xdr",
+    pathParams: ["hash"],
     query: [],
     body: 'none',
     deprecated: false,
-    tags: ["Treasury"],
-    summary: "Treasury service overview",
-  },
-  getTreasuryAllocations: {
-    method: 'GET',
-    path: "/treasury/allocations",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Treasury"],
-    summary: "Get treasury fund allocations by category",
-  },
-  getTreasuryBalances: {
-    method: 'GET',
-    path: "/treasury/balances",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Treasury"],
-    summary: "Get treasury asset balances",
-  },
-  getTreasuryBalancesByAssetCode: {
-    method: 'GET',
-    path: "/treasury/balances/{assetCode}",
-    pathParams: ["assetCode"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Treasury"],
-    summary: "Get treasury balance for a specific asset",
-  },
-  getTreasuryProposals: {
-    method: 'GET',
-    path: "/treasury/proposals",
-    pathParams: [],
-    query: [
-      { name: "status", type: 'string', required: false, enum: ["pending","active","passed","rejected","executed"] },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["Treasury"],
-    summary: "List treasury spending proposals",
-  },
-  postTreasuryProposals: {
-    method: 'POST',
-    path: "/treasury/proposals",
-    pathParams: [],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Treasury"],
-    summary: "Create a treasury spending proposal",
-  },
-  getTreasuryProposalsById: {
-    method: 'GET',
-    path: "/treasury/proposals/{id}",
-    pathParams: ["id"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Treasury"],
-    summary: "Get a specific treasury proposal",
-  },
-  postTreasuryProposalsByIdVote: {
-    method: 'POST',
-    path: "/treasury/proposals/{id}/vote",
-    pathParams: ["id"],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Treasury"],
-    summary: "Vote on a treasury proposal",
-  },
-  getTreasuryStats: {
-    method: 'GET',
-    path: "/treasury/stats",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Treasury"],
-    summary: "Get treasury statistics",
-  },
-  getTreasuryTransactions: {
-    method: 'GET',
-    path: "/treasury/transactions",
-    pathParams: [],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Treasury"],
-    summary: "List treasury transactions",
+    tags: ["Transactions"],
+    summary: "Retrieve the retained base64 transaction envelope XDR",
   },
   getUpgradeTrace: {
     method: 'GET',
@@ -5412,36 +4107,6 @@ export const OPERATIONS = {
     deprecated: false,
     tags: ["Upgrade Trace"],
     summary: "Get aggregate upgrade statistics",
-  },
-  getVirtualListEvents: {
-    method: 'GET',
-    path: "/virtual-list/events",
-    pathParams: [],
-    query: [
-      { name: "contract", type: 'string', required: false },
-      { name: "limit", type: 'integer', required: false },
-      { name: "offset", type: 'integer', required: false },
-      { name: "type", type: 'string', required: false },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["VirtualList"],
-    summary: "Get events in virtual list format for infinite scroll",
-  },
-  getVirtualListTransactions: {
-    method: 'GET',
-    path: "/virtual-list/transactions",
-    pathParams: [],
-    query: [
-      { name: "contract", type: 'string', required: false },
-      { name: "limit", type: 'integer', required: false },
-      { name: "offset", type: 'integer', required: false },
-      { name: "status", type: 'string', required: false, enum: ["success","failed","pending"] },
-    ],
-    body: 'none',
-    deprecated: false,
-    tags: ["VirtualList"],
-    summary: "Get transactions in virtual list format for infinite scroll",
   },
   getWalletsByAddressEvents: {
     method: 'GET',
@@ -5591,7 +4256,7 @@ export const OPERATIONS = {
 
 export type OperationId = keyof typeof OPERATIONS;
 
-export const OPERATION_COUNT = 506 as const;
+export const OPERATION_COUNT = 383 as const;
 
 export interface OperationTypes {
   /** GET /admin/contract-abi-submissions — List contract ABI submissions for moderation */
@@ -5636,82 +4301,6 @@ export interface OperationTypes {
     };
     response: unknown;
   };
-  /** GET /advanced-events — Advanced Events service overview */
-  getAdvancedEvents: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /advanced-events/aggregations — Get aggregated event statistics across the network */
-  getAdvancedEventsAggregations: {
-    path: Record<string, never>;
-    query: {
-      period?: "1h" | "24h" | "7d" | "30d";
-    };
-    body: never;
-    response: unknown;
-  };
-  /** GET /advanced-events/contracts/{contractId} — Get advanced event analysis for a specific contract */
-  getAdvancedEventsContractsByContractId: {
-    path: {
-      contractId: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** POST /advanced-events/query — Query events with advanced filters */
-  postAdvancedEventsQuery: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      contractIds?: Array<string>;
-      eventTypes?: Array<string>;
-      ledgerFrom?: number;
-      ledgerTo?: number;
-      limit?: number;
-      offset?: number;
-      topics?: Array<string>;
-    };
-    response: unknown;
-  };
-  /** GET /advanced-events/replay/{txHash} — Replay all events emitted by a specific transaction */
-  getAdvancedEventsReplayByTxHash: {
-    path: {
-      txHash: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /advanced-events/subscriptions — List active event subscriptions */
-  getAdvancedEventsSubscriptions: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** POST /advanced-events/subscriptions — Subscribe to events matching a filter */
-  postAdvancedEventsSubscriptions: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      contractIds?: Array<string>;
-      topics?: Array<string>;
-      webhookUrl: string;
-    };
-    response: unknown;
-  };
-  /** DELETE /advanced-events/subscriptions/{id} — Cancel an event subscription */
-  deleteAdvancedEventsSubscriptionsById: {
-    path: {
-      id: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: void;
-  };
   /** GET /agents — List the current user's agents */
   getAgents: {
     path: Record<string, never>;
@@ -5721,6 +4310,7 @@ export interface OperationTypes {
       /** Filter by agent status */
       status?: string;
     };
+    query: Record<string, never>;
     body: never;
     response: unknown;
   };
@@ -5803,7 +4393,6 @@ export interface OperationTypes {
       pricePerCall?: string;
       pricePerMonth?: string;
     };
-    response: unknown;
   };
   /** GET /agents/verification/{executionId} — Get verification status for an execution */
   getAgentsVerificationByExecutionId: {
@@ -5814,8 +4403,8 @@ export interface OperationTypes {
     body: never;
     response: unknown;
   };
-  /** POST /agents/verification/{executionId} — Submit a verification result for an execution trace */
-  postAgentsVerificationByExecutionId: {
+  /** POST /agents/verification/{executionId}/verify — Submit a verification result for an execution trace */
+  postAgentsVerificationByExecutionIdVerify: {
     path: {
       executionId: string;
     };
@@ -5823,21 +4412,11 @@ export interface OperationTypes {
     body: {
       verifierNode: string;
     };
-    response: unknown;
   };
   /** POST /agents/{id}/execute — Execute the agent (trigger single run) */
   postAgentsByIdExecute: {
     path: {
       id: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /analytics/dashboard/{type} — Fast dashboard data from PostgreSQL materialized views (Redis-cached) */
-  getAnalyticsDashboardByType: {
-    path: {
-      type: "top-contracts" | "gas-distribution" | "wallet-creation" | "token-heatmap" | "protocol-summary";
     };
     query: Record<string, never>;
     body: never;
@@ -5863,13 +4442,6 @@ export interface OperationTypes {
       }>;
     };
   };
-  /** GET /analytics/lineage — List recent ETL job lineage records */
-  getAnalyticsLineage: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
   /** POST /analytics/query — Execute a SQL query against the Iceberg data lake */
   postAnalyticsQuery: {
     path: Record<string, never>;
@@ -5891,136 +4463,54 @@ export interface OperationTypes {
     };
     response: unknown;
   };
+  /** GET /analytics/query/dashboard/{type} — Fast dashboard data from PostgreSQL materialized views (Redis-cached) */
+  getAnalyticsQueryDashboardByType: {
+    path: {
+      type: "top-contracts" | "gas-distribution" | "wallet-creation" | "token-heatmap" | "protocol-summary";
+    };
+    query: Record<string, never>;
+    body: never;
+    response: {
+      composedWith?: Array<unknown>;
+      contractAddress?: string;
+      uniqueCallers?: number;
+    };
+  };
   /** POST /analytics/query/estimate — Estimate cost and engine recommendation for a SQL query */
   postAnalyticsQueryEstimate: {
     path: Record<string, never>;
     query: Record<string, never>;
     body: never;
-    response: unknown;
+    response: Array<{
+      confidence?: number;
+      createdAt?: string;
+      details?: Record<string, unknown> | null;
+      id?: string;
+      pattern?: Models.CompositionPattern;
+      patternId?: string;
+      txId?: string;
+    }>;
+  };
+  /** GET /analytics/query/lineage — List recent ETL job lineage records */
+  getAnalyticsQueryLineage: {
+    path: Record<string, never>;
+    query: Record<string, never>;
+    body: never;
+    response: {
+      criticalAlerts?: number;
+      ecosystemIndex?: number | null;
+      generatedAt?: string;
+      newPatternsDetected?: number;
+      period?: string;
+      totalComposedTransactions?: number;
+    };
   };
   /** GET /analytics/query/templates — List pre-built dashboard SQL templates */
   getAnalyticsQueryTemplates: {
     path: Record<string, never>;
     query: Record<string, never>;
     body: never;
-    response: unknown;
-  };
-  /** GET /api/v1/contracts/protocol/{protocolKey} — List every network deployment grouped under one protocol key */
-  getApiV1ContractsProtocolByProtocolKey: {
-    path: {
-      /** Linkage hint shared by deployments of the same protocol */
-      protocolKey: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /api/v1/graph/contract-calls — Weighted contract-to-contract call graph for visualization */
-  getApiV1GraphContractCalls: {
-    path: Record<string, never>;
-    query: {
-      /** Root contract address (omit for ecosystem scope) */
-      address?: string;
-      direction?: "upstream" | "downstream" | "both";
-      includeInactive?: boolean;
-      maxDepth?: number;
-      maxEdges?: number;
-      maxNodes?: number;
-      /** Drop edges (and traversal) below this call weight */
-      minWeight?: number;
-      /** Bypass the cache and recompute */
-      refresh?: boolean;
-      timeoutMs?: number;
-    };
-    body: never;
-    response: {
-      edges?: Array<{
-        id?: string;
-        source?: string;
-        target?: string;
-        weight?: number;
-      }>;
-      metadata?: Record<string, unknown>;
-      nodes?: Array<{
-        address?: string;
-        callVolume?: number;
-        depth?: number | null;
-        id?: string;
-        inDegree?: number;
-        isRoot?: boolean;
-        label?: string;
-        name?: string | null;
-        outDegree?: number;
-      }>;
-    };
-  };
-  /** GET /api/v1/mev/predictions — Ranked forward-looking MEV predictions */
-  getApiV1MevPredictions: {
-    path: Record<string, never>;
-    query: {
-      limit?: number;
-      lookbackMinutes?: number;
-      /** Hard floor on score, combined with the sensitivity threshold */
-      minScore?: number;
-      /** Sandbox-safe mode — recompute without broadcasting */
-      preview?: "true" | "false";
-      /** Numeric 0-1 or a preset (conservative|balanced|aggressive) */
-      sensitivity?: string;
-      stage?: "pending" | "recent" | "all";
-      /** Comma-separated subset of arbitrage,sandwich,liquidation */
-      types?: string;
-    };
-    body: never;
-    response: unknown;
-  };
-  /** GET /api/v1/mev/predictions/config — Prediction engine configuration */
-  getApiV1MevPredictionsConfig: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: {
-      defaultSensitivity?: number;
-      sensitivityPresets?: Record<string, number>;
-      signalTypes?: Array<string>;
-      webSocketPath?: string;
-    };
-  };
-  /** POST /api/v1/mev/predictions/ingest — Ingest pending transactions and score them */
-  postApiV1MevPredictionsIngest: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      limit?: number;
-      minScore?: number;
-      preview?: boolean;
-      sensitivity?: string;
-      transactions: Array<unknown>;
-    };
-    response: {
-      accepted?: number;
-      preview?: boolean;
-      result?: unknown;
-    };
-  };
-  /** GET /api/v1/mev/predictions/pending — List buffered pending transactions */
-  getApiV1MevPredictionsPending: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: {
-      count?: number;
-      pending?: Array<unknown>;
-    };
-  };
-  /** DELETE /api/v1/mev/predictions/pending — Clear the pending transaction buffer */
-  deleteApiV1MevPredictionsPending: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: {
-      cleared?: number;
-      success?: boolean;
-    };
+    response: (Models.EcosystemComposabilityIndex);
   };
   /** GET /assets/metrics — Compute live token storage metrics for all SAC-mapped assets */
   getAssetsMetrics: {
@@ -6066,7 +4556,9 @@ export interface OperationTypes {
   /** GET /authorizations/dashboard — Authorization expiry dashboard */
   getAuthorizationsDashboard: {
     path: Record<string, never>;
-    query: Record<string, never>;
+    query: {
+      category?: string;
+    };
     body: never;
     response: {
       activeCount?: number;
@@ -6110,6 +4602,12 @@ export interface OperationTypes {
         /** Total Soroban transactions from this account */
         transactionCount?: number;
       } | null>;
+      /** Invalid or failed input items, identified by their zero-based input index */
+      errors?: Array<{
+        code?: "INVALID_ITEM" | "LOOKUP_FAILED";
+        index?: number;
+        message?: string;
+      }>;
       /** Addresses with no recorded Soroban activity */
       inactive?: Array<string>;
     };
@@ -6134,6 +4632,12 @@ export interface OperationTypes {
         topicSymbol?: string | null;
         transactionHash?: string;
       } | null>;
+      /** Invalid or failed input items, identified by their zero-based input index */
+      errors?: Array<{
+        code?: "INVALID_ITEM" | "LOOKUP_FAILED";
+        index?: number;
+        message?: string;
+      }>;
       /** IDs that were not found */
       missing?: Array<string>;
     };
@@ -6164,139 +4668,29 @@ export interface OperationTypes {
         /** success | failed */
         status?: string;
       } | null>;
+      /** Invalid or failed input items, identified by their zero-based input index */
+      errors?: Array<{
+        code?: "INVALID_ITEM" | "LOOKUP_FAILED";
+        index?: number;
+        message?: string;
+      }>;
       /** Hashes that were not found */
       missing?: Array<string>;
     };
-  };
-  /** GET /bn254 — BN254 elliptic curve service overview */
-  getBn254: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** POST /bn254/pairing-check — Perform a BN254 pairing check (e(A,B) == e(C,D)) */
-  postBn254PairingCheck: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      /** Array of [G1, G2] point pairs */
-      pairs: Array<unknown>;
-    };
-    response: unknown;
-  };
-  /** GET /bn254/params — Get BN254 curve parameters */
-  getBn254Params: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** POST /bn254/point-add — Add two G1 points on the BN254 curve */
-  postBn254PointAdd: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      p1: {
-        x?: string;
-        y?: string;
-      };
-      p2: {
-        x?: string;
-        y?: string;
-      };
-    };
-    response: unknown;
-  };
-  /** POST /bn254/scalar-mul — Scalar multiplication of a G1 point */
-  postBn254ScalarMul: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      point: {
-        x?: string;
-        y?: string;
-      };
-      scalar: string;
-    };
-    response: unknown;
-  };
-  /** POST /bn254/verify-groth16 — Verify a Groth16 zero-knowledge proof */
-  postBn254VerifyGroth16: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      /** Groth16 proof (A, B, C) */
-      proof: Record<string, unknown>;
-      publicInputs: Array<string>;
-      /** Verification key */
-      vk: Record<string, unknown>;
-    };
-    response: unknown;
-  };
-  /** POST /bn254/verify-plonk — Verify a PLONK zero-knowledge proof */
-  postBn254VerifyPlonk: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      proof: Record<string, unknown>;
-      publicInputs: Array<string>;
-      vk: Record<string, unknown>;
-    };
-    response: unknown;
-  };
-  /** GET /checked-arithmetic — Overview of the checked arithmetic service */
-  getCheckedArithmetic: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** POST /checked-arithmetic/compute — Perform a single checked arithmetic operation */
-  postCheckedArithmeticCompute: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      a: number;
-      b: number;
-      bitWidth?: 32 | 64 | 128;
-      operation: "add" | "sub" | "mul" | "div" | "pow" | "rem";
-    };
-    response: unknown;
-  };
-  /** POST /checked-arithmetic/compute/batch — Perform multiple checked arithmetic operations in batch */
-  postCheckedArithmeticComputeBatch: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      operations: Array<unknown>;
-    };
-    response: unknown;
-  };
-  /** GET /checked-arithmetic/limits — Get integer limits for each supported bit width */
-  getCheckedArithmeticLimits: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** POST /checked-arithmetic/validate — Validate an arithmetic expression for overflow safety */
-  postCheckedArithmeticValidate: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      bitWidth?: number;
-      expression: string;
-      variables?: Record<string, unknown>;
-    };
-    response: unknown;
   };
   /** GET /compiler — Compiler service overview */
   getCompiler: {
     path: Record<string, never>;
     query: Record<string, never>;
     body: never;
-    response: unknown;
+    response: {
+      campaignId?: string;
+      contractAddress?: string;
+      coverage?: number;
+      findings?: Array<Record<string, unknown>>;
+      totalCases?: number;
+      unsafeFound?: number;
+    };
   };
   /** POST /compiler/compile — Compile a Soroban contract from uploaded source archive */
   postCompilerCompile: {
@@ -6310,20 +4704,125 @@ export interface OperationTypes {
     path: Record<string, never>;
     query: Record<string, never>;
     body: never;
-    response: unknown;
+    response: Array<{
+      compositionCount?: number;
+      contractAddress?: string;
+      riskIncidents?: number;
+      safetyScoreAvg?: number | null;
+      uniqueCallees?: number;
+      uniqueCallers?: number;
+    }>;
   };
   /** GET /compiler/toolchains — List supported compiler toolchains */
   getCompilerToolchains: {
     path: Record<string, never>;
     query: Record<string, never>;
     body: never;
-    response: unknown;
+    response: {
+      contractAddress?: string;
+      patch?: Record<string, unknown>;
+      patternsFound?: number;
+    };
   };
   /** POST /compiler/verify — Verify source code matches a deployed contract's WASM hash */
   postCompilerVerify: {
     path: Record<string, never>;
     query: Record<string, never>;
     body: string;
+    response: unknown;
+  };
+  /** GET /compliance/rwa — RWA compliance service overview */
+  getComplianceRwa: {
+    path: Record<string, never>;
+    query: Record<string, never>;
+    body: never;
+    response: Array<Models.CompositionPattern>;
+  };
+  /** GET /compliance/rwa/assets — List RWA-compliant assets */
+  getComplianceRwaAssets: {
+    path: Record<string, never>;
+    query: Record<string, never>;
+    body: {
+      category: string;
+      description: string;
+      detectionRules?: unknown;
+      mitigationGuide?: string;
+      name: string;
+      requiredCalls?: number;
+      riskRating?: "safe" | "low_risk" | "medium_risk" | "high_risk" | "critical";
+      safeIf?: unknown;
+    };
+    response: (Models.CompositionPattern);
+  };
+  /** GET /compliance/rwa/assets/{assetId} — Get compliance metadata for an RWA asset */
+  getComplianceRwaAssetsByAssetId: {
+    path: {
+      assetId: string;
+    };
+    query: Record<string, never>;
+    body: never;
+    response: unknown;
+  };
+  /** POST /compliance/rwa/assets/{assetId}/check — Check if a transfer is compliant for an RWA asset */
+  postComplianceRwaAssetsByAssetIdCheck: {
+    path: {
+      assetId: string;
+    };
+    query: Record<string, never>;
+    body: {
+      amount: number;
+      fromAddress: string;
+      toAddress: string;
+    };
+    response: unknown;
+  };
+  /** GET /compliance/rwa/holders/{address} — Get compliance status for an asset holder */
+  getComplianceRwaHoldersByAddress: {
+    path: {
+      address: string;
+    };
+    query: Record<string, never>;
+    body: never;
+    response: unknown;
+  };
+  /** POST /compliance/rwa/holders/{address}/verify — Submit KYC/AML verification for a holder */
+  postComplianceRwaHoldersByAddressVerify: {
+    path: {
+      address: string;
+    };
+    query: Record<string, never>;
+    body: {
+      jurisdiction: string;
+      verificationId: string;
+      verificationProvider: string;
+    };
+    response: unknown;
+  };
+  /** GET /compliance/rwa/jurisdictions — List supported jurisdictions and their compliance requirements */
+  getComplianceRwaJurisdictions: {
+    path: Record<string, never>;
+    query: Record<string, never>;
+    body: never;
+    response: unknown;
+  };
+  /** GET /compliance/rwa/reports — Get regulatory compliance reports */
+  getComplianceRwaReports: {
+    path: Record<string, never>;
+    query: Record<string, never>;
+    body: never;
+    response: unknown;
+  };
+  /** POST /compliance/rwa/reports/schedule — Schedule recurring RWA compliance report generation and delivery */
+  postComplianceRwaReportsSchedule: {
+    path: Record<string, never>;
+    query: Record<string, never>;
+    body: {
+      cadence: "daily" | "weekly" | "monthly";
+      delivery: {
+        email?: string;
+        webhook?: string;
+      };
+    };
     response: unknown;
   };
   /** GET /compliance/token-labels/{tokenId} — Accreditation and risk labels for a token, with reasons */
@@ -6382,6 +4881,7 @@ export interface OperationTypes {
       txHash?: string;
       verification?: Record<string, unknown>;
     };
+    response: Models.Contract;
   };
   /** POST /composability/analyze/batch — Analyse multiple composed transactions in one request */
   postComposabilityAnalyzeBatch: {
@@ -6407,6 +4907,7 @@ export interface OperationTypes {
         txHash?: string;
       }>;
     };
+    response: unknown;
   };
   /** GET /composability/circular-dependencies — Contracts with detected unbounded recursion */
   getComposabilityCircularDependencies: {
@@ -6423,7 +4924,7 @@ export interface OperationTypes {
   /** GET /composability/contracts/{address} — Composability profile for a contract */
   getComposabilityContractsByAddress: {
     path: {
-      address: string;
+      contractId: string;
     };
     query: Record<string, never>;
     body: never;
@@ -6432,6 +4933,7 @@ export interface OperationTypes {
   /** GET /composability/contracts/{address}/callees — Callee count for a contract */
   getComposabilityContractsByAddressCallees: {
     path: {
+      /** Contract address */
       address: string;
     };
     query: Record<string, never>;
@@ -6440,6 +4942,18 @@ export interface OperationTypes {
       contractAddress?: string;
       uniqueCallees?: number;
     };
+    query: {
+      /** Only count calls at or after this ISO-8601 timestamp */
+      since?: string;
+    };
+    body: never;
+    response: Array<{
+      /** Number of calls to this function */
+      callCount?: number;
+      functionName?: string;
+      /** Ledger close time of the most recent call */
+      lastCalledAt?: string | null;
+    }>;
   };
   /** GET /composability/contracts/{address}/callers — Caller count and composition partners for a contract */
   getComposabilityContractsByAddressCallers: {
@@ -6453,6 +4967,7 @@ export interface OperationTypes {
       contractAddress?: string;
       uniqueCallers?: number;
     };
+    response: unknown;
   };
   /** GET /composability/contracts/{address}/patterns — Pattern instances observed involving a contract */
   getComposabilityContractsByAddressPatterns: {
@@ -6495,9 +5010,7 @@ export interface OperationTypes {
   /** GET /composability/ecosystem-index/history — Historical ecosystem index snapshots */
   getComposabilityEcosystemIndexHistory: {
     path: Record<string, never>;
-    query: {
-      limit?: number;
-    };
+    query: Record<string, never>;
     body: never;
     response: Array<Models.EcosystemComposabilityIndex>;
   };
@@ -6538,6 +5051,7 @@ export interface OperationTypes {
         to: string;
       }>;
     };
+    body: never;
     response: {
       confidence?: number;
       description?: string | null;
@@ -6557,7 +5071,6 @@ export interface OperationTypes {
     path: {
       campaignId: string;
     };
-    query: Record<string, never>;
     body: never;
     response: (Models.ComposabilityFuzzCampaign);
   };
@@ -6566,6 +5079,10 @@ export interface OperationTypes {
     path: {
       campaignId: string;
     };
+  };
+  /** GET /graph/dependencies/svg — Get contract dependency graph as SVG visualization */
+  getGraphDependenciesSvg: {
+    path: Record<string, never>;
     query: Record<string, never>;
     body: never;
     response: {
@@ -6653,6 +5170,7 @@ export interface OperationTypes {
       patch?: Record<string, unknown>;
       txHash?: string;
     };
+    response: unknown;
   };
   /** GET /composability/patterns — All catalogued composition patterns ordered by risk rating */
   getComposabilityPatterns: {
@@ -6708,6 +5226,7 @@ export interface OperationTypes {
       txHash?: string;
       verification?: Record<string, unknown> | null;
     };
+    response: unknown;
   };
   /** GET /composability/score/{txHash} — Safety score and per-dimension breakdown for a transaction */
   getComposabilityScoreByTxHash: {
@@ -6771,6 +5290,7 @@ export interface OperationTypes {
       txHash?: string;
       verified?: boolean;
     };
+    response: unknown;
   };
   /** GET /contracts — List all indexed contracts */
   getContracts: {
@@ -6853,7 +5373,10 @@ export interface OperationTypes {
   getContractsLicenses: {
     path: Record<string, never>;
     query: Record<string, never>;
-    body: never;
+    body: {
+      limit?: number;
+      tokenAddress?: string;
+    };
     response: unknown;
   };
   /** GET /contracts/licenses/{contractId} — License and attribution for a contract */
@@ -6869,6 +5392,16 @@ export interface OperationTypes {
   putContractsLicensesByContractId: {
     path: {
       contractId: string;
+    };
+    query: Record<string, never>;
+    body: never;
+    response: unknown;
+  };
+  /** GET /contracts/protocol/{protocolKey} — List every network deployment grouped under one protocol key */
+  getContractsProtocolByProtocolKey: {
+    path: {
+      /** Linkage hint shared by deployments of the same protocol */
+      protocolKey: string;
     };
     query: Record<string, never>;
     body: never;
@@ -6924,24 +5457,38 @@ export interface OperationTypes {
     query: {
       /** Filter by contract address (exact match) */
       contract?: string;
-      /** Event id to resume after (cursor pagination, preferred for deep pages). Takes precedence over `page` when set. */
+      /** Legacy event-id cursor, or the opaque nextCursor value when `pagination=cursor`. */
       cursor?: string;
       /** Page size */
       limit?: number;
-      /** 1-based page number (offset pagination) */
+      /** 1-based page number for legacy offset pagination; do not combine with pagination=cursor */
       page?: number;
+      /** Select the stable opaque cursor contract. On the first page, omit `cursor`; pass the returned `nextCursor` on subsequent requests. */
+      pagination?: "cursor";
       /** Filter by decoded first-topic symbol (e.g. "transfer", "mint_pass") */
       topic?: string;
       /** Filter by event type (e.g. transfer, swap, mint, burn, custom) */
       type?: string;
     };
     body: never;
-    response: {
+    response: ({
+      data: Array<{
+        contractAddress?: string;
+        decoded?: Record<string, unknown> | null;
+        eventType?: string;
+        id?: string;
+        ledgerCloseTime?: string;
+        ledgerSequence?: number;
+        topicSymbol?: string | null;
+        transactionHash?: string;
+      }>;
+      hasNext: boolean;
+      /** Opaque cursor; pass with pagination=cursor */
+      nextCursor: string | null;
+    }) | ({
       data?: Array<{
         contractAddress?: string;
-        /** Human-readable decoded event payload */
         decoded?: Record<string, unknown> | null;
-        /** transfer | swap | mint | burn | custom */
         eventType?: string;
         id?: string;
         ledgerCloseTime?: string;
@@ -6950,12 +5497,94 @@ export interface OperationTypes {
         transactionHash?: string;
       }>;
       limit?: number;
-      /** Pass as `cursor` to fetch the next page */
+      /** Legacy event-id cursor */
       nextCursor?: string | null;
       page?: number;
       /** Total number of events matching the filter */
       total?: number;
+    });
+  };
+  /** GET /events/advanced — Advanced Events service overview */
+  getEventsAdvanced: {
+    path: Record<string, never>;
+    query: Record<string, never>;
+    body: never;
+    response: unknown;
+  };
+  /** GET /events/advanced/aggregations — Get aggregated event statistics across the network */
+  getEventsAdvancedAggregations: {
+    path: Record<string, never>;
+    query: {
+      period?: "1h" | "24h" | "7d" | "30d";
     };
+    body: never;
+    response: unknown;
+  };
+  /** GET /events/advanced/contracts/{contractId} — Get advanced event analysis for a specific contract */
+  getEventsAdvancedContractsByContractId: {
+    path: {
+      contractId: string;
+    };
+    body: never;
+    response: unknown;
+  };
+  /** POST /i18n/translate/batch — Translate multiple keys at once */
+  postI18nTranslateBatch: {
+    path: Record<string, never>;
+    query: Record<string, never>;
+    body: never;
+    response: unknown;
+  };
+  /** POST /events/advanced/query — Query events with advanced filters */
+  postEventsAdvancedQuery: {
+    path: Record<string, never>;
+    query: Record<string, never>;
+    body: {
+      contractIds?: Array<string>;
+      eventTypes?: Array<string>;
+      ledgerFrom?: number;
+      ledgerTo?: number;
+      limit?: number;
+      offset?: number;
+      topics?: Array<string>;
+    };
+    response: unknown;
+  };
+  /** GET /events/advanced/replay/{txHash} — Replay all events emitted by a specific transaction */
+  getEventsAdvancedReplayByTxHash: {
+    path: {
+      txHash: string;
+    };
+    query: Record<string, never>;
+    body: never;
+    response: unknown;
+  };
+  /** GET /events/advanced/subscriptions — List active event subscriptions */
+  getEventsAdvancedSubscriptions: {
+    path: Record<string, never>;
+    query: Record<string, never>;
+    body: never;
+    response: unknown;
+  };
+  /** POST /events/advanced/subscriptions — Subscribe to events matching a filter */
+  postEventsAdvancedSubscriptions: {
+    path: Record<string, never>;
+    query: Record<string, never>;
+    body: {
+      contractIds?: Array<string>;
+      topics?: Array<string>;
+      webhookUrl: string;
+    };
+    response: unknown;
+  };
+  /** DELETE /events/advanced/subscriptions/{id} — Cancel an event subscription */
+  deleteEventsAdvancedSubscriptionsById: {
+    path: {
+      id: string;
+    };
+    query: Record<string, never>;
+    body: never;
+    response: void;
   };
   /** GET /events/{id} — Get a single event by ID */
   getEventsById: {
@@ -7020,6 +5649,45 @@ export interface OperationTypes {
     body: never;
     response: unknown;
   };
+  /** GET /graph/contract-calls — Weighted contract-to-contract call graph for visualization */
+  getGraphContractCalls: {
+    path: Record<string, never>;
+    query: {
+      /** Root contract address (omit for ecosystem scope) */
+      address?: string;
+      direction?: "upstream" | "downstream" | "both";
+      includeInactive?: boolean;
+      maxDepth?: number;
+      maxEdges?: number;
+      maxNodes?: number;
+      /** Drop edges (and traversal) below this call weight */
+      minWeight?: number;
+      /** Bypass the cache and recompute */
+      refresh?: boolean;
+      timeoutMs?: number;
+    };
+    body: never;
+    response: {
+      edges?: Array<{
+        id?: string;
+        source?: string;
+        target?: string;
+        weight?: number;
+      }>;
+      metadata?: Record<string, unknown>;
+      nodes?: Array<{
+        address?: string;
+        callVolume?: number;
+        depth?: number | null;
+        id?: string;
+        inDegree?: number;
+        isRoot?: boolean;
+        label?: string;
+        name?: string | null;
+        outDegree?: number;
+      }>;
+    };
+  };
   /** GET /graph/contracts/{address}/downstream — Get downstream contract dependencies using frontier-paginated BFS */
   getGraphContractsByAddressDownstream: {
     path: {
@@ -7082,7 +5750,9 @@ export interface OperationTypes {
   getGraphDependencies: {
     path: Record<string, never>;
     query: Record<string, never>;
-    body: never;
+    body: {
+      txHash: string;
+    };
     response: {
       edges?: Array<{
         from?: string;
@@ -7127,7 +5797,6 @@ export interface OperationTypes {
       /** Filter by node types (comma-separated) */
       nodeTypes?: string;
     };
-    body: never;
     response: {
       edges?: Array<Record<string, unknown>>;
       metadata?: Record<string, unknown>;
@@ -7435,7 +6104,6 @@ export interface OperationTypes {
     query: {
       limit?: number;
     };
-    body: never;
     response: {
       count?: number;
       data?: Array<Models.MevEvent>;
@@ -7480,7 +6148,6 @@ export interface OperationTypes {
     query: {
       limit?: number;
     };
-    body: never;
     response: {
       bots?: Array<Models.MevAttacker>;
       count?: number;
@@ -7683,6 +6350,74 @@ export interface OperationTypes {
     body: never;
     response: Models.MevOverview;
   };
+  /** GET /mev/predictions — Ranked forward-looking MEV predictions */
+  getMevPredictions: {
+    path: Record<string, never>;
+    query: {
+      limit?: number;
+      lookbackMinutes?: number;
+      /** Hard floor on score, combined with the sensitivity threshold */
+      minScore?: number;
+      /** Sandbox-safe mode — recompute without broadcasting */
+      preview?: "true" | "false";
+      /** Numeric 0-1 or a preset (conservative|balanced|aggressive) */
+      sensitivity?: string;
+      stage?: "pending" | "recent" | "all";
+      /** Comma-separated subset of arbitrage,sandwich,liquidation */
+      types?: string;
+    };
+    body: never;
+    response: unknown;
+  };
+  /** GET /mev/predictions/config — Prediction engine configuration */
+  getMevPredictionsConfig: {
+    path: Record<string, never>;
+    query: Record<string, never>;
+    body: never;
+    response: {
+      defaultSensitivity?: number;
+      sensitivityPresets?: Record<string, number>;
+      signalTypes?: Array<string>;
+      webSocketPath?: string;
+    };
+  };
+  /** POST /mev/predictions/ingest — Ingest pending transactions and score them */
+  postMevPredictionsIngest: {
+    path: Record<string, never>;
+    query: Record<string, never>;
+    body: {
+      limit?: number;
+      minScore?: number;
+      preview?: boolean;
+      sensitivity?: string;
+      transactions: Array<unknown>;
+    };
+    response: {
+      accepted?: number;
+      preview?: boolean;
+      result?: unknown;
+    };
+  };
+  /** GET /mev/predictions/pending — List buffered pending transactions */
+  getMevPredictionsPending: {
+    path: Record<string, never>;
+    query: Record<string, never>;
+    body: never;
+    response: {
+      count?: number;
+      pending?: Array<unknown>;
+    };
+  };
+  /** DELETE /mev/predictions/pending — Clear the pending transaction buffer */
+  deleteMevPredictionsPending: {
+    path: Record<string, never>;
+    query: Record<string, never>;
+    body: never;
+    response: {
+      cleared?: number;
+      success?: boolean;
+    };
+  };
   /** POST /mev/protect-tx — Request protected submission for a transaction */
   postMevProtectTx: {
     path: Record<string, never>;
@@ -7725,7 +6460,6 @@ export interface OperationTypes {
       /** Protocol contract address */
       contract: string;
     };
-    query: Record<string, never>;
     body: never;
     response: {
       contractAddress?: string;
@@ -7763,6 +6497,8 @@ export interface OperationTypes {
       };
       success?: boolean;
     };
+    body: never;
+    response: Models.PrivacyComplianceReport;
   };
   /** GET /mev/reports/weekly — MEV totals for the last 7 days */
   getMevReportsWeekly: {
@@ -7802,6 +6538,8 @@ export interface OperationTypes {
       description: string;
       name: string;
     };
+    query: Record<string, never>;
+    body: never;
     response: {
       confidence?: number;
       description?: string;
@@ -7869,88 +6607,6 @@ export interface OperationTypes {
       /** Soroban RPC endpoint */
       rpcUrl?: string;
     };
-  };
-  /** GET /oracle-feeds — Oracle feeds service overview */
-  getOracleFeeds: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /oracle-feeds/assets — List all available oracle price feed assets */
-  getOracleFeedsAssets: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /oracle-feeds/assets/{assetPair}/history — Get historical price data for an asset pair */
-  getOracleFeedsAssetsByAssetPairHistory: {
-    path: {
-      assetPair: string;
-    };
-    query: {
-      from?: string;
-      limit?: number;
-      to?: string;
-    };
-    body: never;
-    response: unknown;
-  };
-  /** GET /oracle-feeds/assets/{assetPair}/ohlcv — Get OHLCV (open/high/low/close/volume) candle data */
-  getOracleFeedsAssetsByAssetPairOhlcv: {
-    path: {
-      assetPair: string;
-    };
-    query: {
-      limit?: number;
-      resolution?: "1m" | "5m" | "15m" | "1h" | "4h" | "1d";
-    };
-    body: never;
-    response: unknown;
-  };
-  /** GET /oracle-feeds/assets/{assetPair}/price — Get current price for an asset pair */
-  getOracleFeedsAssetsByAssetPairPrice: {
-    path: {
-      assetPair: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /oracle-feeds/providers — List oracle data providers */
-  getOracleFeedsProviders: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** POST /oracle-feeds/subscribe — Subscribe to price feed updates */
-  postOracleFeedsSubscribe: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      assetPair: string;
-      updateFrequencyMs?: number;
-      webhookUrl: string;
-    };
-    response: unknown;
-  };
-  /** GET /oracle-feeds/subscriptions — List active feed subscriptions */
-  getOracleFeedsSubscriptions: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** DELETE /oracle-feeds/subscriptions/{id} — Cancel a feed subscription */
-  deleteOracleFeedsSubscriptionsById: {
-    path: {
-      id: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: void;
   };
   /** GET /oracles/audit — Oracle audit service overview */
   getOraclesAudit: {
@@ -8023,6 +6679,88 @@ export interface OperationTypes {
       reportedPrice: number;
     };
     response: unknown;
+  };
+  /** GET /oracles/feeds — Oracle feeds service overview */
+  getOraclesFeeds: {
+    path: Record<string, never>;
+    query: Record<string, never>;
+    body: never;
+    response: unknown;
+  };
+  /** GET /oracles/feeds/assets — List all available oracle price feed assets */
+  getOraclesFeedsAssets: {
+    path: Record<string, never>;
+    query: Record<string, never>;
+    body: never;
+    response: unknown;
+  };
+  /** GET /oracles/feeds/assets/{assetPair}/history — Get historical price data for an asset pair */
+  getOraclesFeedsAssetsByAssetPairHistory: {
+    path: {
+      assetPair: string;
+    };
+    query: {
+      from?: string;
+      limit?: number;
+      to?: string;
+    };
+    body: never;
+    response: unknown;
+  };
+  /** GET /oracles/feeds/assets/{assetPair}/ohlcv — Get OHLCV (open/high/low/close/volume) candle data */
+  getOraclesFeedsAssetsByAssetPairOhlcv: {
+    path: {
+      assetPair: string;
+    };
+    query: {
+      limit?: number;
+      resolution?: "1m" | "5m" | "15m" | "1h" | "4h" | "1d";
+    };
+    body: never;
+    response: unknown;
+  };
+  /** GET /oracles/feeds/assets/{assetPair}/price — Get current price for an asset pair */
+  getOraclesFeedsAssetsByAssetPairPrice: {
+    path: {
+      assetPair: string;
+    };
+    query: Record<string, never>;
+    body: never;
+    response: unknown;
+  };
+  /** GET /oracles/feeds/providers — List oracle data providers */
+  getOraclesFeedsProviders: {
+    path: Record<string, never>;
+    query: Record<string, never>;
+    body: never;
+    response: unknown;
+  };
+  /** POST /oracles/feeds/subscribe — Subscribe to price feed updates */
+  postOraclesFeedsSubscribe: {
+    path: Record<string, never>;
+    query: Record<string, never>;
+    body: {
+      assetPair: string;
+      updateFrequencyMs?: number;
+      webhookUrl: string;
+    };
+    response: unknown;
+  };
+  /** GET /oracles/feeds/subscriptions — List active feed subscriptions */
+  getOraclesFeedsSubscriptions: {
+    path: Record<string, never>;
+    query: Record<string, never>;
+    body: never;
+    response: unknown;
+  };
+  /** DELETE /oracles/feeds/subscriptions/{id} — Cancel a feed subscription */
+  deleteOraclesFeedsSubscriptionsById: {
+    path: {
+      id: string;
+    };
+    query: Record<string, never>;
+    body: never;
+    response: void;
   };
   /** GET /privacy/anonymity-sets — Current anonymity set sizes by protocol */
   getPrivacyAnonymitySets: {
@@ -8201,7 +6939,6 @@ export interface OperationTypes {
     path: {
       address: string;
     };
-    query: Record<string, never>;
     body: never;
     response: {
       address?: string;
@@ -8223,7 +6960,6 @@ export interface OperationTypes {
     path: {
       address: string;
     };
-    query: Record<string, never>;
     body: never;
     response: {
       address?: string;
@@ -8247,7 +6983,8 @@ export interface OperationTypes {
   /** GET /privacy/de-anonymization/amount/{address} — Amount-correlation analysis for an address */
   getPrivacyDeAnonymizationAmountByAddress: {
     path: {
-      address: string;
+      /** Transaction hash */
+      txHash: string;
     };
     query: Record<string, never>;
     body: never;
@@ -8422,7 +7159,9 @@ export interface OperationTypes {
       protocol: string;
     };
     query: {
-      days?: number;
+      limit?: number;
+      offset?: number;
+      status?: string;
     };
     body: never;
     response: {
@@ -8798,75 +7537,6 @@ export interface OperationTypes {
       totalTx?: number;
     };
   };
-  /** GET /protocol26 — Protocol 26 state extension service overview */
-  getProtocol26: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /protocol26/archive/stats — Get archival statistics for the network */
-  getProtocol26ArchiveStats: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /protocol26/contracts/{contractId}/entries — List persistent and temporary storage entries for a contract */
-  getProtocol26ContractsByContractIdEntries: {
-    path: {
-      contractId: string;
-    };
-    query: {
-      nearExpiry?: boolean;
-      type?: "persistent" | "temporary" | "all";
-    };
-    body: never;
-    response: unknown;
-  };
-  /** POST /protocol26/contracts/{contractId}/extend-ttl — Extend the TTL for a contract's state entries */
-  postProtocol26ContractsByContractIdExtendTtl: {
-    path: {
-      contractId: string;
-    };
-    query: Record<string, never>;
-    body: {
-      entryType?: "instance" | "persistent" | "temporary";
-      /** Number of ledgers to extend the entry TTL by */
-      ledgersToLive: number;
-    };
-    response: unknown;
-  };
-  /** GET /protocol26/contracts/{contractId}/ttl — Get TTL information for a contract's state entries */
-  getProtocol26ContractsByContractIdTtl: {
-    path: {
-      contractId: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /protocol26/expiring — List contracts with state entries expiring soon */
-  getProtocol26Expiring: {
-    path: Record<string, never>;
-    query: {
-      /** Warn if TTL < this many ledgers (default 50000, ~3 days) */
-      ledgersThreshold?: number;
-    };
-    body: never;
-    response: unknown;
-  };
-  /** POST /protocol26/footprint/optimize — Optimize a transaction footprint for Protocol 26 state access */
-  postProtocol26FootprintOptimize: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      contractId: string;
-      readOnly?: Array<string>;
-      readWrite?: Array<string>;
-    };
-    response: unknown;
-  };
   /** POST /ramp/execute — Execute a fiat/crypto ramp order */
   postRampExecute: {
     path: Record<string, never>;
@@ -8970,868 +7640,6 @@ export interface OperationTypes {
     query: Record<string, never>;
     body: never;
     response: Record<string, string>;
-  };
-  /** GET /reputation/attestations/{address} — List attestations from inline chain data (legacy stateless endpoint) */
-  getReputationAttestationsByAddress: {
-    path: {
-      address: string;
-    };
-    query: {
-      /** JSON-encoded ChainReputationData array. */
-      chainData?: string;
-      /** Set to "true" to return only verifiable attestations. */
-      verified?: "true";
-    };
-    body: never;
-    response: {
-      address?: string;
-      attestations?: Array<Record<string, unknown>>;
-      total?: number;
-    };
-  };
-  /** GET /reputation/badges/{address} — Get earned badges from inline chain data (legacy stateless endpoint) */
-  getReputationBadgesByAddress: {
-    path: {
-      address: string;
-    };
-    query: {
-      /** JSON-encoded ChainReputationData array. */
-      chainData?: string;
-    };
-    body: never;
-    response: {
-      address?: string;
-      badges?: Array<Models.ReputationBadge>;
-    };
-  };
-  /** POST /reputation/credentials/verify — Check whether a JSON payload matches the W3C VC format */
-  postReputationCredentialsVerify: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: Record<string, unknown>;
-    response: {
-      message?: string;
-      verified?: boolean;
-    };
-  };
-  /** GET /reputation/credentials/{address} — List verifiable credentials from inline chain data (legacy stateless endpoint) */
-  getReputationCredentialsByAddress: {
-    path: {
-      address: string;
-    };
-    query: {
-      /** JSON-encoded ChainReputationData array. */
-      chainData?: string;
-      /** Set to "true" to return only W3C-valid credentials. */
-      verified?: "true";
-    };
-    body: never;
-    response: {
-      address?: string;
-      credentials?: Array<Record<string, unknown>>;
-      total?: number;
-    };
-  };
-  /** POST /reputation/disputes — Open a reputation dispute against an address */
-  postReputationDisputes: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      challenge: string;
-      challenger: string;
-      evidenceHash: string;
-      quorumVotes?: number;
-      respondent: string;
-    };
-    response: Models.ReputationDisputeRecord;
-  };
-  /** GET /reputation/disputes/{id} — Get a dispute by id, including all votes */
-  getReputationDisputesById: {
-    path: {
-      id: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: Models.ReputationDisputeRecord;
-  };
-  /** POST /reputation/disputes/{id}/resolve — Resolve a dispute by tallying its votes */
-  postReputationDisputesByIdResolve: {
-    path: {
-      id: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: {
-      dispute?: Models.ReputationDisputeRecord;
-      resolution?: {
-        caseId?: string;
-        outcome?: "upheld" | "rejected" | "timeout" | null;
-        quorumReached?: boolean;
-        quorumVotes?: number;
-        status?: "open" | "resolved";
-        votesAbstain?: number;
-        votesAgainst?: number;
-        votesFor?: number;
-        winner?: string;
-      };
-    };
-  };
-  /** POST /reputation/disputes/{id}/vote — Cast a vote on a reputation dispute */
-  postReputationDisputesByIdVote: {
-    path: {
-      id: string;
-    };
-    query: Record<string, never>;
-    body: {
-      signature?: string;
-      transactionHash?: string;
-      vote: "uphold" | "reject" | "abstain";
-      voter: string;
-      weight?: number;
-    };
-    response: {
-      createdAt?: string;
-      disputeId?: string;
-      id?: string;
-      signature?: string | null;
-      transactionHash?: string | null;
-      vote?: string | null;
-      voter?: string;
-      weight?: number | null;
-    };
-  };
-  /** POST /reputation/endorse — Record an endorsement from one address to another */
-  postReputationEndorse: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      chainId: string;
-      endorser: string;
-      subject: string;
-      weight?: number;
-    };
-    response: Models.ReputationEndorsement;
-  };
-  /** POST /reputation/endorsements — Compute weighted endorsements from inline data (legacy stateless endpoint) */
-  postReputationEndorsements: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      /** Must be an array if provided. */
-      endorsements?: Array<{
-        chainId?: string;
-        endorser?: string;
-        subject?: string;
-        weight?: number;
-      }>;
-      /** Map of endorser address to their reputation score. */
-      endorserScores?: Record<string, number>;
-    };
-    response: {
-      endorsements?: Array<{
-        chainId?: string;
-        endorser?: string;
-        subject?: string;
-        weight?: number;
-      }>;
-    };
-  };
-  /** POST /reputation/governance/delegate — Delegate voting power to another address */
-  postReputationGovernanceDelegate: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      amount?: number;
-      delegatee: string;
-      delegator: string;
-    };
-    response: {
-      amount?: string | null;
-      createdAt?: string;
-      delegatee?: string;
-      delegator?: string;
-      id?: string;
-    };
-  };
-  /** POST /reputation/governance/vote — Cast or update a governance vote for a proposal */
-  postReputationGovernanceVote: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      proposalId: string;
-      support: "for" | "against" | "abstain";
-      voter: string;
-      weight?: number;
-    };
-    response: {
-      createdAt?: string;
-      id?: string;
-      proposalId?: string;
-      reason?: string | null;
-      vote?: string | null;
-      voter?: string;
-      weight?: number | null;
-    };
-  };
-  /** GET /reputation/governance/voting-power/{address} — Get the effective voting power for an address */
-  getReputationGovernanceVotingPowerByAddress: {
-    path: {
-      address: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: {
-      address?: string;
-      delegatedIn?: number;
-      delegatedOut?: number;
-      effectivePower?: number;
-      ownPower?: number;
-    };
-  };
-  /** POST /reputation/identity/link — Verify a set of cross-chain identity links (legacy stateless endpoint) */
-  postReputationIdentityLink: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      canonicalAddress: string;
-      /** Must be an array if provided. */
-      links?: Array<{
-        address?: string;
-        chainId?: string;
-        message?: string;
-        signature?: string;
-      }>;
-    };
-    response: {
-      links?: Array<Models.VerifiedIdentityLink>;
-    };
-  };
-  /** POST /reputation/identity/score — Compute a cross-identity reputation score (legacy stateless endpoint) */
-  postReputationIdentityScore: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      canonicalAddress: string;
-      /** Must be an array if provided; omit to use empty set. */
-      chainData?: Array<Record<string, unknown>>;
-      /** Linked identity inputs to verify and include. */
-      links?: Array<Record<string, unknown>>;
-    };
-    response: (Models.ReputationScoreResult) & ({
-      identityLinks?: Array<Models.VerifiedIdentityLink>;
-    });
-  };
-  /** GET /reputation/leaderboard — Get reputation leaderboard (overall) */
-  getReputationLeaderboard: {
-    path: Record<string, never>;
-    query: {
-      /** Number of entries to return (clamped 1-100, never throws 400). */
-      limit?: number;
-    };
-    body: never;
-    response: {
-      category?: string;
-      leaderboard?: Array<Models.LeaderboardEntry>;
-    };
-  };
-  /** GET /reputation/leaderboard/{category} — Get reputation leaderboard for a specific category */
-  getReputationLeaderboardByCategory: {
-    path: {
-      /** Score category (e.g. "activity", "governance", "attestations"). */
-      category: string;
-    };
-    query: {
-      limit?: number;
-    };
-    body: never;
-    response: {
-      category?: string;
-      leaderboard?: Array<Models.LeaderboardEntry>;
-    };
-  };
-  /** GET /reputation/leaderboards/{category} — Get a leaderboard from inline chain data (legacy stateless endpoint) */
-  getReputationLeaderboardsByCategory: {
-    path: {
-      /** Score category (e.g. "overall"). Pass "overall" to match the base route. */
-      category: string;
-    };
-    query: {
-      /** JSON-encoded ChainReputationData array (must be an array if provided). */
-      chainData?: string;
-      limit?: number;
-    };
-    body: never;
-    response: {
-      category?: string;
-      leaderboard?: Array<Models.LeaderboardEntry>;
-    };
-  };
-  /** POST /reputation/link — Link a cross-chain address to a canonical reputation profile */
-  postReputationLink: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      address: string;
-      canonicalAddress: string;
-      chainId: string;
-      message?: string;
-      signature: string;
-    };
-    response: Models.ReputationLinkedIdentity;
-  };
-  /** DELETE /reputation/link/{id} — Remove a linked cross-chain identity by its record id */
-  deleteReputationLinkById: {
-    path: {
-      /** LinkedIdentity record id. */
-      id: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: {
-      removedLink?: (Models.ReputationLinkedIdentity) & ({
-        profile?: Models.ReputationProfileRecord;
-      });
-      success?: boolean;
-    };
-  };
-  /** POST /reputation/nfts/mint/{badgeType} — Mint a Soulbound reputation NFT for an address */
-  postReputationNftsMintByBadgeType: {
-    path: {
-      /** Badge type identifier (e.g. "whale", "governance_voter"). */
-      badgeType: string;
-    };
-    query: Record<string, never>;
-    body: {
-      address: string;
-    };
-    response: Models.ReputationNftRecord;
-  };
-  /** GET /reputation/nfts/{address} — List all reputation NFTs for an address */
-  getReputationNftsByAddress: {
-    path: {
-      address: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: Array<Models.ReputationNftRecord>;
-  };
-  /** GET /reputation/nfts/{address}/{badgeType}/verify — Verify whether an address holds a specific Soulbound NFT badge */
-  getReputationNftsByAddressByBadgeTypeVerify: {
-    path: {
-      address: string;
-      badgeType: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: {
-      message?: string;
-      nft?: (Models.ReputationNftRecord) | (unknown);
-      verified?: boolean;
-    };
-  };
-  /** GET /reputation/oracle-counts/{address} — Count valid attestations and credentials from inline chain data (legacy stateless endpoint) */
-  getReputationOracleCountsByAddress: {
-    path: {
-      address: string;
-    };
-    query: {
-      /** JSON-encoded ChainReputationData array. */
-      chainData?: string;
-    };
-    body: never;
-    response: {
-      address?: string;
-      attestations?: number;
-      credentials?: number;
-    };
-  };
-  /** GET /reputation/oracle/proof — Get the verifiable proof for an address's reputation score */
-  getReputationOracleProof: {
-    path: Record<string, never>;
-    query: {
-      /** Address to generate proof for. */
-      address: string;
-    };
-    body: never;
-    response: Models.ReputationProof;
-  };
-  /** POST /reputation/oracle/query — Query the reputation oracle for a full response */
-  postReputationOracleQuery: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      address: string;
-    };
-    response: Models.OracleReputationResponse;
-  };
-  /** GET /reputation/oracle/{address} — Get an oracle response from inline chain data (legacy stateless endpoint) */
-  getReputationOracleByAddress: {
-    path: {
-      address: string;
-    };
-    query: {
-      /** JSON-encoded ChainReputationData array. */
-      chainData?: string;
-    };
-    body: never;
-    response: Models.OracleReputationResponse;
-  };
-  /** POST /reputation/score — Compute a reputation score (legacy stateless endpoint) */
-  postReputationScore: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      address: string;
-      /** On-chain data array. If provided it must be an array or a 400 is returned. */
-      chainData?: Array<Record<string, unknown>>;
-    };
-    response: Models.ReputationScoreResult;
-  };
-  /** GET /reputation/sdk/js — Download the Reputation JavaScript SDK */
-  getReputationSdkJs: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** POST /reputation/sdk/register — Register a dApp to receive a Reputation SDK API key */
-  postReputationSdkRegister: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      name: string;
-    };
-    response: {
-      apiKey?: string;
-      createdAt?: string;
-      id?: string;
-      name?: string;
-    };
-  };
-  /** GET /reputation/search — Search reputation profiles by address or domain */
-  getReputationSearch: {
-    path: Record<string, never>;
-    query: {
-      /** Partial address or domain string (case-insensitive, up to 10 results). */
-      q: string;
-    };
-    body: never;
-    response: {
-      query?: string;
-      results?: Array<Models.ReputationProfileRecord>;
-    };
-  };
-  /** GET /reputation/sybil/{address} — Get Sybil risk from inline chain data (legacy stateless endpoint) */
-  getReputationSybilByAddress: {
-    path: {
-      address: string;
-    };
-    query: {
-      /** JSON-encoded ChainReputationData array. */
-      chainData?: string;
-    };
-    body: never;
-    response: Models.SybilAssessment;
-  };
-  /** GET /reputation/trust-network/influence/{address} — Get the influence score for an address in the trust network */
-  getReputationTrustNetworkInfluenceByAddress: {
-    path: {
-      address: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: {
-      address?: string;
-      influenceScore?: number;
-    };
-  };
-  /** GET /reputation/trust-network/{address} — Get the trust graph for an address */
-  getReputationTrustNetworkByAddress: {
-    path: {
-      address: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: {
-      edges?: Array<{
-        chainId?: string;
-        from?: string;
-        to?: string;
-        transactionHash?: string | null;
-        type?: string | null;
-        weight?: number;
-      }>;
-      nodes?: Array<string>;
-    };
-  };
-  /** GET /reputation/trust-network/{address}/path/{target} — Find the shortest trust path between two addresses */
-  getReputationTrustNetworkByAddressPathByTarget: {
-    path: {
-      address: string;
-      target: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: Models.TrustPath;
-  };
-  /** POST /reputation/trust/path — Find a trust path from inline chain data (legacy stateless endpoint) */
-  postReputationTrustPath: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      /** Must be an array if provided. */
-      chainData?: Array<Record<string, unknown>>;
-      from: string;
-      maxDepth?: number;
-      to: string;
-    };
-    response: {
-      from?: string;
-      path?: (Models.TrustPath) | (unknown);
-      to?: string;
-    };
-  };
-  /** POST /reputation/verify-cross-chain — Record a verified cross-chain reputation signal for an address */
-  postReputationVerifyCrossChain: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      address: string;
-      chain: string;
-      metadata?: Record<string, unknown>;
-      signalType: string;
-      source?: string;
-      value?: number;
-    };
-    response: {
-      chain?: string;
-      createdAt?: string;
-      id?: string;
-      metadata?: Record<string, unknown> | null;
-      normalizedScore?: number | null;
-      profileId?: string;
-      signalType?: string;
-      source?: string | null;
-      value?: number | null;
-      verified?: boolean;
-      weight?: number | null;
-    };
-  };
-  /** GET /reputation/{address} — Compute and return the full reputation score for an address */
-  getReputationByAddress: {
-    path: {
-      /** Stellar or EVM address (normalised to canonical form). */
-      address: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: Models.ReputationScoreResult;
-  };
-  /** POST /reputation/{address}/attest — Submit an on-chain or off-chain attestation for an address */
-  postReputationByAddressAttest: {
-    path: {
-      address: string;
-    };
-    query: Record<string, never>;
-    body: {
-      attester: string;
-      blockNumber?: number;
-      chainId: string;
-      data?: Record<string, unknown>;
-      recipient?: string;
-      revoked?: boolean;
-      schemaId: string;
-      signature?: string;
-      transactionHash?: string;
-    };
-    response: Models.ReputationAttestationRecord;
-  };
-  /** GET /reputation/{address}/attestations — List all stored attestations for an address */
-  getReputationByAddressAttestations: {
-    path: {
-      address: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: {
-      address?: string;
-      attestations?: Array<Models.ReputationAttestationRecord>;
-      total?: number;
-    };
-  };
-  /** GET /reputation/{address}/attestations/{id}/verify — Verify a stored attestation by its uid */
-  getReputationByAddressAttestationsByIdVerify: {
-    path: {
-      address: string;
-      /** The uid of the attestation. */
-      id: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: {
-      id?: string;
-      verificationMsg?: string;
-      verified?: boolean;
-    };
-  };
-  /** GET /reputation/{address}/badges — Get earned reputation badges for an address */
-  getReputationByAddressBadges: {
-    path: {
-      address: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: {
-      address?: string;
-      badges?: Array<Models.ReputationBadge>;
-    };
-  };
-  /** GET /reputation/{address}/credentials — List stored verifiable credentials for an address */
-  getReputationByAddressCredentials: {
-    path: {
-      address: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: {
-      address?: string;
-      credentials?: Array<Models.ReputationVerifiableCredential>;
-      total?: number;
-    };
-  };
-  /** POST /reputation/{address}/credentials — Submit a W3C Verifiable Credential for an address */
-  postReputationByAddressCredentials: {
-    path: {
-      address: string;
-    };
-    query: Record<string, never>;
-    body: Record<string, unknown>;
-    response: Models.ReputationVerifiableCredential;
-  };
-  /** GET /reputation/{address}/cross-chain — Get per-chain reputation scores for an address */
-  getReputationByAddressCrossChain: {
-    path: {
-      address: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: {
-      address?: string;
-      crossChainScores?: Array<Models.ReputationChainScore>;
-    };
-  };
-  /** GET /reputation/{address}/endorsements/received — List endorsements received by an address */
-  getReputationByAddressEndorsementsReceived: {
-    path: {
-      address: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: {
-      address?: string;
-      endorsements?: Array<Models.ReputationEndorsement>;
-    };
-  };
-  /** GET /reputation/{address}/history — Get reputation score history for an address */
-  getReputationByAddressHistory: {
-    path: {
-      address: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: {
-      address?: string;
-      history?: Array<{
-        score?: number | null;
-        timestamp?: string;
-      }>;
-    };
-  };
-  /** GET /reputation/{address}/links — List all linked cross-chain identities for an address */
-  getReputationByAddressLinks: {
-    path: {
-      address: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: {
-      address?: string;
-      links?: Array<Models.ReputationLinkedIdentity>;
-    };
-  };
-  /** GET /reputation/{address}/signals — Get the raw signal breakdown for an address */
-  getReputationByAddressSignals: {
-    path: {
-      address: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: {
-      address?: string;
-      signals?: Array<Models.ReputationBreakdownItem>;
-    };
-  };
-  /** GET /reputation/{address}/summary — Get a brief reputation summary for an address */
-  getReputationByAddressSummary: {
-    path: {
-      address: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: {
-      address?: string;
-      badges?: Array<Models.ReputationBadge>;
-      score?: number;
-    };
-  };
-  /** GET /reputation/{address}/sybil-score — Get the Sybil risk assessment for an address */
-  getReputationByAddressSybilScore: {
-    path: {
-      address: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: Models.SybilAssessment;
-  };
-  /** GET /resource-audit — Resource audit service overview */
-  getResourceAudit: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /resource-audit/contracts/{contractId} — Get resource usage for a specific contract */
-  getResourceAuditContractsByContractId: {
-    path: {
-      contractId: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /resource-audit/contracts/{contractId}/history — Get historical resource usage over time for a contract */
-  getResourceAuditContractsByContractIdHistory: {
-    path: {
-      contractId: string;
-    };
-    query: {
-      days?: number;
-    };
-    body: never;
-    response: unknown;
-  };
-  /** GET /resource-audit/network/summary — Get network-wide resource consumption summary */
-  getResourceAuditNetworkSummary: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** POST /resource-audit/simulate — Simulate resource cost for a hypothetical contract call */
-  postResourceAuditSimulate: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      args?: Array<unknown>;
-      contractId: string;
-      functionName: string;
-    };
-    response: unknown;
-  };
-  /** GET /resource-audit/top-consumers — Get top resource-consuming contracts */
-  getResourceAuditTopConsumers: {
-    path: Record<string, never>;
-    query: {
-      limit?: number;
-      metric?: "compute_units" | "read_bytes" | "write_bytes" | "events_bytes" | "fees";
-    };
-    body: never;
-    response: unknown;
-  };
-  /** GET /rwa-compliance — RWA compliance service overview */
-  getRwaCompliance: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /rwa-compliance/assets — List RWA-compliant assets */
-  getRwaComplianceAssets: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /rwa-compliance/assets/{assetId} — Get compliance metadata for an RWA asset */
-  getRwaComplianceAssetsByAssetId: {
-    path: {
-      assetId: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** POST /rwa-compliance/assets/{assetId}/check — Check if a transfer is compliant for an RWA asset */
-  postRwaComplianceAssetsByAssetIdCheck: {
-    path: {
-      assetId: string;
-    };
-    query: Record<string, never>;
-    body: {
-      amount: number;
-      fromAddress: string;
-      toAddress: string;
-    };
-    response: unknown;
-  };
-  /** GET /rwa-compliance/holders/{address} — Get compliance status for an asset holder */
-  getRwaComplianceHoldersByAddress: {
-    path: {
-      address: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** POST /rwa-compliance/holders/{address}/verify — Submit KYC/AML verification for a holder */
-  postRwaComplianceHoldersByAddressVerify: {
-    path: {
-      address: string;
-    };
-    query: Record<string, never>;
-    body: {
-      jurisdiction: string;
-      verificationId: string;
-      verificationProvider: string;
-    };
-    response: unknown;
-  };
-  /** GET /rwa-compliance/jurisdictions — List supported jurisdictions and their compliance requirements */
-  getRwaComplianceJurisdictions: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /rwa-compliance/reports — Get regulatory compliance reports */
-  getRwaComplianceReports: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** POST /rwa-compliance/reports/schedule — Schedule recurring RWA compliance report generation and delivery */
-  postRwaComplianceReportsSchedule: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      cadence: "daily" | "weekly" | "monthly";
-      delivery: {
-        email?: string;
-        webhook?: string;
-      };
-    };
-    response: unknown;
   };
   /** GET /sac-trustlines — SAC trustlines service overview */
   getSacTrustlines: {
@@ -11249,71 +9057,6 @@ export interface OperationTypes {
     body: never;
     response: unknown;
   };
-  /** GET /signers — Signers service overview */
-  getSigners: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /signers/accounts/{address} — Get signer configuration for an account */
-  getSignersAccountsByAddress: {
-    path: {
-      address: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /signers/accounts/{address}/history — Get signer change history for an account */
-  getSignersAccountsByAddressHistory: {
-    path: {
-      address: string;
-    };
-    query: {
-      limit?: number;
-    };
-    body: never;
-    response: unknown;
-  };
-  /** GET /signers/accounts/{address}/signers — List all signers for an account */
-  getSignersAccountsByAddressSigners: {
-    path: {
-      address: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /signers/accounts/{address}/thresholds — Get signing thresholds for an account */
-  getSignersAccountsByAddressThresholds: {
-    path: {
-      address: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /signers/key/{publicKey} — Get all accounts where this key is a signer */
-  getSignersKeyByPublicKey: {
-    path: {
-      publicKey: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** POST /signers/verify — Verify if a signer key can authorize a transaction at a given threshold */
-  postSignersVerify: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      accountAddress: string;
-      signerKey: string;
-      threshold: "low" | "medium" | "high";
-    };
-    response: unknown;
-  };
   /** POST /simulate — Simulate a Soroban transaction */
   postSimulate: {
     path: Record<string, never>;
@@ -11513,348 +9256,6 @@ export interface OperationTypes {
     };
     response: unknown;
   };
-  /** GET /tax — Tax reporting service overview */
-  getTax: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /tax/accounts/{address}/cost-basis — Get current cost basis for holdings */
-  getTaxAccountsByAddressCostBasis: {
-    path: {
-      address: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /tax/accounts/{address}/gains — Get capital gains/losses for an account */
-  getTaxAccountsByAddressGains: {
-    path: {
-      address: string;
-    };
-    query: {
-      method?: "FIFO" | "LIFO" | "HIFO" | "average_cost";
-      year?: number;
-    };
-    body: never;
-    response: unknown;
-  };
-  /** GET /tax/accounts/{address}/income — Get income events (staking rewards, airdrops, yield) */
-  getTaxAccountsByAddressIncome: {
-    path: {
-      address: string;
-    };
-    query: {
-      year?: number;
-    };
-    body: never;
-    response: unknown;
-  };
-  /** POST /tax/accounts/{address}/report — Generate a tax report for download */
-  postTaxAccountsByAddressReport: {
-    path: {
-      address: string;
-    };
-    query: Record<string, never>;
-    body: {
-      format?: "json" | "csv" | "pdf";
-      method?: "FIFO" | "LIFO" | "HIFO" | "average_cost";
-      year?: number;
-    };
-    response: unknown;
-  };
-  /** GET /tax/accounts/{address}/summary — Get tax summary for an account */
-  getTaxAccountsByAddressSummary: {
-    path: {
-      address: string;
-    };
-    query: {
-      year?: number;
-    };
-    body: never;
-    response: unknown;
-  };
-  /** GET /tax/rates — Get indicative tax rates by jurisdiction */
-  getTaxRates: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /tip/advisories — List threat advisories */
-  getTipAdvisories: {
-    path: Record<string, never>;
-    query: {
-      limit?: number;
-      page?: number;
-      /** Case-insensitive substring match on title and description */
-      search?: string;
-      /** Filter by severity level */
-      severity?: "critical" | "high" | "medium" | "low" | "info";
-      /** Filter by advisory status */
-      status?: "open" | "under_review" | "resolved" | "disputed";
-    };
-    body: never;
-    response: {
-      items?: Array<(Models.ThreatAdvisory) & ({
-        source?: {
-          name?: string;
-        } | null;
-      })>;
-      limit?: number;
-      page?: number;
-      total?: number;
-    };
-  };
-  /** POST /tip/advisories — Submit a new threat advisory */
-  postTipAdvisories: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      affectedChains?: Array<string>;
-      affectedContracts?: Array<string>;
-      cvssScore?: number;
-      description: string;
-      externalUrl?: string;
-      mitigations?: Array<string>;
-      severity: "critical" | "high" | "medium" | "low" | "info";
-      tags?: Array<string>;
-      title: string;
-    };
-    response: {
-      id?: string;
-    };
-  };
-  /** GET /tip/advisories/{id} — Get a threat advisory by id */
-  getTipAdvisoriesById: {
-    path: {
-      id: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: (Models.ThreatAdvisory);
-  };
-  /** PATCH /tip/advisories/{id} — Update an advisory's status, severity, mitigations, or resolved timestamp */
-  patchTipAdvisoriesById: {
-    path: {
-      id: string;
-    };
-    query: Record<string, never>;
-    body: {
-      mitigations?: Array<string>;
-      resolvedAt?: string;
-      severity?: "critical" | "high" | "medium" | "low" | "info";
-      status?: "open" | "under_review" | "resolved" | "disputed";
-    };
-    response: (Models.ThreatAdvisory);
-  };
-  /** DELETE /tip/advisories/{id} — Delete a threat advisory */
-  deleteTipAdvisoriesById: {
-    path: {
-      id: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: void;
-  };
-  /** POST /tip/advisories/{id}/comments — Post a community comment on an advisory */
-  postTipAdvisoriesByIdComments: {
-    path: {
-      id: string;
-    };
-    query: Record<string, never>;
-    body: {
-      body: string;
-    };
-    response: (Models.ThreatComment);
-  };
-  /** POST /tip/advisories/{id}/rescore — Recompute the severity score for an advisory */
-  postTipAdvisoriesByIdRescore: {
-    path: {
-      id: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: {
-      severity?: "critical" | "high" | "medium" | "low" | "info";
-    };
-  };
-  /** POST /tip/advisories/{id}/reviews — Submit a review decision for an advisory */
-  postTipAdvisoriesByIdReviews: {
-    path: {
-      id: string;
-    };
-    query: Record<string, never>;
-    body: {
-      decision: "approve" | "reject" | "escalate";
-      notes?: string;
-      reviewerKey: string;
-      role: "analyst" | "admin";
-    };
-    response: (Models.ThreatReview);
-  };
-  /** GET /tip/analytics/severity — Advisory count grouped by severity */
-  getTipAnalyticsSeverity: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: Array<{
-      count?: number;
-      severity?: "critical" | "high" | "medium" | "low" | "info";
-    }>;
-  };
-  /** GET /tip/analytics/status — Advisory count grouped by status */
-  getTipAnalyticsStatus: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: Array<{
-      count?: number;
-      status?: "open" | "under_review" | "resolved" | "disputed";
-    }>;
-  };
-  /** GET /tip/analytics/top-contracts — Contracts most frequently cited in advisories */
-  getTipAnalyticsTopContracts: {
-    path: Record<string, never>;
-    query: {
-      /** Clamped to 50 */
-      limit?: number;
-    };
-    body: never;
-    response: Array<{
-      contract?: string;
-      count?: number;
-    }>;
-  };
-  /** GET /tip/analytics/trend — Daily advisory creation trend */
-  getTipAnalyticsTrend: {
-    path: Record<string, never>;
-    query: {
-      /** Lookback window in days; clamped to 365 */
-      days?: number;
-    };
-    body: never;
-    response: Array<{
-      critical?: number;
-      date?: string;
-      high?: number;
-      total?: number;
-    }>;
-  };
-  /** POST /tip/correlate — Run advisory deduplication and correlation */
-  postTipCorrelate: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: {
-      linked?: number;
-    };
-  };
-  /** GET /tip/feeds/json — JSON feed of recent non-disputed advisories */
-  getTipFeedsJson: {
-    path: Record<string, never>;
-    query: {
-      /** Clamped to 200; no 400 is returned for out-of-range values */
-      limit?: number;
-    };
-    body: never;
-    response: {
-      feed?: string;
-      generated?: string;
-      items?: Array<{
-        affectedChains?: Array<string>;
-        affectedContracts?: Array<string>;
-        cveId?: string | null;
-        externalUrl?: string | null;
-        ghsaId?: string | null;
-        id?: string;
-        publishedAt?: string | null;
-        severity?: "critical" | "high" | "medium" | "low" | "info";
-        title?: string;
-      }>;
-    };
-  };
-  /** GET /tip/feeds/rss — RSS 2.0 feed of recent non-disputed advisories */
-  getTipFeedsRss: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /tip/sources — List vulnerability feed sources */
-  getTipSources: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: Array<Models.VulnerabilitySource>;
-  };
-  /** GET /tip/subscriptions — List all TIP notification subscriptions */
-  getTipSubscriptions: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: Array<Models.TipSubscription>;
-  };
-  /** POST /tip/subscriptions — Create or reactivate a TIP notification subscription */
-  postTipSubscriptions: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      channel: "email" | "slack" | "discord" | "telegram";
-      filters?: {
-        severity?: Array<string>;
-        tags?: Array<string>;
-      };
-      target: string;
-    };
-    response: (Models.TipSubscription);
-  };
-  /** DELETE /tip/subscriptions/{id} — Delete a TIP subscription */
-  deleteTipSubscriptionsById: {
-    path: {
-      id: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: void;
-  };
-  /** GET /tip/webhooks — List registered TIP webhooks */
-  getTipWebhooks: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: Array<{
-      active?: boolean;
-      events?: Array<string>;
-      id?: string;
-      url?: string;
-    }>;
-  };
-  /** POST /tip/webhooks — Register or update a TIP webhook */
-  postTipWebhooks: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      events?: Array<string>;
-      secret: string;
-      url: string;
-    };
-    response: {
-      id?: string;
-      url?: string;
-    };
-  };
-  /** DELETE /tip/webhooks/{id} — Delete a TIP webhook */
-  deleteTipWebhooksById: {
-    path: {
-      id: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: void;
-  };
   /** POST /token-metadata/batch — Bulk-resolve token metadata for up to 100 addresses */
   postTokenMetadataBatch: {
     path: Record<string, never>;
@@ -11876,6 +9277,7 @@ export interface OperationTypes {
       address?: string;
       decimals?: number;
       name?: string | null;
+      observedAt?: string;
       source?: "db" | "sac" | "rpc" | "classic";
       symbol?: string | null;
     };
@@ -11969,25 +9371,32 @@ export interface OperationTypes {
       account?: string;
       /** Filter by contract address (exact match) */
       contract?: string;
-      /** Ledger sequence cursor (preferred for large datasets). When set, returns rows with ledgerSequence < cursor in descending order and the response uses the cursor envelope. */
-      cursor?: number;
+      /** Legacy ledger-sequence cursor, or the opaque nextCursor value when `pagination=cursor`. */
+      cursor?: string;
       /** Inclusive upper bound on ledger sequence */
       ledgerMax?: number;
       /** Inclusive lower bound on ledger sequence */
       ledgerMin?: number;
       /** Page size */
       limit?: number;
-      /** 1-based page number (offset pagination; ignored when cursor is set) */
+      /** 1-based page number for legacy offset pagination; do not combine with pagination=cursor */
       page?: number;
+      /** Select the stable opaque cursor contract. On the first page, omit `cursor`; pass the returned `nextCursor` on subsequent requests. */
+      pagination?: "cursor";
       /** Filter by status (success | failed) */
       status?: string;
     };
     body: never;
     response: ({
+      data: Array<Models.Transaction>;
+      hasNext: boolean;
+      /** Opaque cursor; pass with pagination=cursor */
+      nextCursor: string | null;
+    }) | ({
       data?: Array<Models.Transaction>;
       hasNext?: boolean;
-      /** ledgerSequence to pass as the next `cursor`, or null when there are no more rows */
-      nextCursor?: number | null;
+      /** Legacy ledgerSequence cursor */
+      nextCursor?: string | null;
     }) | ({
       data?: Array<Models.Transaction>;
       limit?: number;
@@ -12029,94 +9438,20 @@ export interface OperationTypes {
       events?: Array<Models.Event>;
     });
   };
-  /** GET /treasury — Treasury service overview */
-  getTreasury: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /treasury/allocations — Get treasury fund allocations by category */
-  getTreasuryAllocations: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /treasury/balances — Get treasury asset balances */
-  getTreasuryBalances: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /treasury/balances/{assetCode} — Get treasury balance for a specific asset */
-  getTreasuryBalancesByAssetCode: {
+  /** GET /transactions/{hash}/xdr — Retrieve the retained base64 transaction envelope XDR */
+  getTransactionsByHashXdr: {
     path: {
-      assetCode: string;
+      /** Transaction hash */
+      hash: string;
     };
     query: Record<string, never>;
     body: never;
-    response: unknown;
-  };
-  /** GET /treasury/proposals — List treasury spending proposals */
-  getTreasuryProposals: {
-    path: Record<string, never>;
-    query: {
-      status?: "pending" | "active" | "passed" | "rejected" | "executed";
+    response: {
+      encoding: "base64";
+      transactionHash: string;
+      /** Base64-encoded Stellar transaction envelope XDR */
+      xdr: string;
     };
-    body: never;
-    response: unknown;
-  };
-  /** POST /treasury/proposals — Create a treasury spending proposal */
-  postTreasuryProposals: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: {
-      amount: number;
-      assetCode: string;
-      category?: string;
-      description: string;
-      recipient: string;
-      title: string;
-    };
-    response: unknown;
-  };
-  /** GET /treasury/proposals/{id} — Get a specific treasury proposal */
-  getTreasuryProposalsById: {
-    path: {
-      id: string;
-    };
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** POST /treasury/proposals/{id}/vote — Vote on a treasury proposal */
-  postTreasuryProposalsByIdVote: {
-    path: {
-      id: string;
-    };
-    query: Record<string, never>;
-    body: {
-      signature: string;
-      support: boolean;
-      voter: string;
-    };
-    response: unknown;
-  };
-  /** GET /treasury/stats — Get treasury statistics */
-  getTreasuryStats: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
-  };
-  /** GET /treasury/transactions — List treasury transactions */
-  getTreasuryTransactions: {
-    path: Record<string, never>;
-    query: Record<string, never>;
-    body: never;
-    response: unknown;
   };
   /** GET /upgrade-trace — Upgrade trace service overview */
   getUpgradeTrace: {
@@ -12172,48 +9507,6 @@ export interface OperationTypes {
     query: Record<string, never>;
     body: never;
     response: unknown;
-  };
-  /** GET /virtual-list/events — Get events in virtual list format for infinite scroll */
-  getVirtualListEvents: {
-    path: Record<string, never>;
-    query: {
-      contract?: string;
-      limit?: number;
-      offset?: number;
-      type?: string;
-    };
-    body: never;
-    response: unknown;
-  };
-  /** GET /virtual-list/transactions — Get transactions in virtual list format for infinite scroll */
-  getVirtualListTransactions: {
-    path: Record<string, never>;
-    query: {
-      /** Filter by contract address */
-      contract?: string;
-      /** Number of items to return */
-      limit?: number;
-      /** Starting position in result set */
-      offset?: number;
-      /** Filter by transaction status */
-      status?: "success" | "failed" | "pending";
-    };
-    body: never;
-    response: {
-      estimatedRowHeight?: number;
-      hasMore?: boolean;
-      items?: Array<{
-        contractAddress?: string;
-        decoded?: string;
-        hash?: string;
-        id?: string;
-        ledger?: number;
-        rowHeight?: number;
-        status?: string;
-        timestamp?: number;
-      }>;
-      totalCount?: number;
-    };
   };
   /** GET /wallets/{address}/events — List events involving a wallet (offset-paginated) */
   getWalletsByAddressEvents: {
@@ -12288,14 +9581,14 @@ export interface OperationTypes {
       address: string;
     };
     query: {
-      /** Exclusive time cursor — return items strictly older than this instant (use the previous page's nextCursor) */
+      /** Opaque cursor from the previous response, bound to this wallet and page size */
       before?: string;
       /** Maximum number of timeline items per page */
       limit?: number;
     };
     body: never;
     response: {
-      /** Cursor this page was built from */
+      /** Opaque cursor this page was built from */
       before?: string | null;
       /** Per-type counts within this page */
       counts?: Record<string, unknown>;
@@ -12343,7 +9636,7 @@ export interface OperationTypes {
       }>;
       hasMore?: boolean;
       limit?: number;
-      /** Pass as `before` for the next page */
+      /** Opaque cursor to pass as `before` for the next page */
       nextCursor?: string | null;
     };
   };
@@ -12467,6 +9760,63 @@ export interface OperationTypes {
     body: never;
     response: unknown;
   };
+  /** GET /webhooks/{id}/replay — List replay jobs for a webhook subscription */
+  getWebhooksByIdReplay: {
+    path: {
+      id: string;
+    };
+    query: Record<string, never>;
+    body: never;
+    response: unknown;
+  };
+  /** POST /webhooks/{id}/replay — Replay webhook deliveries from a selected ledger checkpoint */
+  postWebhooksByIdReplay: {
+    path: {
+      id: string;
+    };
+    query: Record<string, never>;
+    body: {
+      filters?: {
+        contractAddress?: string | null;
+        eventType?: string | null;
+        topicSymbol?: string | null;
+      };
+      fromLedger: number;
+      idempotencyKey?: string;
+      toLedger?: number;
+    };
+    response: unknown;
+  };
+  /** GET /webhooks/{id}/replay/{jobId} — Get progress of a specific replay job */
+  getWebhooksByIdReplayByJobId: {
+    path: {
+      id: string;
+      jobId: string;
+    };
+    query: Record<string, never>;
+    body: never;
+    response: unknown;
+  };
+  /** POST /webhooks/{id}/replay/{jobId}/cancel — Cancel a replay job */
+  postWebhooksByIdReplayByJobIdCancel: {
+    path: {
+      id: string;
+      jobId: string;
+    };
+    query: Record<string, never>;
+    body: never;
+    response: unknown;
+  };
+  /** POST /webhooks/{id}/replay/{jobId}/resume — Resume an interrupted replay job */
+  postWebhooksByIdReplayByJobIdResume: {
+    path: {
+      id: string;
+      jobId: string;
+    };
+    query: Record<string, never>;
+    body: never;
+    response: unknown;
+  };
   /** POST /webhooks/{id}/verify — Verify ownership of a subscription's destination URL */
   postWebhooksByIdVerify: {
     path: {
@@ -12483,14 +9833,6 @@ export interface OperationParams {
   postAdminContractAbiSubmissionsByIdApprove: { path: OperationTypes['postAdminContractAbiSubmissionsByIdApprove']['path']; query?: Record<string, never>; body?: OperationTypes['postAdminContractAbiSubmissionsByIdApprove']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
   postAdminContractAbiSubmissionsByIdPublish: { path: OperationTypes['postAdminContractAbiSubmissionsByIdPublish']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   postAdminContractAbiSubmissionsByIdReject: { path: OperationTypes['postAdminContractAbiSubmissionsByIdReject']['path']; query?: Record<string, never>; body: OperationTypes['postAdminContractAbiSubmissionsByIdReject']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getAdvancedEvents: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getAdvancedEventsAggregations: { path?: Record<string, never>; query?: OperationTypes['getAdvancedEventsAggregations']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getAdvancedEventsContractsByContractId: { path: OperationTypes['getAdvancedEventsContractsByContractId']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postAdvancedEventsQuery: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postAdvancedEventsQuery']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getAdvancedEventsReplayByTxHash: { path: OperationTypes['getAdvancedEventsReplayByTxHash']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getAdvancedEventsSubscriptions: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postAdvancedEventsSubscriptions: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postAdvancedEventsSubscriptions']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  deleteAdvancedEventsSubscriptionsById: { path: OperationTypes['deleteAdvancedEventsSubscriptionsById']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getAgents: { path?: Record<string, never>; query?: OperationTypes['getAgents']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   postAgents: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postAgents']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
   postAgentsEscalations: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postAgentsEscalations']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
@@ -12500,21 +9842,14 @@ export interface OperationParams {
   getAgentsRegistry: { path?: Record<string, never>; query: OperationTypes['getAgentsRegistry']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   postAgentsRegistry: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postAgentsRegistry']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
   getAgentsVerificationByExecutionId: { path: OperationTypes['getAgentsVerificationByExecutionId']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postAgentsVerificationByExecutionId: { path: OperationTypes['postAgentsVerificationByExecutionId']['path']; query?: Record<string, never>; body: OperationTypes['postAgentsVerificationByExecutionId']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
+  postAgentsVerificationByExecutionIdVerify: { path: OperationTypes['postAgentsVerificationByExecutionIdVerify']['path']; query?: Record<string, never>; body: OperationTypes['postAgentsVerificationByExecutionIdVerify']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
   postAgentsByIdExecute: { path: OperationTypes['postAgentsByIdExecute']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getAnalyticsDashboardByType: { path: OperationTypes['getAnalyticsDashboardByType']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getAnalyticsGas: { path?: Record<string, never>; query?: OperationTypes['getAnalyticsGas']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getAnalyticsLineage: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   postAnalyticsQuery: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postAnalyticsQuery']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
+  getAnalyticsQueryDashboardByType: { path: OperationTypes['getAnalyticsQueryDashboardByType']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   postAnalyticsQueryEstimate: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  getAnalyticsQueryLineage: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getAnalyticsQueryTemplates: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getApiV1ContractsProtocolByProtocolKey: { path: OperationTypes['getApiV1ContractsProtocolByProtocolKey']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getApiV1GraphContractCalls: { path?: Record<string, never>; query?: OperationTypes['getApiV1GraphContractCalls']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getApiV1MevPredictions: { path?: Record<string, never>; query?: OperationTypes['getApiV1MevPredictions']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getApiV1MevPredictionsConfig: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postApiV1MevPredictionsIngest: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postApiV1MevPredictionsIngest']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getApiV1MevPredictionsPending: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  deleteApiV1MevPredictionsPending: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getAssetsMetrics: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getAuthorizations: { path?: Record<string, never>; query?: OperationTypes['getAuthorizations']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getAuthorizationsDashboard: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
@@ -12522,23 +9857,20 @@ export interface OperationParams {
   postBatchAccounts: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postBatchAccounts']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
   postBatchEvents: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postBatchEvents']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
   postBatchTransactions: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postBatchTransactions']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getBn254: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postBn254PairingCheck: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postBn254PairingCheck']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getBn254Params: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postBn254PointAdd: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postBn254PointAdd']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  postBn254ScalarMul: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postBn254ScalarMul']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  postBn254VerifyGroth16: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postBn254VerifyGroth16']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  postBn254VerifyPlonk: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postBn254VerifyPlonk']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getCheckedArithmetic: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postCheckedArithmeticCompute: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postCheckedArithmeticCompute']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  postCheckedArithmeticComputeBatch: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postCheckedArithmeticComputeBatch']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getCheckedArithmeticLimits: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postCheckedArithmeticValidate: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postCheckedArithmeticValidate']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
   getCompiler: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   postCompilerCompile: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postCompilerCompile']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
   getCompilerMetrics: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getCompilerToolchains: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   postCompilerVerify: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postCompilerVerify']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
+  getComplianceRwa: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  getComplianceRwaAssets: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  getComplianceRwaAssetsByAssetId: { path: OperationTypes['getComplianceRwaAssetsByAssetId']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  postComplianceRwaAssetsByAssetIdCheck: { path: OperationTypes['postComplianceRwaAssetsByAssetIdCheck']['path']; query?: Record<string, never>; body: OperationTypes['postComplianceRwaAssetsByAssetIdCheck']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
+  getComplianceRwaHoldersByAddress: { path: OperationTypes['getComplianceRwaHoldersByAddress']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  postComplianceRwaHoldersByAddressVerify: { path: OperationTypes['postComplianceRwaHoldersByAddressVerify']['path']; query?: Record<string, never>; body: OperationTypes['postComplianceRwaHoldersByAddressVerify']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
+  getComplianceRwaJurisdictions: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  getComplianceRwaReports: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  postComplianceRwaReportsSchedule: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postComplianceRwaReportsSchedule']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
   getComplianceTokenLabelsByTokenId: { path: OperationTypes['getComplianceTokenLabelsByTokenId']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   putComplianceTokenLabelsByTokenId: { path: OperationTypes['putComplianceTokenLabelsByTokenId']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   postComposabilityAlerts: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postComposabilityAlerts']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
@@ -12578,9 +9910,18 @@ export interface OperationParams {
   getContractsLicenses: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getContractsLicensesByContractId: { path: OperationTypes['getContractsLicensesByContractId']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   putContractsLicensesByContractId: { path: OperationTypes['putContractsLicensesByContractId']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  getContractsProtocolByProtocolKey: { path: OperationTypes['getContractsProtocolByProtocolKey']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getContractsByAddress: { path: OperationTypes['getContractsByAddress']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getContractsByAddressStats: { path: OperationTypes['getContractsByAddressStats']['path']; query?: OperationTypes['getContractsByAddressStats']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getEvents: { path?: Record<string, never>; query?: OperationTypes['getEvents']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  getEventsAdvanced: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  getEventsAdvancedAggregations: { path?: Record<string, never>; query?: OperationTypes['getEventsAdvancedAggregations']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  getEventsAdvancedContractsByContractId: { path: OperationTypes['getEventsAdvancedContractsByContractId']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  postEventsAdvancedQuery: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postEventsAdvancedQuery']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
+  getEventsAdvancedReplayByTxHash: { path: OperationTypes['getEventsAdvancedReplayByTxHash']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  getEventsAdvancedSubscriptions: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  postEventsAdvancedSubscriptions: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postEventsAdvancedSubscriptions']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
+  deleteEventsAdvancedSubscriptionsById: { path: OperationTypes['deleteEventsAdvancedSubscriptionsById']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getEventsById: { path: OperationTypes['getEventsById']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getFactoryTracker: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getFactoryTrackerContractsByContractIdLineage: { path: OperationTypes['getFactoryTrackerContractsByContractIdLineage']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
@@ -12588,6 +9929,7 @@ export interface OperationParams {
   getFactoryTrackerFactoriesByContractId: { path: OperationTypes['getFactoryTrackerFactoriesByContractId']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getFactoryTrackerFactoriesByContractIdChildren: { path: OperationTypes['getFactoryTrackerFactoriesByContractIdChildren']['path']; query?: OperationTypes['getFactoryTrackerFactoriesByContractIdChildren']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getFactoryTrackerStats: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  getGraphContractCalls: { path?: Record<string, never>; query?: OperationTypes['getGraphContractCalls']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getGraphContractsByAddressDownstream: { path: OperationTypes['getGraphContractsByAddressDownstream']['path']; query?: OperationTypes['getGraphContractsByAddressDownstream']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getGraphContractsByAddressUpstream: { path: OperationTypes['getGraphContractsByAddressUpstream']['path']; query?: OperationTypes['getGraphContractsByAddressUpstream']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getGraphDependencies: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
@@ -12641,6 +9983,11 @@ export interface OperationParams {
   getMevLeaderboard: { path?: Record<string, never>; query?: OperationTypes['getMevLeaderboard']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getMevMempoolPending: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getMevOverview: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  getMevPredictions: { path?: Record<string, never>; query?: OperationTypes['getMevPredictions']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  getMevPredictionsConfig: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  postMevPredictionsIngest: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postMevPredictionsIngest']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
+  getMevPredictionsPending: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  deleteMevPredictionsPending: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   postMevProtectTx: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postMevProtectTx']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
   getMevProtectionsLeaderboard: { path?: Record<string, never>; query?: OperationTypes['getMevProtectionsLeaderboard']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getMevProtectionsByContract: { path: OperationTypes['getMevProtectionsByContract']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
@@ -12654,15 +10001,6 @@ export interface OperationParams {
   getMevVictimsByAddress: { path: OperationTypes['getMevVictimsByAddress']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   postMevVictimsByAddressNotify: { path: OperationTypes['postMevVictimsByAddressNotify']['path']; query?: Record<string, never>; body?: OperationTypes['postMevVictimsByAddressNotify']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
   getNetwork: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getOracleFeeds: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getOracleFeedsAssets: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getOracleFeedsAssetsByAssetPairHistory: { path: OperationTypes['getOracleFeedsAssetsByAssetPairHistory']['path']; query?: OperationTypes['getOracleFeedsAssetsByAssetPairHistory']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getOracleFeedsAssetsByAssetPairOhlcv: { path: OperationTypes['getOracleFeedsAssetsByAssetPairOhlcv']['path']; query?: OperationTypes['getOracleFeedsAssetsByAssetPairOhlcv']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getOracleFeedsAssetsByAssetPairPrice: { path: OperationTypes['getOracleFeedsAssetsByAssetPairPrice']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getOracleFeedsProviders: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postOracleFeedsSubscribe: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postOracleFeedsSubscribe']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getOracleFeedsSubscriptions: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  deleteOracleFeedsSubscriptionsById: { path: OperationTypes['deleteOracleFeedsSubscriptionsById']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getOraclesAudit: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getOraclesAuditAnomalies: { path?: Record<string, never>; query?: OperationTypes['getOraclesAuditAnomalies']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getOraclesAuditProviders: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
@@ -12671,6 +10009,15 @@ export interface OperationParams {
   getOraclesAuditRequestsByRequestTxHash: { path: OperationTypes['getOraclesAuditRequestsByRequestTxHash']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getOraclesAuditStats: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   postOraclesAuditValidate: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postOraclesAuditValidate']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
+  getOraclesFeeds: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  getOraclesFeedsAssets: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  getOraclesFeedsAssetsByAssetPairHistory: { path: OperationTypes['getOraclesFeedsAssetsByAssetPairHistory']['path']; query?: OperationTypes['getOraclesFeedsAssetsByAssetPairHistory']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  getOraclesFeedsAssetsByAssetPairOhlcv: { path: OperationTypes['getOraclesFeedsAssetsByAssetPairOhlcv']['path']; query?: OperationTypes['getOraclesFeedsAssetsByAssetPairOhlcv']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  getOraclesFeedsAssetsByAssetPairPrice: { path: OperationTypes['getOraclesFeedsAssetsByAssetPairPrice']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  getOraclesFeedsProviders: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  postOraclesFeedsSubscribe: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postOraclesFeedsSubscribe']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
+  getOraclesFeedsSubscriptions: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  deleteOraclesFeedsSubscriptionsById: { path: OperationTypes['deleteOraclesFeedsSubscriptionsById']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getPrivacyAnonymitySets: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getPrivacyAnonymitySetsEffective: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getPrivacyAnonymitySetsByProtocolHistory: { path: OperationTypes['getPrivacyAnonymitySetsByProtocolHistory']['path']; query?: OperationTypes['getPrivacyAnonymitySetsByProtocolHistory']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
@@ -12711,13 +10058,6 @@ export interface OperationParams {
   getPrivacyZkProofs: { path?: Record<string, never>; query?: OperationTypes['getPrivacyZkProofs']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getPrivacyZkVerifiers: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getPrivacyZkVerifiersByAddress: { path: OperationTypes['getPrivacyZkVerifiersByAddress']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getProtocol26: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getProtocol26ArchiveStats: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getProtocol26ContractsByContractIdEntries: { path: OperationTypes['getProtocol26ContractsByContractIdEntries']['path']; query?: OperationTypes['getProtocol26ContractsByContractIdEntries']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postProtocol26ContractsByContractIdExtendTtl: { path: OperationTypes['postProtocol26ContractsByContractIdExtendTtl']['path']; query?: Record<string, never>; body: OperationTypes['postProtocol26ContractsByContractIdExtendTtl']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getProtocol26ContractsByContractIdTtl: { path: OperationTypes['getProtocol26ContractsByContractIdTtl']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getProtocol26Expiring: { path?: Record<string, never>; query?: OperationTypes['getProtocol26Expiring']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postProtocol26FootprintOptimize: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postProtocol26FootprintOptimize']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
   postRampExecute: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postRampExecute']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
   postRampKycStatus: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getRampOrders: { path?: Record<string, never>; query?: OperationTypes['getRampOrders']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
@@ -12728,72 +10068,6 @@ export interface OperationParams {
   postRampWebhookByProvider: { path: OperationTypes['postRampWebhookByProvider']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   postRender: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postRender']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
   getRenderTemplates: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationAttestationsByAddress: { path: OperationTypes['getReputationAttestationsByAddress']['path']; query?: OperationTypes['getReputationAttestationsByAddress']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationBadgesByAddress: { path: OperationTypes['getReputationBadgesByAddress']['path']; query?: OperationTypes['getReputationBadgesByAddress']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postReputationCredentialsVerify: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postReputationCredentialsVerify']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationCredentialsByAddress: { path: OperationTypes['getReputationCredentialsByAddress']['path']; query?: OperationTypes['getReputationCredentialsByAddress']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postReputationDisputes: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postReputationDisputes']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationDisputesById: { path: OperationTypes['getReputationDisputesById']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postReputationDisputesByIdResolve: { path: OperationTypes['postReputationDisputesByIdResolve']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postReputationDisputesByIdVote: { path: OperationTypes['postReputationDisputesByIdVote']['path']; query?: Record<string, never>; body: OperationTypes['postReputationDisputesByIdVote']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  postReputationEndorse: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postReputationEndorse']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  postReputationEndorsements: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postReputationEndorsements']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  postReputationGovernanceDelegate: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postReputationGovernanceDelegate']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  postReputationGovernanceVote: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postReputationGovernanceVote']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationGovernanceVotingPowerByAddress: { path: OperationTypes['getReputationGovernanceVotingPowerByAddress']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postReputationIdentityLink: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postReputationIdentityLink']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  postReputationIdentityScore: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postReputationIdentityScore']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationLeaderboard: { path?: Record<string, never>; query?: OperationTypes['getReputationLeaderboard']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationLeaderboardByCategory: { path: OperationTypes['getReputationLeaderboardByCategory']['path']; query?: OperationTypes['getReputationLeaderboardByCategory']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationLeaderboardsByCategory: { path: OperationTypes['getReputationLeaderboardsByCategory']['path']; query?: OperationTypes['getReputationLeaderboardsByCategory']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postReputationLink: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postReputationLink']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  deleteReputationLinkById: { path: OperationTypes['deleteReputationLinkById']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postReputationNftsMintByBadgeType: { path: OperationTypes['postReputationNftsMintByBadgeType']['path']; query?: Record<string, never>; body: OperationTypes['postReputationNftsMintByBadgeType']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationNftsByAddress: { path: OperationTypes['getReputationNftsByAddress']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationNftsByAddressByBadgeTypeVerify: { path: OperationTypes['getReputationNftsByAddressByBadgeTypeVerify']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationOracleCountsByAddress: { path: OperationTypes['getReputationOracleCountsByAddress']['path']; query?: OperationTypes['getReputationOracleCountsByAddress']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationOracleProof: { path?: Record<string, never>; query: OperationTypes['getReputationOracleProof']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postReputationOracleQuery: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postReputationOracleQuery']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationOracleByAddress: { path: OperationTypes['getReputationOracleByAddress']['path']; query?: OperationTypes['getReputationOracleByAddress']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postReputationScore: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postReputationScore']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationSdkJs: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postReputationSdkRegister: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postReputationSdkRegister']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationSearch: { path?: Record<string, never>; query: OperationTypes['getReputationSearch']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationSybilByAddress: { path: OperationTypes['getReputationSybilByAddress']['path']; query?: OperationTypes['getReputationSybilByAddress']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationTrustNetworkInfluenceByAddress: { path: OperationTypes['getReputationTrustNetworkInfluenceByAddress']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationTrustNetworkByAddress: { path: OperationTypes['getReputationTrustNetworkByAddress']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationTrustNetworkByAddressPathByTarget: { path: OperationTypes['getReputationTrustNetworkByAddressPathByTarget']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postReputationTrustPath: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postReputationTrustPath']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  postReputationVerifyCrossChain: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postReputationVerifyCrossChain']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationByAddress: { path: OperationTypes['getReputationByAddress']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postReputationByAddressAttest: { path: OperationTypes['postReputationByAddressAttest']['path']; query?: Record<string, never>; body: OperationTypes['postReputationByAddressAttest']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationByAddressAttestations: { path: OperationTypes['getReputationByAddressAttestations']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationByAddressAttestationsByIdVerify: { path: OperationTypes['getReputationByAddressAttestationsByIdVerify']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationByAddressBadges: { path: OperationTypes['getReputationByAddressBadges']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationByAddressCredentials: { path: OperationTypes['getReputationByAddressCredentials']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postReputationByAddressCredentials: { path: OperationTypes['postReputationByAddressCredentials']['path']; query?: Record<string, never>; body: OperationTypes['postReputationByAddressCredentials']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationByAddressCrossChain: { path: OperationTypes['getReputationByAddressCrossChain']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationByAddressEndorsementsReceived: { path: OperationTypes['getReputationByAddressEndorsementsReceived']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationByAddressHistory: { path: OperationTypes['getReputationByAddressHistory']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationByAddressLinks: { path: OperationTypes['getReputationByAddressLinks']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationByAddressSignals: { path: OperationTypes['getReputationByAddressSignals']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationByAddressSummary: { path: OperationTypes['getReputationByAddressSummary']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getReputationByAddressSybilScore: { path: OperationTypes['getReputationByAddressSybilScore']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getResourceAudit: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getResourceAuditContractsByContractId: { path: OperationTypes['getResourceAuditContractsByContractId']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getResourceAuditContractsByContractIdHistory: { path: OperationTypes['getResourceAuditContractsByContractIdHistory']['path']; query?: OperationTypes['getResourceAuditContractsByContractIdHistory']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getResourceAuditNetworkSummary: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postResourceAuditSimulate: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postResourceAuditSimulate']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getResourceAuditTopConsumers: { path?: Record<string, never>; query?: OperationTypes['getResourceAuditTopConsumers']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getRwaCompliance: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getRwaComplianceAssets: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getRwaComplianceAssetsByAssetId: { path: OperationTypes['getRwaComplianceAssetsByAssetId']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postRwaComplianceAssetsByAssetIdCheck: { path: OperationTypes['postRwaComplianceAssetsByAssetIdCheck']['path']; query?: Record<string, never>; body: OperationTypes['postRwaComplianceAssetsByAssetIdCheck']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getRwaComplianceHoldersByAddress: { path: OperationTypes['getRwaComplianceHoldersByAddress']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postRwaComplianceHoldersByAddressVerify: { path: OperationTypes['postRwaComplianceHoldersByAddressVerify']['path']; query?: Record<string, never>; body: OperationTypes['postRwaComplianceHoldersByAddressVerify']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getRwaComplianceJurisdictions: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getRwaComplianceReports: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postRwaComplianceReportsSchedule: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postRwaComplianceReportsSchedule']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
   getSacTrustlines: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getSacTrustlinesAccountsByAddress: { path: OperationTypes['getSacTrustlinesAccountsByAddress']['path']; query?: OperationTypes['getSacTrustlinesAccountsByAddress']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getSacTrustlinesAccountsByAddressAuthorized: { path: OperationTypes['getSacTrustlinesAccountsByAddressAuthorized']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
@@ -12886,13 +10160,6 @@ export interface OperationParams {
   getScheduleVestingLeaderboard: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getScheduleVestingByBeneficiaryAddress: { path: OperationTypes['getScheduleVestingByBeneficiaryAddress']['path']; query?: OperationTypes['getScheduleVestingByBeneficiaryAddress']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getSearchSuggest: { path?: Record<string, never>; query: OperationTypes['getSearchSuggest']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getSigners: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getSignersAccountsByAddress: { path: OperationTypes['getSignersAccountsByAddress']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getSignersAccountsByAddressHistory: { path: OperationTypes['getSignersAccountsByAddressHistory']['path']; query?: OperationTypes['getSignersAccountsByAddressHistory']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getSignersAccountsByAddressSigners: { path: OperationTypes['getSignersAccountsByAddressSigners']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getSignersAccountsByAddressThresholds: { path: OperationTypes['getSignersAccountsByAddressThresholds']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getSignersKeyByPublicKey: { path: OperationTypes['getSignersKeyByPublicKey']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postSignersVerify: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postSignersVerify']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
   postSimulate: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postSimulate']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
   getStorage: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getStorageTrap: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
@@ -12915,35 +10182,6 @@ export interface OperationParams {
   getSystemicOverview: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getSystemicProtocolsByAddress: { path: OperationTypes['getSystemicProtocolsByAddress']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   postSystemicSimulateCascade: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postSystemicSimulateCascade']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getTax: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getTaxAccountsByAddressCostBasis: { path: OperationTypes['getTaxAccountsByAddressCostBasis']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getTaxAccountsByAddressGains: { path: OperationTypes['getTaxAccountsByAddressGains']['path']; query?: OperationTypes['getTaxAccountsByAddressGains']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getTaxAccountsByAddressIncome: { path: OperationTypes['getTaxAccountsByAddressIncome']['path']; query?: OperationTypes['getTaxAccountsByAddressIncome']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postTaxAccountsByAddressReport: { path: OperationTypes['postTaxAccountsByAddressReport']['path']; query?: Record<string, never>; body: OperationTypes['postTaxAccountsByAddressReport']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getTaxAccountsByAddressSummary: { path: OperationTypes['getTaxAccountsByAddressSummary']['path']; query?: OperationTypes['getTaxAccountsByAddressSummary']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getTaxRates: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getTipAdvisories: { path?: Record<string, never>; query?: OperationTypes['getTipAdvisories']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postTipAdvisories: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postTipAdvisories']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getTipAdvisoriesById: { path: OperationTypes['getTipAdvisoriesById']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  patchTipAdvisoriesById: { path: OperationTypes['patchTipAdvisoriesById']['path']; query?: Record<string, never>; body: OperationTypes['patchTipAdvisoriesById']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  deleteTipAdvisoriesById: { path: OperationTypes['deleteTipAdvisoriesById']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postTipAdvisoriesByIdComments: { path: OperationTypes['postTipAdvisoriesByIdComments']['path']; query?: Record<string, never>; body: OperationTypes['postTipAdvisoriesByIdComments']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  postTipAdvisoriesByIdRescore: { path: OperationTypes['postTipAdvisoriesByIdRescore']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postTipAdvisoriesByIdReviews: { path: OperationTypes['postTipAdvisoriesByIdReviews']['path']; query?: Record<string, never>; body: OperationTypes['postTipAdvisoriesByIdReviews']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getTipAnalyticsSeverity: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getTipAnalyticsStatus: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getTipAnalyticsTopContracts: { path?: Record<string, never>; query?: OperationTypes['getTipAnalyticsTopContracts']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getTipAnalyticsTrend: { path?: Record<string, never>; query?: OperationTypes['getTipAnalyticsTrend']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postTipCorrelate: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getTipFeedsJson: { path?: Record<string, never>; query?: OperationTypes['getTipFeedsJson']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getTipFeedsRss: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getTipSources: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getTipSubscriptions: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postTipSubscriptions: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postTipSubscriptions']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  deleteTipSubscriptionsById: { path: OperationTypes['deleteTipSubscriptionsById']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getTipWebhooks: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postTipWebhooks: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postTipWebhooks']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  deleteTipWebhooksById: { path: OperationTypes['deleteTipWebhooksById']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   postTokenMetadataBatch: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postTokenMetadataBatch']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
   getTokenMetadataByAddress: { path: OperationTypes['getTokenMetadataByAddress']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   deleteTokenMetadataByAddressCache: { path: OperationTypes['deleteTokenMetadataByAddressCache']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
@@ -12954,24 +10192,13 @@ export interface OperationParams {
   getTokensByAddressTransfers: { path: OperationTypes['getTokensByAddressTransfers']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getTransactions: { path?: Record<string, never>; query?: OperationTypes['getTransactions']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getTransactionsByHash: { path: OperationTypes['getTransactionsByHash']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getTreasury: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getTreasuryAllocations: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getTreasuryBalances: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getTreasuryBalancesByAssetCode: { path: OperationTypes['getTreasuryBalancesByAssetCode']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getTreasuryProposals: { path?: Record<string, never>; query?: OperationTypes['getTreasuryProposals']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postTreasuryProposals: { path?: Record<string, never>; query?: Record<string, never>; body: OperationTypes['postTreasuryProposals']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getTreasuryProposalsById: { path: OperationTypes['getTreasuryProposalsById']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  postTreasuryProposalsByIdVote: { path: OperationTypes['postTreasuryProposalsByIdVote']['path']; query?: Record<string, never>; body: OperationTypes['postTreasuryProposalsByIdVote']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
-  getTreasuryStats: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getTreasuryTransactions: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  getTransactionsByHashXdr: { path: OperationTypes['getTransactionsByHashXdr']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getUpgradeTrace: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getUpgradeTraceContractsByContractId: { path: OperationTypes['getUpgradeTraceContractsByContractId']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getUpgradeTraceContractsByContractIdDiff: { path: OperationTypes['getUpgradeTraceContractsByContractIdDiff']['path']; query?: OperationTypes['getUpgradeTraceContractsByContractIdDiff']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getUpgradeTraceContractsByContractIdHistory: { path: OperationTypes['getUpgradeTraceContractsByContractIdHistory']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getUpgradeTraceRecent: { path?: Record<string, never>; query?: OperationTypes['getUpgradeTraceRecent']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getUpgradeTraceStats: { path?: Record<string, never>; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getVirtualListEvents: { path?: Record<string, never>; query?: OperationTypes['getVirtualListEvents']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
-  getVirtualListTransactions: { path?: Record<string, never>; query?: OperationTypes['getVirtualListTransactions']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getWalletsByAddressEvents: { path: OperationTypes['getWalletsByAddressEvents']['path']; query?: OperationTypes['getWalletsByAddressEvents']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getWalletsByAddressHistory: { path: OperationTypes['getWalletsByAddressHistory']['path']; query?: OperationTypes['getWalletsByAddressHistory']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getWalletsByAddressJourney: { path: OperationTypes['getWalletsByAddressJourney']['path']; query?: OperationTypes['getWalletsByAddressJourney']['query']; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
@@ -12984,5 +10211,10 @@ export interface OperationParams {
   getWebhooksByIdDeliveries: { path: OperationTypes['getWebhooksByIdDeliveries']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   postWebhooksByIdPing: { path: OperationTypes['postWebhooksByIdPing']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   getWebhooksByIdPreview: { path: OperationTypes['getWebhooksByIdPreview']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  getWebhooksByIdReplay: { path: OperationTypes['getWebhooksByIdReplay']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  postWebhooksByIdReplay: { path: OperationTypes['postWebhooksByIdReplay']['path']; query?: Record<string, never>; body: OperationTypes['postWebhooksByIdReplay']['body']; signal?: AbortSignal; headers?: Record<string, string>; };
+  getWebhooksByIdReplayByJobId: { path: OperationTypes['getWebhooksByIdReplayByJobId']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  postWebhooksByIdReplayByJobIdCancel: { path: OperationTypes['postWebhooksByIdReplayByJobIdCancel']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
+  postWebhooksByIdReplayByJobIdResume: { path: OperationTypes['postWebhooksByIdReplayByJobIdResume']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
   postWebhooksByIdVerify: { path: OperationTypes['postWebhooksByIdVerify']['path']; query?: Record<string, never>; body?: never; signal?: AbortSignal; headers?: Record<string, string>; };
 }
