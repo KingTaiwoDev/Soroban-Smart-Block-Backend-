@@ -104,6 +104,12 @@ function parseEndpointList(value: string | undefined): string[] {
     .filter(Boolean);
 }
 
+const NETWORK_PASSPHRASES: Record<NetworkName, string> = {
+  testnet: 'Test SDF Network ; September 2015',
+  mainnet: 'Public Global Stellar Network ; September 2015',
+  devnet: 'Standalone Network ; February 2017',
+};
+
 // ─── Profile validation ───────────────────────────────────────────────────────
 
 function isHttpUrl(s: string): boolean {

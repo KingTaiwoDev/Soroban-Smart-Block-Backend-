@@ -25,6 +25,16 @@ import {
   hashVerificationToken,
   VERIFICATION_TOKEN_TTL_MS,
 } from '../webhooks/verification';
+import {
+  validateAndCreateReplayJob,
+  getReplayJob,
+  listReplayJobs,
+  cancelReplayJob,
+  resumeReplayJob,
+  executeReplayStep,
+  CheckpointValidationError,
+  FilterMismatchError,
+} from '../webhooks/replay';
 
 export const webhooksRouter = Router();
 
@@ -358,6 +368,7 @@ webhooksRouter.get(
           'X-Webhook-Signature (body only) is still sent for backwards compatibility but does not protect the timestamp; migrate to X-Webhook-Signature-V2.',
       },
       retryPolicy: {
+        maxAttempts: MAX_ATTEMPTS,
         immediateMaxAttempts: MAX_ATTEMPTS,
         backoffMs: [1, 2, 3, 4].map((attempt) => backoffMs(attempt)),
         batchMaxAttempts: null,
@@ -976,3 +987,227 @@ webhooksRouter.get(
     res.json({ data: deliveries });
   }),
 );
+
+const replayRequestSchema = z.object({
+  fromLedger: z.number().int().min(1),
+  toLedger: z.number().int().min(1).optional(),
+  filters: z
+    .object({
+      contractAddress: z.string().nullable().optional(),
+      eventType: z.string().nullable().optional(),
+      topicSymbol: z.string().nullable().optional(),
+    })
+    .optional(),
+  idempotencyKey: z.string().optional(),
+});
+
+/**
+ * @swagger
+ * /webhooks/{id}/replay:
+ *   post:
+ *     summary: Replay webhook deliveries from a selected ledger checkpoint
+ *     description: >
+ *       Initiates an asynchronous, idempotent replay job for missed events starting
+ *       from a validated ledger checkpoint. Replayed events carry explicit replay
+ *       headers and envelope markers and are signed with the subscription's secret.
+ *     security:
+ *       - ApiKeyAuth: []
+ *     tags: [Webhooks]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [fromLedger]
+ *             properties:
+ *               fromLedger: { type: integer, minimum: 1 }
+ *               toLedger: { type: integer, minimum: 1 }
+ *               filters:
+ *                 type: object
+ *                 properties:
+ *                   contractAddress: { type: string, nullable: true }
+ *                   eventType: { type: string, nullable: true }
+ *                   topicSymbol: { type: string, nullable: true }
+ *               idempotencyKey: { type: string }
+ *     responses:
+ *       201:
+ *         description: Replay job created
+ *       200:
+ *         description: Existing replay job returned (idempotent request)
+ *       400:
+ *         description: Invalid checkpoint or filter mismatch
+ *       404:
+ *         description: Subscription not found or not owned by caller
+ *       409:
+ *         description: Replay job already in progress
+ */
+webhooksRouter.post(
+  '/:id/replay',
+  asyncHandler(async (req: Request, res: Response) => {
+    const sub = await prismaRead.webhookSubscription.findFirst({
+      where: { id: req.params.id, apiKeyId: req.apiKey!.id },
+    });
+    if (!sub) return res.status(404).json({ error: 'Subscription not found' });
+
+    const parsed = replayRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: parsed.error.flatten() });
+    }
+
+    const idempotencyKey =
+      parsed.data.idempotencyKey ?? (req.header('Idempotency-Key') || undefined);
+
+    try {
+      const { job, isDuplicate } = await validateAndCreateReplayJob(
+        {
+          subscriptionId: sub.id,
+          apiKeyId: req.apiKey!.id,
+          fromLedger: parsed.data.fromLedger,
+          toLedger: parsed.data.toLedger,
+          filters: parsed.data.filters,
+          idempotencyKey,
+        },
+        sub,
+      );
+
+      if (!isDuplicate) {
+        // Kick off execution asynchronously
+        setImmediate(() => {
+          executeReplayStep(job.id).catch((err) => {
+            logger.error('Background replay step failed', { jobId: job.id, error: String(err) });
+          });
+        });
+      }
+
+      const statusCode = isDuplicate ? 200 : 201;
+      return res.status(statusCode).json({ data: job });
+    } catch (err) {
+      if (err instanceof CheckpointValidationError || err instanceof FilterMismatchError) {
+        const status = (err as CheckpointValidationError).code === 'REPLAY_JOB_ALREADY_IN_PROGRESS' ? 409 : 400;
+        return res.status(status).json({
+          error: err.message,
+          code: (err as any).code,
+        });
+      }
+      throw err;
+    }
+  }),
+);
+
+/**
+ * @swagger
+ * /webhooks/{id}/replay:
+ *   get:
+ *     summary: List replay jobs for a webhook subscription
+ *     security:
+ *       - ApiKeyAuth: []
+ *     tags: [Webhooks]
+ */
+webhooksRouter.get(
+  '/:id/replay',
+  asyncHandler(async (req: Request, res: Response) => {
+    const sub = await prismaRead.webhookSubscription.findFirst({
+      where: { id: req.params.id, apiKeyId: req.apiKey!.id },
+      select: { id: true },
+    });
+    if (!sub) return res.status(404).json({ error: 'Subscription not found' });
+
+    const jobs = listReplayJobs(sub.id);
+    res.json({ data: jobs });
+  }),
+);
+
+/**
+ * @swagger
+ * /webhooks/{id}/replay/{jobId}:
+ *   get:
+ *     summary: Get progress of a specific replay job
+ *     security:
+ *       - ApiKeyAuth: []
+ *     tags: [Webhooks]
+ */
+webhooksRouter.get(
+  '/:id/replay/:jobId',
+  asyncHandler(async (req: Request, res: Response) => {
+    const sub = await prismaRead.webhookSubscription.findFirst({
+      where: { id: req.params.id, apiKeyId: req.apiKey!.id },
+      select: { id: true },
+    });
+    if (!sub) return res.status(404).json({ error: 'Subscription not found' });
+
+    const job = getReplayJob(req.params.jobId, sub.id);
+    if (!job) return res.status(404).json({ error: 'Replay job not found' });
+
+    res.json({ data: job });
+  }),
+);
+
+/**
+ * @swagger
+ * /webhooks/{id}/replay/{jobId}/resume:
+ *   post:
+ *     summary: Resume an interrupted replay job
+ *     security:
+ *       - ApiKeyAuth: []
+ *     tags: [Webhooks]
+ */
+webhooksRouter.post(
+  '/:id/replay/:jobId/resume',
+  asyncHandler(async (req: Request, res: Response) => {
+    const sub = await prismaRead.webhookSubscription.findFirst({
+      where: { id: req.params.id, apiKeyId: req.apiKey!.id },
+      select: { id: true },
+    });
+    if (!sub) return res.status(404).json({ error: 'Subscription not found' });
+
+    try {
+      const job = await resumeReplayJob(req.params.jobId, sub.id);
+      if (!job) return res.status(404).json({ error: 'Replay job not found' });
+
+      setImmediate(() => {
+        executeReplayStep(job.id).catch((err) => {
+          logger.error('Background resumed replay step failed', { jobId: job.id, error: String(err) });
+        });
+      });
+
+      res.json({ data: job });
+    } catch (err) {
+      if (err instanceof CheckpointValidationError) {
+        return res.status(400).json({ error: err.message, code: err.code });
+      }
+      throw err;
+    }
+  }),
+);
+
+/**
+ * @swagger
+ * /webhooks/{id}/replay/{jobId}/cancel:
+ *   post:
+ *     summary: Cancel a replay job
+ *     security:
+ *       - ApiKeyAuth: []
+ *     tags: [Webhooks]
+ */
+webhooksRouter.post(
+  '/:id/replay/:jobId/cancel',
+  asyncHandler(async (req: Request, res: Response) => {
+    const sub = await prismaRead.webhookSubscription.findFirst({
+      where: { id: req.params.id, apiKeyId: req.apiKey!.id },
+      select: { id: true },
+    });
+    if (!sub) return res.status(404).json({ error: 'Subscription not found' });
+
+    const job = await cancelReplayJob(req.params.jobId, sub.id);
+    if (!job) return res.status(404).json({ error: 'Replay job not found' });
+
+    res.json({ data: job });
+  }),
+);
+

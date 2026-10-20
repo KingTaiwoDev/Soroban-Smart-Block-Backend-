@@ -235,4 +235,4 @@ Calibration compares measured sandbox gas against authoritative network results 
 4. **`feat: gas cost model calibration`** — **Implemented** (`src/sandbox/corpus/replay-corpus.json`, `src/sandbox/calibration.ts`, `scripts/sandbox/calibrate-fuel.ts`)
 5. **`feat: replay oracle pipeline`** — RPC ingestion, XDR decode, parallel execution, comparison report
 6. **`feat: side-channel hardening`** — Constant-time metering, lfence barriers, epoch preemption
-7. **`docs: benchmark report`** — Publish perf numbers vs. soroban-env-host native
+7. **`docs: benchmark report`** — Publish perf numbers vs. soroban-env-host native

@@ -31,16 +31,16 @@ The SDK generation pipeline is a production-grade system that automatically gene
 │  • Graceful degradation with circuit breakers                     │
 └────────────────────────┬────────────────────────────────────────┘
                          │
-         ┌───────────────┼───────────────┐
-         │               │               │
-         ▼               ▼               ▼
-┌─────────────────┐ ┌─────────────┐ ┌─────────────┐
-│ TypeScript     │ │ Python      │ │ Parity      │
-│ Emitter        │ │ Emitter     │ │ Matrix      │
-│                │ │             │ │ Generator   │
-└─────────────────┘ └─────────────┘ └─────────────┘
-         │               │               │
-         └───────────────┼───────────────┘
+         ┌───────────────┬───────────────┬───────────────┐
+         │               │               │               │
+         ▼               ▼               ▼               ▼
+┌─────────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
+│ TypeScript     │ │ Python      │ │ Go          │ │ Parity      │
+│ Emitter        │ │ Emitter     │ │ Emitter     │ │ Matrix      │
+│                │ │             │ │             │ │ Generator   │
+└─────────────────┘ └─────────────┘ └─────────────┘ └─────────────┘
+         │               │               │               │
+         └───────────────┴───────────────┴───────────────┘
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
@@ -386,6 +386,7 @@ Every cached file entry stores its SHA-256 checksum in a manifest. A cache hit r
    npm run sdk:check          # Drift detection
    npm run sdk:breaking       # Semver validation
    npm run sdk:audit:security # Security audit
+   npm run sdk:quality:check  # OpenAPI quality baseline check
    ```
 
 ### Release Process
@@ -396,6 +397,7 @@ Every cached file entry stores its SHA-256 checksum in a manifest. A cache hit r
    npm run sdk:check          # Verify no drift
    npm run sdk:breaking       # Check semver compliance
    npm run sdk:audit:security # Security audit
+   npm run sdk:quality:check  # OpenAPI quality baseline check
    npm run sdk:test:chaos     # Chaos tests
    npm run sdk:test:load      # Load tests
    npm run sdk:bench          # Performance benchmarks

@@ -4,8 +4,8 @@ import express from 'express';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
 
-vi.mock('../src/db', () => ({
-  prismaWrite: {
+vi.mock('../src/db', () => {
+  const writeMock: any = {
     webhookSubscription: {
       create: vi.fn(),
       update: vi.fn(),
@@ -17,17 +17,28 @@ vi.mock('../src/db', () => ({
       update: vi.fn(),
       updateMany: vi.fn(),
     },
-  },
-  prismaRead: {
-    webhookSubscription: {
-      findMany: vi.fn(),
-      findFirst: vi.fn(),
+    webhookOutboxEvent: {
+      updateMany: vi.fn(),
     },
-    webhookDelivery: {
-      findMany: vi.fn(),
+  };
+  writeMock.$transaction = vi.fn(async (cb: any) => cb(writeMock));
+  return {
+    prismaWrite: writeMock,
+    prismaRead: {
+      webhookSubscription: {
+        findMany: vi.fn(),
+        findFirst: vi.fn(),
+      },
+      webhookDelivery: {
+        findMany: vi.fn(),
+        count: vi.fn(async () => 0),
+      },
+      webhookOutboxEvent: {
+        count: vi.fn(async () => 0),
+      },
     },
-  },
-}));
+  };
+});
 
 vi.mock('../src/middleware/asyncHandler', () => ({
   asyncHandler: (fn: unknown) => fn,

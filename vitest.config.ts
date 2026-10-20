@@ -3,6 +3,11 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     globals: false,
+    env: {
+      TESTNET_DATABASE_URL: 'postgresql://postgres:postgres@localhost:5432/test?schema=public',
+      TESTNET_RPC_URL: 'https://soroban-testnet.stellar.org',
+      TESTNET_PASSPHRASE: 'Test SDF Network ; September 2015',
+    },
     include: ['tests/**/*.test.ts', 'src/**/*.test.ts', 'packages/**/*.test.ts'],
     exclude: [
       // Integration harness for the orphaned-router validation — deliberately

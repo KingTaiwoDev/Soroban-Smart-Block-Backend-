@@ -97,9 +97,10 @@ documented peak baseline and a 30-minute load runner. The current repository
 does not establish that baseline or provide a 100,000-connection runner.
 Webhook POST callbacks do not hold 100,000 persistent connections, so that
 criterion needs an explicit scope decision before it can be meaningfully
-validated. An arbitrary-checkpoint replay API is also not implemented: the
-retained snapshots support recovery of already-enqueued work, not replay from
-any chosen checkpoint.
+validated. An arbitrary-checkpoint replay API is implemented via `POST /webhooks/:id/replay`:
+subscription owners can request controlled, idempotent, and resumable event replay starting
+from a validated ledger checkpoint, subject to range limits (up to 10,000 ledgers) and
+signature verification.
 
 ## Compatibility And Rollback
 

@@ -3370,6 +3370,34 @@
       "body": "none",
       "deprecated": false
     },
+    "getWebhooksByIdReplay": {
+      "method": "GET",
+      "path": "/webhooks/{id}/replay",
+      "params": {
+        "path:id": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "body": "none",
+      "deprecated": false
+    },
+    "getWebhooksByIdReplayByJobId": {
+      "method": "GET",
+      "path": "/webhooks/{id}/replay/{jobId}",
+      "params": {
+        "path:id": {
+          "type": "string",
+          "required": true
+        },
+        "path:jobId": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "body": "none",
+      "deprecated": false
+    },
     "getWebhooksSdk": {
       "method": "GET",
       "path": "/webhooks/sdk",
@@ -3380,18 +3408,6 @@
     "patchI18nTranslationsById": {
       "method": "PATCH",
       "path": "/i18n/translations/{id}",
-      "params": {
-        "path:id": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "patchScheduleCronByIdToggle": {
-      "method": "PATCH",
-      "path": "/schedule/cron/{id}/toggle",
       "params": {
         "path:id": {
           "type": "string",
@@ -3704,6 +3720,20 @@
     "postContractsAbiSubmissions": {
       "method": "POST",
       "path": "/contracts/abi-submissions",
+      "params": {},
+      "body": "required",
+      "deprecated": false
+    },
+    "postEventsAdvancedQuery": {
+      "method": "POST",
+      "path": "/events/advanced/query",
+      "params": {},
+      "body": "required",
+      "deprecated": false
+    },
+    "postEventsAdvancedSubscriptions": {
+      "method": "POST",
+      "path": "/events/advanced/subscriptions",
       "params": {},
       "body": "required",
       "deprecated": false
