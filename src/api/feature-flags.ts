@@ -20,6 +20,7 @@ import { asyncHandler } from '../middleware/asyncHandler';
 import { config } from '../config';
 import { featureFlags } from '../feature-flags';
 import { findFlagDefinition } from '../feature-flags/registry';
+import { auditActor, recordAdminAudit } from '../lib/admin-audit';
 
 export const featureFlagsAdminRouter = Router();
 
@@ -83,6 +84,12 @@ featureFlagsAdminRouter.put(
       return res.status(400).json({ error: parsed.error.issues[0]?.message ?? 'Invalid body' });
     }
     const flag = await featureFlags.updateFlag(key, parsed.data);
+    void recordAdminAudit({
+      actor: auditActor(req),
+      action: 'feature_flag.updated',
+      target: key,
+      newState: parsed.data,
+    });
     res.json({ flag });
   }),
 );
@@ -115,6 +122,12 @@ featureFlagsAdminRouter.put(
       scopeValue,
       parsed.data.enabled,
     );
+    void recordAdminAudit({
+      actor: auditActor(req),
+      action: 'feature_flag.override_set',
+      target: key,
+      newState: { scopeType, scopeValue, enabled: parsed.data.enabled },
+    });
     res.json({ flag });
   }),
 );
@@ -133,6 +146,12 @@ featureFlagsAdminRouter.delete(
         .json({ error: `scopeType must be one of: ${FLAG_SCOPE_TYPES.join(', ')}` });
     }
     await featureFlags.clearOverride(key, scopeType as FlagScopeType, scopeValue);
+    void recordAdminAudit({
+      actor: auditActor(req),
+      action: 'feature_flag.override_cleared',
+      target: key,
+      previousState: { scopeType, scopeValue },
+    });
     res.json({ ok: true });
   }),
 );

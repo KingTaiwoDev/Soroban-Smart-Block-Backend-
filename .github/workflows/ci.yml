@@ -25,6 +25,21 @@ jobs:
           fi
           echo "OK: No unpinned :latest tags found in compose files."
 
+  # Issue #1235: dependency license policy. Reads package-lock.json only, so no
+  # install is needed. See docs/license-policy.md.
+  license-policy:
+    name: Dependency license policy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - name: Check dependency licenses
+        run: npm run licenses:check
+
   test:
     name: Test
     runs-on: ubuntu-latest

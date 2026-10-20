@@ -70,6 +70,7 @@
     "test:guard": "ts-node scripts/verify-test-coverage.ts",
     "test:exclusions": "ts-node scripts/verify-test-exclusions.ts",
     "docs:check": "ts-node scripts/check-doc-counts.ts",
+    "licenses:check": "node scripts/check-licenses.mjs",
     "audit:ci": "node scripts/audit-check.js",
     "typecheck:budget": "ts-node scripts/typecheck-budget.ts --max-errors 1312",
     "typecheck:budget:ci": "ts-node scripts/typecheck-budget.ts --max-errors 1312",

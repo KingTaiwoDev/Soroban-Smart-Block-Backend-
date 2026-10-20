@@ -9,11 +9,17 @@ const mocks = vi.hoisted(() => ({
   updateFlag: vi.fn(),
   setOverride: vi.fn(),
   clearOverride: vi.fn(),
+  recordAdminAudit: vi.fn(async () => {}),
 }));
 
 vi.mock('../../src/auth/middleware', () => ({
   requireAuth: mocks.requireAuth,
   requireRole: mocks.requireRole,
+}));
+
+vi.mock('../../src/lib/admin-audit', () => ({
+  auditActor: () => 'admin-user',
+  recordAdminAudit: mocks.recordAdminAudit,
 }));
 
 vi.mock('../../src/feature-flags', () => ({
@@ -108,6 +114,12 @@ describe('feature flags admin API', () => {
       rolloutPercent: 10,
     });
     expect(res.body.flag.defaultEnabled).toBe(true);
+    expect(mocks.recordAdminAudit).toHaveBeenCalledWith({
+      actor: 'admin-user',
+      action: 'feature_flag.updated',
+      target: 'poolMonitor',
+      newState: { defaultEnabled: true, rolloutPercent: 10 },
+    });
   });
 
   it('rejects unknown flag keys on update', async () => {
@@ -116,6 +128,7 @@ describe('feature flags admin API', () => {
       .send({ defaultEnabled: true });
     expect(res.status).toBe(404);
     expect(mocks.updateFlag).not.toHaveBeenCalled();
+    expect(mocks.recordAdminAudit).not.toHaveBeenCalled();
   });
 
   it('rejects an empty update body and out-of-range rollout', async () => {
@@ -164,6 +177,9 @@ describe('feature flags admin API', () => {
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ ok: true });
     expect(mocks.clearOverride).toHaveBeenCalledWith('poolMonitor', 'developer', 'dev-1');
+    expect(mocks.recordAdminAudit).toHaveBeenCalledWith(
+      expect.objectContaining({ action: 'feature_flag.override_cleared', target: 'poolMonitor' }),
+    );
   });
 
   it('rate limits requests beyond the configured max', async () => {
