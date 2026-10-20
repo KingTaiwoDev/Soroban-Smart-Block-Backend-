@@ -1,5 +1,6 @@
 import { existsSync } from 'fs';
 import { join } from 'path';
+import { createRequire } from 'module';
 import { logger } from '../logger';
 import { markNotReady, markReady } from '../readiness';
 import { getP2pConfig, recordPeerHeartbeat, setSelfPeerId } from './responsibility';
@@ -30,28 +31,51 @@ export { resolveLedgerLocation } from './resolve-location';
  * (tsconfig.p2p.json) because the current libp2p ecosystem is ESM-only while
  * this project is CommonJS (see docs/P2P_INDEXER_DESIGN.md §5).
  *
- * TypeScript unconditionally rewrites `import(x)` to a `require(x)`-based
- * shim when compiling under `module: commonjs` — even when `x` is a runtime
- * value rather than a string literal (verified empirically: it downleveled
- * to `Promise.resolve().then(() => require(x))`, which throws
- * ERR_REQUIRE_ESM against a genuine ESM target). The only reliable escape
- * hatch is constructing the `import()` call inside `new Function(...)`,
- * which TypeScript cannot see into and therefore cannot transform — this is
- * a real dynamic import at runtime, not a require() in disguise.
+ * CJS ↔ ESM bridge
+ * ----------------
+ * TypeScript rewrites `import(x)` to a `require()`-based shim under
+ * `module: commonjs`, which throws ERR_REQUIRE_ESM against genuine ESM
+ * artifacts.  The previous workaround used `new Function('specifier',
+ * 'return import(specifier)')` to hide the call from the TypeScript
+ * compiler — a code-execution primitive that defeats static analysis and
+ * breaks under stricter CSP / sandbox environments.
+ *
+ * The replacement uses `src/p2p/esm/import-shim.mts`, compiled by
+ * tsconfig.p2p.json (module: NodeNext).  Because that file is compiled as
+ * ESM, its `import()` is emitted as a real dynamic import.  Node ≥ 22.12
+ * supports `require()` of synchronous ESM modules, so this CJS module
+ * loads the shim synchronously with `createRequire`, then delegates all
+ * further ESM loading through the typed `loadNodeFactory` export — no
+ * `new Function(...)` required.
  */
-const dynamicImport: (specifier: string) => Promise<unknown> = new Function(
-  'specifier',
-  'return import(specifier)',
-) as (specifier: string) => Promise<unknown>;
+
+/** Lazily-resolved shim module; populated on first call to loadEsmNodeFactory(). */
+let _shim: { loadNodeFactory: () => Promise<typeof import('./esm/node-factory.mjs')> } | null =
+  null;
+
+function getShim(): { loadNodeFactory: () => Promise<typeof import('./esm/node-factory.mjs')> } {
+  if (_shim) return _shim;
+  const shimPath = join(__dirname, '..', '..', 'dist-esm', 'import-shim.mjs');
+  // Node ≥ 22.12 supports require() of synchronous ESM modules.
+  // createRequire(__filename) produces a require() rooted at this CJS file.
+  const req = createRequire(__filename);
+  _shim = req(shimPath) as typeof _shim;
+  return _shim!;
+}
 
 export async function loadEsmNodeFactory(): Promise<typeof import('./esm/node-factory.mjs')> {
-  const modulePath = join(__dirname, '..', '..', 'dist-esm', 'node-factory.mjs');
-  if (!existsSync(modulePath)) {
-    const errorMsg = `[p2p] Missing P2P ESM node factory artifact at ${modulePath}. Run "npm run build" or "tsc -p tsconfig.p2p.json" to generate dist-esm/node-factory.mjs before starting with P2P_ENABLED=true.`;
+  const shimPath = join(__dirname, '..', '..', 'dist-esm', 'import-shim.mjs');
+  const nodeFactoryPath = join(__dirname, '..', '..', 'dist-esm', 'node-factory.mjs');
+  if (!existsSync(shimPath) || !existsSync(nodeFactoryPath)) {
+    const missing = [shimPath, nodeFactoryPath].filter((p) => !existsSync(p));
+    const errorMsg =
+      `[p2p] Missing P2P ESM artifacts: ${missing.join(', ')}. ` +
+      `Run "npm run build" or "tsc -p tsconfig.p2p.json" to generate the dist-esm/ ` +
+      `artifacts before starting with P2P_ENABLED=true.`;
     logger.error(errorMsg);
     throw new Error(errorMsg);
   }
-  return dynamicImport(modulePath) as Promise<typeof import('./esm/node-factory.mjs')>;
+  return getShim().loadNodeFactory();
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

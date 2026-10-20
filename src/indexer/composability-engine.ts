@@ -587,7 +587,7 @@ export function runFuzzCampaign(
       if (pattern.confidence >= 0.7 && verification.scores.total < 50) {
         findings.push({
           sequence,
-          risk: (pattern.details as any).riskRating ?? 'high_risk',
+          risk: (pattern.details as Record<string, unknown>)?.riskRating as string ?? 'high_risk',
           description: `Detected ${pattern.patternName} with confidence ${(pattern.confidence * 100).toFixed(0)}%`,
         });
       }
@@ -610,7 +610,7 @@ export function checkForExploit(calls: ContractCall[]): {
   // Check for known high-confidence exploit signatures
   const patterns = detectPatterns(calls);
   const criticalPatterns = patterns.filter(
-    (p) => (p.details as any).riskRating === 'critical' && p.confidence >= 0.8,
+    (p) => (p.details as Record<string, unknown>)?.riskRating === 'critical' && p.confidence >= 0.8,
   );
 
   if (criticalPatterns.length > 0) {

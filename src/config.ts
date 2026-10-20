@@ -234,6 +234,15 @@ const envSchema = z.object({
   WS_SECRET: z.string().optional(),
   WEBHOOK_SECRET: z.string().optional(),
 
+  // PLT09 / #1030 — Enterprise SSO / OIDC
+  // Set ENABLE_ENTERPRISE_SSO=true to activate the /auth/sso/* routes.
+  // SSO_CLIENT_SECRETS_STRATEGY: "hash" (default, secrets stored as SHA-256)
+  //   or "vault" (secrets fetched from an external secrets manager at runtime).
+  ENABLE_ENTERPRISE_SSO: z
+    .union([z.boolean(), z.string()])
+    .transform((v) => v === true || v === 'true' || v === '1')
+    .default(false),
+
   // #907 — /metrics access control. Comma-separated IP/CIDR allowlist and/or
   // a shared bearer token; see src/middleware/metricsAuth.ts.
   METRICS_ALLOWED_IPS: z.string().default(''),
@@ -290,17 +299,172 @@ try {
   process.exit(1);
 }
 
+export const UNSAFE_PLACEHOLDER_SECRETS = [
+  'changeme',
+  'secret',
+  'password',
+  'admin',
+  'default',
+  'test',
+  '123456',
+  'development',
+  'jwt-secret',
+  'soroban',
+  'placeholder',
+  'supersecret',
+  'replace_me',
+  'your_secret_here',
+] as const;
+
+export interface ProductionValidationResult {
+  valid: boolean;
+  errors: string[];
+}
+
+export function validateProductionConfig(
+  env: {
+    NODE_ENV?: string;
+    ADMIN_API_KEY?: string;
+    JWT_SECRET?: string;
+    WS_SECRET?: string;
+    WEBHOOK_SECRET?: string;
+    COOKIE_SECRET?: string;
+    COOKIE_SECURE?: boolean | string;
+    FORECAST_MODE?: string;
+    METRICS_ALLOWED_IPS?: string;
+    METRICS_TOKEN?: string;
+    [key: string]: unknown;
+  } = parsedEnv,
+  netProfile?: {
+    name?: string;
+    rpcUrl?: string;
+    rpcWsUrl?: string;
+    databaseUrl?: string;
+    cacheUrl?: string;
+    [key: string]: unknown;
+  },
+): ProductionValidationResult {
+  const errors: string[] = [];
+  const targetProfile = netProfile ?? profile;
+
+  const requiredSecrets: Array<{ key: string; val?: string; minLen: number }> = [
+    { key: 'ADMIN_API_KEY', val: env.ADMIN_API_KEY, minLen: 16 },
+    { key: 'JWT_SECRET', val: env.JWT_SECRET, minLen: 32 },
+    { key: 'WS_SECRET', val: env.WS_SECRET, minLen: 32 },
+    { key: 'WEBHOOK_SECRET', val: env.WEBHOOK_SECRET, minLen: 32 },
+    { key: 'COOKIE_SECRET', val: env.COOKIE_SECRET, minLen: 32 },
+  ];
+
+  for (const { key, val, minLen } of requiredSecrets) {
+    if (!val || typeof val !== 'string' || val.trim() === '') {
+      errors.push(`Missing required production variable: ${key}`);
+      continue;
+    }
+
+    const trimmed = val.trim();
+    const lower = trimmed.toLowerCase();
+
+    const isPlaceholder = UNSAFE_PLACEHOLDER_SECRETS.some((placeholder) => {
+      if (lower === placeholder) return true;
+      if (placeholder === 'changeme' && lower.includes('changeme')) return true;
+      if (placeholder === 'placeholder' && lower.includes('placeholder')) return true;
+      if (placeholder === 'replace_me' && lower.includes('replace_me')) return true;
+      if (placeholder === 'your_secret_here' && lower.includes('your_secret')) return true;
+      return false;
+    });
+    if (isPlaceholder) {
+      errors.push(
+        `Unsafe default or placeholder secret detected for ${key}. Production secrets must be unique, high-entropy values.`,
+      );
+    } else if (trimmed.length < minLen) {
+      errors.push(
+        `Secret ${key} is too short (${trimmed.length} chars). Production requires at least ${minLen} characters.`,
+      );
+    }
+  }
+
+  // Cookie secure flag
+  if (env.COOKIE_SECURE !== undefined) {
+    const isCookieSecure =
+      env.COOKIE_SECURE === true || env.COOKIE_SECURE === 'true' || env.COOKIE_SECURE === '1';
+    if (!isCookieSecure) {
+      errors.push(
+        'In production, COOKIE_SECURE must be true to prevent transmitting session cookies over plaintext HTTP.',
+      );
+    }
+  }
+
+  // Forecast mode
+  if (env.FORECAST_MODE === 'demo') {
+    errors.push("In production, FORECAST_MODE cannot be 'demo'. Set FORECAST_MODE=production.");
+  }
+
+  // Metrics endpoint access protection
+  const metricsAllowed = (
+    typeof env.METRICS_ALLOWED_IPS === 'string' ? env.METRICS_ALLOWED_IPS : ''
+  ).trim();
+  const metricsToken = (typeof env.METRICS_TOKEN === 'string' ? env.METRICS_TOKEN : '').trim();
+  if (!metricsAllowed && !metricsToken) {
+    errors.push(
+      'In production, the metrics endpoint must be protected. Set METRICS_ALLOWED_IPS and/or METRICS_TOKEN.',
+    );
+  }
+
+  // Cache configuration in production
+  if (targetProfile && targetProfile.cacheUrl === 'memory://') {
+    errors.push(
+      "In production, in-memory cache ('memory://') is unsafe. A shared Redis cache must be configured.",
+    );
+  }
+
+  // Profile-specific mainnet production checks
+  if (targetProfile && targetProfile.name === 'mainnet') {
+    if (targetProfile.rpcUrl && targetProfile.rpcUrl.startsWith('http://')) {
+      errors.push('[mainnet] Insecure HTTP RPC URL is not allowed in production. Use https://.');
+    }
+    if (targetProfile.rpcWsUrl && targetProfile.rpcWsUrl.startsWith('ws://')) {
+      errors.push(
+        '[mainnet] Insecure WS RPC WebSocket URL is not allowed in production. Use wss://.',
+      );
+    }
+    if (
+      targetProfile.databaseUrl &&
+      (targetProfile.databaseUrl.includes('localhost') ||
+        targetProfile.databaseUrl.includes('127.0.0.1') ||
+        targetProfile.databaseUrl.includes('::1'))
+    ) {
+      errors.push('[mainnet] Localhost or loopback database URL is not allowed in production.');
+    }
+    if (
+      targetProfile.databaseUrl &&
+      (targetProfile.databaseUrl.includes(':password@') ||
+        targetProfile.databaseUrl.includes(':postgres@'))
+    ) {
+      errors.push(
+        '[mainnet] Default development database credentials are not allowed for mainnet.',
+      );
+    }
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+  };
+}
+
 export function assertConfig() {
   if (parsedEnv.NODE_ENV === 'production') {
-    const missing = [];
-    if (!parsedEnv.ADMIN_API_KEY) missing.push('ADMIN_API_KEY');
-    if (!parsedEnv.JWT_SECRET) missing.push('JWT_SECRET');
-    if (!parsedEnv.WS_SECRET) missing.push('WS_SECRET');
-    if (!parsedEnv.WEBHOOK_SECRET) missing.push('WEBHOOK_SECRET');
+    const result = validateProductionConfig(parsedEnv, profile);
+    if (!result.valid) {
+      logger.error('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      logger.error('❌ PRODUCTION CONFIGURATION VALIDATION FAILED');
+      logger.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+      for (const err of result.errors) {
+        logger.error(`  • ${err}`);
+      }
+      logger.error('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
-    if (missing.length > 0) {
-      const errString = `Missing required production variables: ${missing.join(', ')}`;
-      logger.error(`\n❌ ${errString}`);
+      const errString = `Invalid production configuration:\n${result.errors.join('\n')}`;
       if (process.env.NODE_ENV === 'test') {
         throw new Error(errString);
       }

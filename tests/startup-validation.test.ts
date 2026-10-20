@@ -4,7 +4,7 @@
  * Verifies that getProfile() rejects incomplete or misconfigured profiles
  * before the process starts connecting to external services.
  */
-import { describe, it, expect, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 async function loadProfiles() {
   vi.resetModules();
@@ -172,7 +172,7 @@ describe('startup validation — validateProfile helper', () => {
   afterEach(() => vi.unstubAllEnvs());
 
   it('is exported and callable directly', async () => {
-    const { validateProfile, getProfile } = await loadProfiles();
+    const { validateProfile } = await loadProfiles();
     vi.stubEnv('MAINNET_DATABASE_URL', 'postgresql://mainnet-db/soroban');
     vi.stubEnv('MAINNET_RPC_URL', 'https://mainnet.example.com/rpc');
     vi.stubEnv('MAINNET_RPC_WS_URL', 'wss://mainnet.example.com/rpc');
@@ -199,5 +199,178 @@ describe('startup validation — validateProfile helper', () => {
       networkPassphrase: 'Public Global Stellar Network ; September 2015',
     };
     expect(() => validateProfile(bad)).toThrow(/databaseUrl is required/);
+  });
+
+  it('rejects plain HTTP rpcUrl on mainnet', async () => {
+    const { validateProfile } = await loadProfiles();
+    const bad = {
+      name: 'mainnet' as const,
+      databaseUrl: 'postgresql://prod-db.example.com:5432/soroban',
+      rpcUrl: 'http://mainnet.example.com/rpc',
+      rpcFallbackUrls: [],
+      rpcWsUrl: 'wss://mainnet.example.com/rpc',
+      horizonUrl: 'https://horizon.stellar.org',
+      readReplicaUrl: '',
+      apiSubdomain: 'api.localhost',
+      cacheUrl: 'redis://cache.example.com:6379',
+      networkPassphrase: 'Public Global Stellar Network ; September 2015',
+    };
+    expect(() => validateProfile(bad)).toThrow(/Insecure HTTP RPC URL is not allowed/);
+  });
+
+  it('rejects plain WS rpcWsUrl on mainnet', async () => {
+    const { validateProfile } = await loadProfiles();
+    const bad = {
+      name: 'mainnet' as const,
+      databaseUrl: 'postgresql://prod-db.example.com:5432/soroban',
+      rpcUrl: 'https://mainnet.example.com/rpc',
+      rpcFallbackUrls: [],
+      rpcWsUrl: 'ws://mainnet.example.com/rpc',
+      horizonUrl: 'https://horizon.stellar.org',
+      readReplicaUrl: '',
+      apiSubdomain: 'api.localhost',
+      cacheUrl: 'redis://cache.example.com:6379',
+      networkPassphrase: 'Public Global Stellar Network ; September 2015',
+    };
+    expect(() => validateProfile(bad)).toThrow(/Insecure WS RPC WebSocket URL is not allowed/);
+  });
+});
+
+// ── Production configuration against unsafe defaults ──────────────────────────
+
+describe('startup validation — validateProductionConfig', () => {
+  beforeEach(() => {
+    vi.resetModules();
+    vi.stubEnv('TESTNET_DATABASE_URL', 'postgresql://testnet-db/soroban');
+  });
+  afterEach(() => vi.unstubAllEnvs());
+
+  const validProfile = {
+    name: 'mainnet',
+    databaseUrl: 'postgresql://soroban:SuperSecretProdPass123!@db.prod.internal:5432/soroban_prod',
+    rpcUrl: 'https://soroban-rpc.stellar.org',
+    rpcFallbackUrls: [],
+    rpcWsUrl: 'wss://soroban-rpc.stellar.org',
+    horizonUrl: 'https://horizon.stellar.org',
+    readReplicaUrl:
+      'postgresql://soroban:SuperSecretProdPass123!@db-replica.prod.internal:5432/soroban_prod',
+    apiSubdomain: 'api.stellar.org',
+    cacheUrl: 'redis://:CacheToken1234567890@redis.prod.internal:6379',
+    cacheMode: 'standalone' as const,
+    networkPassphrase: 'Public Global Stellar Network ; September 2015',
+  };
+
+  const validEnv = {
+    NODE_ENV: 'production',
+    ADMIN_API_KEY: 'admin_live_key_abcdef1234567890',
+    JWT_SECRET: 'super_secure_jwt_secret_key_at_least_32_chars_long_12345',
+    WS_SECRET: 'super_secure_ws_secret_key_at_least_32_chars_long_12345',
+    WEBHOOK_SECRET: 'super_secure_webhook_secret_key_at_least_32_chars_long',
+    COOKIE_SECRET: 'super_secure_cookie_secret_key_at_least_32_chars_long_!',
+    COOKIE_SECURE: true,
+    FORECAST_MODE: 'production',
+    METRICS_TOKEN: 'prom_scrape_bearer_token_xyz_123456',
+    METRICS_ALLOWED_IPS: '10.0.0.0/8',
+  };
+
+  it('accepts fully compliant production configuration', async () => {
+    const { validateProductionConfig } = await import('../src/config');
+    const result = validateProductionConfig(validEnv, validProfile);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  it('rejects missing COOKIE_SECRET in production', async () => {
+    const { validateProductionConfig } = await import('../src/config');
+    const result = validateProductionConfig({ ...validEnv, COOKIE_SECRET: '' }, validProfile);
+    expect(result.valid).toBe(false);
+    expect(
+      result.errors.some((e) => e.includes('Missing required production variable: COOKIE_SECRET')),
+    ).toBe(true);
+  });
+
+  it('rejects unsafe placeholder secrets', async () => {
+    const { validateProductionConfig } = await import('../src/config');
+    for (const placeholder of ['changeme', 'secret', 'password', '123456', 'default']) {
+      const result = validateProductionConfig(
+        { ...validEnv, JWT_SECRET: placeholder },
+        validProfile,
+      );
+      expect(result.valid).toBe(false);
+      expect(
+        result.errors.some((e) =>
+          e.includes('Unsafe default or placeholder secret detected for JWT_SECRET'),
+        ),
+      ).toBe(true);
+    }
+  });
+
+  it('rejects secrets below minimum length threshold', async () => {
+    const { validateProductionConfig } = await import('../src/config');
+    const result = validateProductionConfig(
+      { ...validEnv, JWT_SECRET: 'short_secret' },
+      validProfile,
+    );
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('Secret JWT_SECRET is too short'))).toBe(true);
+  });
+
+  it('rejects COOKIE_SECURE=false in production', async () => {
+    const { validateProductionConfig } = await import('../src/config');
+    const result = validateProductionConfig({ ...validEnv, COOKIE_SECURE: false }, validProfile);
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('COOKIE_SECURE must be true'))).toBe(true);
+  });
+
+  it('rejects FORECAST_MODE="demo" in production', async () => {
+    const { validateProductionConfig } = await import('../src/config');
+    const result = validateProductionConfig({ ...validEnv, FORECAST_MODE: 'demo' }, validProfile);
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes("FORECAST_MODE cannot be 'demo'"))).toBe(true);
+  });
+
+  it('rejects unprotected metrics endpoint in production', async () => {
+    const { validateProductionConfig } = await import('../src/config');
+    const result = validateProductionConfig(
+      { ...validEnv, METRICS_ALLOWED_IPS: '', METRICS_TOKEN: '' },
+      validProfile,
+    );
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('metrics endpoint must be protected'))).toBe(true);
+  });
+
+  it('rejects in-memory cache ("memory://") in production', async () => {
+    const { validateProductionConfig } = await import('../src/config');
+    const result = validateProductionConfig(validEnv, { ...validProfile, cacheUrl: 'memory://' });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes("in-memory cache ('memory://') is unsafe"))).toBe(
+      true,
+    );
+  });
+
+  it('rejects localhost database URL for mainnet production', async () => {
+    const { validateProductionConfig } = await import('../src/config');
+    const result = validateProductionConfig(validEnv, {
+      ...validProfile,
+      databaseUrl: 'postgresql://postgres:pass@localhost:5432/db',
+    });
+    expect(result.valid).toBe(false);
+    expect(
+      result.errors.some((e) => e.includes('Localhost or loopback database URL is not allowed')),
+    ).toBe(true);
+  });
+
+  it('rejects default development credentials in mainnet database URL', async () => {
+    const { validateProductionConfig } = await import('../src/config');
+    const result = validateProductionConfig(validEnv, {
+      ...validProfile,
+      databaseUrl: 'postgresql://postgres:password@prod-db.internal:5432/db',
+    });
+    expect(result.valid).toBe(false);
+    expect(
+      result.errors.some((e) =>
+        e.includes('Default development database credentials are not allowed'),
+      ),
+    ).toBe(true);
   });
 });

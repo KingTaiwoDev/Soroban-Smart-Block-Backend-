@@ -10,8 +10,8 @@ import { prismaRead, prismaWrite } from '../db';
 
 type FeeType = string;
 type FeeDestination = string;
-const feeRead = prismaRead as any;
-const feeWrite = prismaWrite as any;
+const feeRead = prismaRead as unknown as Record<string, { findMany: Function; create: Function; updateMany: Function; count: Function }>;
+const feeWrite = prismaWrite as unknown as Record<string, { findMany: Function; create: Function; updateMany: Function; count: Function }>;
 
 // ---------------------------------------------------------------------------
 // Types

@@ -4,10 +4,11 @@
  */
 
 import { describe, bench, beforeAll } from 'vitest';
-import { generateAll } from '../../scripts/sdk/generate';
+import { generateAll, generateAllParallel } from '../../scripts/sdk/generate';
 import { gracefulDegradation } from '../../scripts/sdk/graceful-degradation';
 import { metrics } from '../../scripts/sdk/sdk-metrics';
 import { featureFlags } from '../../scripts/sdk/feature-flags';
+import { swaggerSpec } from '../indexer/swaggerSpec';
 
 // Mock OpenAPI document for benchmarking
 const mockOpenAPIDoc = {
@@ -74,6 +75,24 @@ describe('SDK Generation Performance Benchmarks', () => {
       featureFlags.registerFlag('typescript-generation', { enabled: true, description: 'Test' });
       featureFlags.registerFlag('python-generation', { enabled: true, description: 'Test' });
       generateAll(mockOpenAPIDoc);
+    });
+
+    bench('generateAllParallel with minimal spec', async () => {
+      await generateAllParallel(mockOpenAPIDoc, { maxWorkers: 2 });
+    });
+  });
+
+  describe('Parallel vs Serial Generation (Current Specification)', () => {
+    bench('serial generation (current OpenAPI spec)', () => {
+      generateAll(swaggerSpec);
+    });
+
+    bench('parallel generation (current OpenAPI spec, 4 workers)', async () => {
+      await generateAllParallel(swaggerSpec, { maxWorkers: 4 });
+    });
+
+    bench('parallel generation (current OpenAPI spec, 2 workers)', async () => {
+      await generateAllParallel(swaggerSpec, { maxWorkers: 2 });
     });
   });
 

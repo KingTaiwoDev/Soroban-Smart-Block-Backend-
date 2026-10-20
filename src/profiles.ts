@@ -91,6 +91,12 @@ const PROFILES: Record<NetworkName, NetworkProfile> = {
   },
 };
 
+export const NETWORK_PASSPHRASES: Record<NetworkName, string> = {
+  testnet: 'Test SDF Network ; September 2015',
+  mainnet: 'Public Global Stellar Network ; September 2015',
+  devnet: 'Standalone Network ; February 2017',
+};
+
 function parseEndpointList(value: string | undefined): string[] {
   return (value ?? '')
     .split(',')
@@ -190,6 +196,12 @@ export function validateProfile(profile: NetworkProfile): void {
 
   // ── Network profile consistency ───────────────────────────────────────────
   if (name === 'mainnet') {
+    if (rpcUrl.startsWith('http://')) {
+      throw new Error(`[mainnet] Insecure HTTP RPC URL is not allowed. Use https://.`);
+    }
+    if (rpcWsUrl.startsWith('ws://')) {
+      throw new Error(`[mainnet] Insecure WS RPC WebSocket URL is not allowed. Use wss://.`);
+    }
     if (rpcUrl.includes('testnet') || horizonUrl.includes('testnet')) {
       throw new Error(`[mainnet] rpcUrl or horizonUrl appears to point to testnet infrastructure.`);
     }

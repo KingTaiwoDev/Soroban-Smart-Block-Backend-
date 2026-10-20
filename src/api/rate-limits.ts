@@ -146,7 +146,7 @@ rateLimitAdminRouter.get(
   adminAuth,
   asyncHandler(async (_req: Request, res: Response) => {
     try {
-      const prisma = prismaRead as any;
+      const prisma = prismaRead as unknown as Record<string, { findUnique: Function; findMany: Function; count: Function }>;
       const rows = await prisma.rateLimitOverride.findMany({
         where: { identifier: { startsWith: 'ent:' } },
         orderBy: { createdAt: 'asc' },
@@ -252,7 +252,7 @@ rateLimitAdminRouter.get(
     }
 
     try {
-      const prisma = prismaRead as any;
+      const prisma = prismaRead as unknown as Record<string, { findUnique: Function; findMany: Function; count: Function }>;
       const rows = await prisma.rateLimitOverride.findMany({
         where: { identifier: `ent:${orgId}` },
       });
@@ -294,7 +294,7 @@ rateLimitAdminRouter.delete(
     }
 
     try {
-      const prisma = prismaWrite as any;
+      const prisma = prismaWrite as unknown as Record<string, { upsert: Function; update: Function; delete: Function; create: Function }>;
       // Delete all rows for this org (endpoint field varies by encoding).
       await prisma.rateLimitOverride.deleteMany({
         where: { identifier: `ent:${orgId}` },

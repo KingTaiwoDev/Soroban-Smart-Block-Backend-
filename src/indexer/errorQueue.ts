@@ -3,7 +3,6 @@ import { Prisma } from '@prisma/client';
 import { logger } from '../logger';
 import { config } from '../config';
 import { classifyFailureReason } from './failure-parser';
-import { config } from '../config';
 import {
   indexerErrorQueueDepth,
   indexerErrorRetriesTotal,
@@ -29,6 +28,44 @@ export interface FailedItemInput {
 export interface RetryOptions {
   batchSize?: number;
   concurrency?: number;
+}
+
+export interface LedgerDecodeErrorInput {
+  network: string;
+  eventId: string;
+  ledger: number;
+  transactionHash: string;
+  eventIndex: number;
+  topics: string[];
+  data: string;
+  error: unknown;
+}
+
+/**
+ * Store a malformed event against its ledger before it is sent to the DLQ.
+ *
+ * This is deliberately idempotent: restarting a range must not create a new
+ * operational incident for the same RPC event.
+ */
+export async function recordLedgerDecodeError(input: LedgerDecodeErrorInput): Promise<void> {
+  const error = input.error instanceof Error ? input.error : new Error(String(input.error));
+  await prisma.ledgerDecodeError.upsert({
+    where: { network_eventId: { network: input.network, eventId: input.eventId } },
+    update: {
+      errorMsg: error.message,
+      payload: { topics: input.topics, data: input.data },
+      resolvedAt: null,
+    },
+    create: {
+      network: input.network,
+      eventId: input.eventId,
+      ledger: input.ledger,
+      transactionHash: input.transactionHash,
+      eventIndex: input.eventIndex,
+      errorMsg: error.message,
+      payload: { topics: input.topics, data: input.data },
+    },
+  });
 }
 
 /**
@@ -150,7 +187,7 @@ export async function moveToDeadLetter(dlData: {
   // operators can see poison-vs-exhaustion mix and alert on DLQ rate.
   indexerErrorDlqTotal.inc({
     network: config.stellarNetwork,
-    reason: dlData.reason ?? classifyFailureReason(dlData.errorMsg),
+    reason: sanitizeMetricLabelValue(dlData.reason ?? classifyFailureReason(dlData.errorMsg)),
   });
   await prisma.deadLetterItem.create({
     data: {
@@ -198,6 +235,54 @@ export async function reprocessDeadLetterItem(id: string): Promise<boolean> {
   await prisma.deadLetterItem.delete({ where: { id } });
   logger.info(`[deadLetter] Reprocess triggered for ${dlItem.itemType}:${dlItem.itemId}`);
   return true;
+}
+
+export interface DeadLetterReplayAudit {
+  actor: string;
+  reason: string;
+}
+
+/**
+ * Requeue exactly one dead-letter item and write an immutable operator audit
+ * record in the same database transaction. CLI automation must use this
+ * instead of the legacy unaudited helper above.
+ */
+export async function reprocessDeadLetterItemAudited(
+  id: string,
+  audit: DeadLetterReplayAudit,
+): Promise<boolean> {
+  return prisma.$transaction(async (tx) => {
+    const dlItem = await tx.deadLetterItem.findUnique({ where: { id } });
+    if (!dlItem) return false;
+
+    const existingFailed = await tx.failedItem.findFirst({
+      where: { itemId: dlItem.itemId, itemType: dlItem.itemType },
+    });
+    if (existingFailed) {
+      await tx.failedItem.update({
+        where: { id: existingFailed.id },
+        data: { dead: false, retryCount: 0, lastTriedAt: new Date() },
+      });
+    }
+
+    await tx.auditLog.create({
+      data: {
+        actor: audit.actor,
+        action: 'dead_letter_replay',
+        target: `dead-letter:${dlItem.id}`,
+        previousState: {
+          itemType: dlItem.itemType,
+          itemId: dlItem.itemId,
+          ledger: dlItem.ledger,
+          retryCount: dlItem.retryCount,
+        },
+        newState: { status: 're-enqueued' },
+        reason: audit.reason,
+      },
+    });
+    await tx.deadLetterItem.delete({ where: { id } });
+    return true;
+  });
 }
 
 /** Purge dead letter items */

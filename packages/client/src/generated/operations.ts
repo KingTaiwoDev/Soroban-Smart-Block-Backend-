@@ -4,7 +4,7 @@ import type * as Models from './models';
 
 export const SPEC_VERSION = "1.0.0" as const;
 /** SHA-256 (first 16 hex chars) of the normalized API surface this file was generated from. */
-export const SPEC_FINGERPRINT = "4c126e23b9a2d4e1" as const;
+export const SPEC_FINGERPRINT = "4c0ba0fdc2224255" as const;
 
 export type ParamType = 'string' | 'integer' | 'number' | 'boolean' | 'array' | 'object';
 
@@ -4242,57 +4242,6 @@ export const OPERATIONS = {
     tags: ["Webhooks"],
     summary: "Preview the exact payload and headers for a subscription",
   },
-  getWebhooksByIdReplay: {
-    method: 'GET',
-    path: "/webhooks/{id}/replay",
-    pathParams: ["id"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Webhooks"],
-    summary: "List replay jobs for a webhook subscription",
-  },
-  postWebhooksByIdReplay: {
-    method: 'POST',
-    path: "/webhooks/{id}/replay",
-    pathParams: ["id"],
-    query: [],
-    body: 'required',
-    contentType: "application/json",
-    deprecated: false,
-    tags: ["Webhooks"],
-    summary: "Replay webhook deliveries from a selected ledger checkpoint",
-  },
-  getWebhooksByIdReplayByJobId: {
-    method: 'GET',
-    path: "/webhooks/{id}/replay/{jobId}",
-    pathParams: ["id", "jobId"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Webhooks"],
-    summary: "Get progress of a specific replay job",
-  },
-  postWebhooksByIdReplayByJobIdCancel: {
-    method: 'POST',
-    path: "/webhooks/{id}/replay/{jobId}/cancel",
-    pathParams: ["id", "jobId"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Webhooks"],
-    summary: "Cancel a replay job",
-  },
-  postWebhooksByIdReplayByJobIdResume: {
-    method: 'POST',
-    path: "/webhooks/{id}/replay/{jobId}/resume",
-    pathParams: ["id", "jobId"],
-    query: [],
-    body: 'none',
-    deprecated: false,
-    tags: ["Webhooks"],
-    summary: "Resume an interrupted replay job",
-  },
   postWebhooksByIdVerify: {
     method: 'POST',
     path: "/webhooks/{id}/verify",
@@ -4307,7 +4256,7 @@ export const OPERATIONS = {
 
 export type OperationId = keyof typeof OPERATIONS;
 
-export const OPERATION_COUNT = 388 as const;
+export const OPERATION_COUNT = 383 as const;
 
 export interface OperationTypes {
   /** GET /admin/contract-abi-submissions — List contract ABI submissions for moderation */
@@ -4361,6 +4310,7 @@ export interface OperationTypes {
       /** Filter by agent status */
       status?: string;
     };
+    query: Record<string, never>;
     body: never;
     response: unknown;
   };
@@ -4443,7 +4393,6 @@ export interface OperationTypes {
       pricePerCall?: string;
       pricePerMonth?: string;
     };
-    response: unknown;
   };
   /** GET /agents/verification/{executionId} — Get verification status for an execution */
   getAgentsVerificationByExecutionId: {
@@ -4463,7 +4412,6 @@ export interface OperationTypes {
     body: {
       verifierNode: string;
     };
-    response: unknown;
   };
   /** POST /agents/{id}/execute — Execute the agent (trigger single run) */
   postAgentsByIdExecute: {
@@ -4522,28 +4470,47 @@ export interface OperationTypes {
     };
     query: Record<string, never>;
     body: never;
-    response: unknown;
+    response: {
+      composedWith?: Array<unknown>;
+      contractAddress?: string;
+      uniqueCallers?: number;
+    };
   };
   /** POST /analytics/query/estimate — Estimate cost and engine recommendation for a SQL query */
   postAnalyticsQueryEstimate: {
     path: Record<string, never>;
     query: Record<string, never>;
     body: never;
-    response: unknown;
+    response: Array<{
+      confidence?: number;
+      createdAt?: string;
+      details?: Record<string, unknown> | null;
+      id?: string;
+      pattern?: Models.CompositionPattern;
+      patternId?: string;
+      txId?: string;
+    }>;
   };
   /** GET /analytics/query/lineage — List recent ETL job lineage records */
   getAnalyticsQueryLineage: {
     path: Record<string, never>;
     query: Record<string, never>;
     body: never;
-    response: unknown;
+    response: {
+      criticalAlerts?: number;
+      ecosystemIndex?: number | null;
+      generatedAt?: string;
+      newPatternsDetected?: number;
+      period?: string;
+      totalComposedTransactions?: number;
+    };
   };
   /** GET /analytics/query/templates — List pre-built dashboard SQL templates */
   getAnalyticsQueryTemplates: {
     path: Record<string, never>;
     query: Record<string, never>;
     body: never;
-    response: unknown;
+    response: (Models.EcosystemComposabilityIndex);
   };
   /** GET /assets/metrics — Compute live token storage metrics for all SAC-mapped assets */
   getAssetsMetrics: {
@@ -4589,7 +4556,9 @@ export interface OperationTypes {
   /** GET /authorizations/dashboard — Authorization expiry dashboard */
   getAuthorizationsDashboard: {
     path: Record<string, never>;
-    query: Record<string, never>;
+    query: {
+      category?: string;
+    };
     body: never;
     response: {
       activeCount?: number;
@@ -4714,7 +4683,14 @@ export interface OperationTypes {
     path: Record<string, never>;
     query: Record<string, never>;
     body: never;
-    response: unknown;
+    response: {
+      campaignId?: string;
+      contractAddress?: string;
+      coverage?: number;
+      findings?: Array<Record<string, unknown>>;
+      totalCases?: number;
+      unsafeFound?: number;
+    };
   };
   /** POST /compiler/compile — Compile a Soroban contract from uploaded source archive */
   postCompilerCompile: {
@@ -4728,14 +4704,25 @@ export interface OperationTypes {
     path: Record<string, never>;
     query: Record<string, never>;
     body: never;
-    response: unknown;
+    response: Array<{
+      compositionCount?: number;
+      contractAddress?: string;
+      riskIncidents?: number;
+      safetyScoreAvg?: number | null;
+      uniqueCallees?: number;
+      uniqueCallers?: number;
+    }>;
   };
   /** GET /compiler/toolchains — List supported compiler toolchains */
   getCompilerToolchains: {
     path: Record<string, never>;
     query: Record<string, never>;
     body: never;
-    response: unknown;
+    response: {
+      contractAddress?: string;
+      patch?: Record<string, unknown>;
+      patternsFound?: number;
+    };
   };
   /** POST /compiler/verify — Verify source code matches a deployed contract's WASM hash */
   postCompilerVerify: {
@@ -4749,14 +4736,23 @@ export interface OperationTypes {
     path: Record<string, never>;
     query: Record<string, never>;
     body: never;
-    response: unknown;
+    response: Array<Models.CompositionPattern>;
   };
   /** GET /compliance/rwa/assets — List RWA-compliant assets */
   getComplianceRwaAssets: {
     path: Record<string, never>;
     query: Record<string, never>;
-    body: never;
-    response: unknown;
+    body: {
+      category: string;
+      description: string;
+      detectionRules?: unknown;
+      mitigationGuide?: string;
+      name: string;
+      requiredCalls?: number;
+      riskRating?: "safe" | "low_risk" | "medium_risk" | "high_risk" | "critical";
+      safeIf?: unknown;
+    };
+    response: (Models.CompositionPattern);
   };
   /** GET /compliance/rwa/assets/{assetId} — Get compliance metadata for an RWA asset */
   getComplianceRwaAssetsByAssetId: {
@@ -4885,6 +4881,7 @@ export interface OperationTypes {
       txHash?: string;
       verification?: Record<string, unknown>;
     };
+    response: Models.Contract;
   };
   /** POST /composability/analyze/batch — Analyse multiple composed transactions in one request */
   postComposabilityAnalyzeBatch: {
@@ -4910,6 +4907,7 @@ export interface OperationTypes {
         txHash?: string;
       }>;
     };
+    response: unknown;
   };
   /** GET /composability/circular-dependencies — Contracts with detected unbounded recursion */
   getComposabilityCircularDependencies: {
@@ -4926,7 +4924,7 @@ export interface OperationTypes {
   /** GET /composability/contracts/{address} — Composability profile for a contract */
   getComposabilityContractsByAddress: {
     path: {
-      address: string;
+      contractId: string;
     };
     query: Record<string, never>;
     body: never;
@@ -4935,6 +4933,7 @@ export interface OperationTypes {
   /** GET /composability/contracts/{address}/callees — Callee count for a contract */
   getComposabilityContractsByAddressCallees: {
     path: {
+      /** Contract address */
       address: string;
     };
     query: Record<string, never>;
@@ -4943,6 +4942,18 @@ export interface OperationTypes {
       contractAddress?: string;
       uniqueCallees?: number;
     };
+    query: {
+      /** Only count calls at or after this ISO-8601 timestamp */
+      since?: string;
+    };
+    body: never;
+    response: Array<{
+      /** Number of calls to this function */
+      callCount?: number;
+      functionName?: string;
+      /** Ledger close time of the most recent call */
+      lastCalledAt?: string | null;
+    }>;
   };
   /** GET /composability/contracts/{address}/callers — Caller count and composition partners for a contract */
   getComposabilityContractsByAddressCallers: {
@@ -4956,6 +4967,7 @@ export interface OperationTypes {
       contractAddress?: string;
       uniqueCallers?: number;
     };
+    response: unknown;
   };
   /** GET /composability/contracts/{address}/patterns — Pattern instances observed involving a contract */
   getComposabilityContractsByAddressPatterns: {
@@ -4998,9 +5010,7 @@ export interface OperationTypes {
   /** GET /composability/ecosystem-index/history — Historical ecosystem index snapshots */
   getComposabilityEcosystemIndexHistory: {
     path: Record<string, never>;
-    query: {
-      limit?: number;
-    };
+    query: Record<string, never>;
     body: never;
     response: Array<Models.EcosystemComposabilityIndex>;
   };
@@ -5041,6 +5051,7 @@ export interface OperationTypes {
         to: string;
       }>;
     };
+    body: never;
     response: {
       confidence?: number;
       description?: string | null;
@@ -5060,7 +5071,6 @@ export interface OperationTypes {
     path: {
       campaignId: string;
     };
-    query: Record<string, never>;
     body: never;
     response: (Models.ComposabilityFuzzCampaign);
   };
@@ -5069,6 +5079,10 @@ export interface OperationTypes {
     path: {
       campaignId: string;
     };
+  };
+  /** GET /graph/dependencies/svg — Get contract dependency graph as SVG visualization */
+  getGraphDependenciesSvg: {
+    path: Record<string, never>;
     query: Record<string, never>;
     body: never;
     response: {
@@ -5156,6 +5170,7 @@ export interface OperationTypes {
       patch?: Record<string, unknown>;
       txHash?: string;
     };
+    response: unknown;
   };
   /** GET /composability/patterns — All catalogued composition patterns ordered by risk rating */
   getComposabilityPatterns: {
@@ -5211,6 +5226,7 @@ export interface OperationTypes {
       txHash?: string;
       verification?: Record<string, unknown> | null;
     };
+    response: unknown;
   };
   /** GET /composability/score/{txHash} — Safety score and per-dimension breakdown for a transaction */
   getComposabilityScoreByTxHash: {
@@ -5274,6 +5290,7 @@ export interface OperationTypes {
       txHash?: string;
       verified?: boolean;
     };
+    response: unknown;
   };
   /** GET /contracts — List all indexed contracts */
   getContracts: {
@@ -5356,7 +5373,10 @@ export interface OperationTypes {
   getContractsLicenses: {
     path: Record<string, never>;
     query: Record<string, never>;
-    body: never;
+    body: {
+      limit?: number;
+      tokenAddress?: string;
+    };
     response: unknown;
   };
   /** GET /contracts/licenses/{contractId} — License and attribution for a contract */
@@ -5505,6 +5525,12 @@ export interface OperationTypes {
     path: {
       contractId: string;
     };
+    body: never;
+    response: unknown;
+  };
+  /** POST /i18n/translate/batch — Translate multiple keys at once */
+  postI18nTranslateBatch: {
+    path: Record<string, never>;
     query: Record<string, never>;
     body: never;
     response: unknown;
@@ -5724,7 +5750,9 @@ export interface OperationTypes {
   getGraphDependencies: {
     path: Record<string, never>;
     query: Record<string, never>;
-    body: never;
+    body: {
+      txHash: string;
+    };
     response: {
       edges?: Array<{
         from?: string;
@@ -5769,7 +5797,6 @@ export interface OperationTypes {
       /** Filter by node types (comma-separated) */
       nodeTypes?: string;
     };
-    body: never;
     response: {
       edges?: Array<Record<string, unknown>>;
       metadata?: Record<string, unknown>;
@@ -6077,7 +6104,6 @@ export interface OperationTypes {
     query: {
       limit?: number;
     };
-    body: never;
     response: {
       count?: number;
       data?: Array<Models.MevEvent>;
@@ -6122,7 +6148,6 @@ export interface OperationTypes {
     query: {
       limit?: number;
     };
-    body: never;
     response: {
       bots?: Array<Models.MevAttacker>;
       count?: number;
@@ -6435,7 +6460,6 @@ export interface OperationTypes {
       /** Protocol contract address */
       contract: string;
     };
-    query: Record<string, never>;
     body: never;
     response: {
       contractAddress?: string;
@@ -6473,6 +6497,8 @@ export interface OperationTypes {
       };
       success?: boolean;
     };
+    body: never;
+    response: Models.PrivacyComplianceReport;
   };
   /** GET /mev/reports/weekly — MEV totals for the last 7 days */
   getMevReportsWeekly: {
@@ -6512,6 +6538,8 @@ export interface OperationTypes {
       description: string;
       name: string;
     };
+    query: Record<string, never>;
+    body: never;
     response: {
       confidence?: number;
       description?: string;
@@ -6911,7 +6939,6 @@ export interface OperationTypes {
     path: {
       address: string;
     };
-    query: Record<string, never>;
     body: never;
     response: {
       address?: string;
@@ -6933,7 +6960,6 @@ export interface OperationTypes {
     path: {
       address: string;
     };
-    query: Record<string, never>;
     body: never;
     response: {
       address?: string;
@@ -6957,7 +6983,8 @@ export interface OperationTypes {
   /** GET /privacy/de-anonymization/amount/{address} — Amount-correlation analysis for an address */
   getPrivacyDeAnonymizationAmountByAddress: {
     path: {
-      address: string;
+      /** Transaction hash */
+      txHash: string;
     };
     query: Record<string, never>;
     body: never;
@@ -7132,7 +7159,9 @@ export interface OperationTypes {
       protocol: string;
     };
     query: {
-      days?: number;
+      limit?: number;
+      offset?: number;
+      status?: string;
     };
     body: never;
     response: {

@@ -1580,7 +1580,7 @@ export class SandboxEngine {
 
   async callBatch(sessionId: string, calls: Array<Omit<CallInput, 'sessionId'>>): Promise<any> {
     const batchId = crypto.randomUUID();
-    const results = [] as any[];
+    const results = [] as unknown[];
     for (const call of calls) {
       results.push(await this.call({ ...call, sessionId, batchId }));
     }
@@ -2069,8 +2069,8 @@ export class SandboxEngine {
   }
 
   private verifier = createVerifier({ timeoutMs: 120000 });
-  private gasAnalyzerInstance = new GasAnalyzer(this.verifier['solver'] as any);
-  private reentrancyAnalyzerInstance = new ReentrancyAnalyzer(this.verifier['solver'] as any);
+  private gasAnalyzerInstance = new GasAnalyzer(this.verifier['solver'] as unknown);
+  private reentrancyAnalyzerInstance = new ReentrancyAnalyzer(this.verifier['solver'] as unknown);
 
   private buildWasmFunctionsFromContract(contract: any): WasmFunction[] {
     const abi = contract.abi ?? { functions: [] };
@@ -2437,8 +2437,8 @@ export default spec('${contract.name ?? 'contract'}_spec', '${contractId}', [
 
   async benchmark(sessionId: string, contractId: string): Promise<any> {
     const contract = await this.getContract(sessionId, contractId);
-    const functionCount = Array.isArray((contract.abi as any)?.functions)
-      ? (contract.abi as any).functions.length
+    const functionCount = Array.isArray((contract.abi as Record<string, unknown>)?.functions)
+      ? (contract.abi as Record<string, unknown[]>).functions.length
       : 0;
     return {
       metrics: {

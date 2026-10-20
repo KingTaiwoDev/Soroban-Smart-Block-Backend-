@@ -134,6 +134,71 @@ jobs:
           path: coverage/
           retention-days: 30
 
+  container-health:
+    name: Container health probe
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U test -d test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies and migrate the probe database
+        run: |
+          npm ci
+          npx prisma migrate deploy
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/test
+          TESTNET_DATABASE_URL: postgresql://test:test@localhost:5432/test
+
+      - name: Build runtime container
+        run: docker build --tag soroban-explorer-health:${{ github.sha }} .
+
+      - name: Start image and require its Docker health probe to pass
+        run: |
+          docker run --detach --name soroban-explorer-health --network host \
+            --add-host host.docker.internal:host-gateway \
+            --env NODE_ENV=test \
+            --env PORT=3000 \
+            --env STELLAR_NETWORK=testnet \
+            --env CACHE_URL=memory:// \
+            --env TESTNET_CACHE_URL=memory:// \
+            --env DATABASE_URL=postgresql://test:test@host.docker.internal:5432/test \
+            --env TESTNET_DATABASE_URL=postgresql://test:test@host.docker.internal:5432/test \
+            soroban-explorer-health:${{ github.sha }}
+          for _ in $(seq 1 30); do
+            STATUS=$(docker inspect --format='{{.State.Health.Status}}' soroban-explorer-health)
+            [ "$STATUS" = healthy ] && exit 0
+            [ "$STATUS" = unhealthy ] && break
+            sleep 2
+          done
+          docker logs soroban-explorer-health
+          exit 1
+
+      - name: Collect container logs on failure
+        if: failure()
+        run: docker logs soroban-explorer-health || true
+
+      - name: Stop health-probe container
+        if: always()
+        run: docker rm --force soroban-explorer-health || true
+
   # DX01/DX02: OpenAPI-first SDKs. The spec is the source of truth; generated
   # clients must match it byte-for-byte (drift fails), API-surface changes
   # must follow semver (docs/sdk/versioning.md), and the quickstart example

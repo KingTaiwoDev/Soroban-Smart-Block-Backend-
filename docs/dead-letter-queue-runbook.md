@@ -18,8 +18,18 @@ the indicated network profile only.
    retry-exhausted failures, inspect the decoder error and raw XDR before
    deploying a parser fix.
 4. Resolve the cause, verify the corresponding network's indexer is healthy,
-   then reprocess selected items using the admin endpoint. Purge only items
-   confirmed to be permanently irrelevant.
+   then reprocess selected items using the audited operator command. It requires
+   an item id, a named operator, and an incident/change reason; each successful
+   replay is committed with its audit record atomically:
+
+   ```sh
+   STELLAR_NETWORK=testnet npm run admin:dead-letter-replay -- \
+     --id <dead-letter-id> --actor <operator-id> --reason <incident-or-change-id>
+   ```
+
+   Add `--dry-run` to validate the invocation without changing the queue.
+   The command intentionally accepts one item at a time so a bulk replay cannot
+   bypass review. Purge only items confirmed to be permanently irrelevant.
 5. Confirm the network's queue depth falls, oldest-item age resets, and the
    growth alert clears. Check the other network profiles separately; their DLQs
    and databases must remain isolated.

@@ -109,7 +109,7 @@ async function simulateViewCall(
   try {
     const invokeArgs: xdr.ScVal[] = [];
 
-    const op = SorobanRpc.assembleTransaction as unknown as any;
+    const op = SorobanRpc.assembleTransaction as unknown as (tx: unknown, simResult: unknown) => unknown;
 
     // Build a minimal InvokeHostFunction operation
     const invokeHostFn = xdr.HostFunction.hostFunctionTypeInvokeContract(
@@ -128,7 +128,7 @@ async function simulateViewCall(
     if (SorobanRpc.Api.isSimulationError(result)) return null;
     if (!('result' in result) || !result.result) return null;
 
-    const retVal = (result.result as any).retval as xdr.ScVal | undefined;
+    const retVal = (result.result as Record<string, unknown>)?.retval as xdr.ScVal | undefined;
     if (!retVal) return null;
 
     return scValToNative(retVal);

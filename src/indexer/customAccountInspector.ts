@@ -22,7 +22,7 @@ export async function inspectCustomAccount(
 
     outer: for (const op of ops) {
       const body = op.body();
-      const invokeOp = (body as any).invokeHostFunction();
+      const invokeOp = (body as Record<string, () => unknown>).invokeHostFunction();
       if (!invokeOp) continue;
 
       const authEntries: any[] = invokeOp.auth?.() ?? [];

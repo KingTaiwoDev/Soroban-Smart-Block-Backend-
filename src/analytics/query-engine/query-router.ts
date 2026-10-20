@@ -27,6 +27,27 @@ const ATHENA_PRICE_PER_TB = 5.0;
 const ATHENA_POLL_INTERVAL_MS = 1000;
 const ATHENA_MAX_WAIT_MS = 300_000;
 
+function positiveIntEnv(name: string, fallback: number): number {
+  const parsed = Number.parseInt(process.env[name] ?? '', 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+/**
+ * Server-side resource budgets.  Callers may request *tighter* limits per
+ * query but can never exceed these ceilings.
+ */
+export const ANALYTICS_QUERY_BUDGETS = {
+  /** Hard ceiling on wall-clock execution time (ms). */
+  maxTimeoutMs: Math.min(
+    positiveIntEnv('ANALYTICS_MAX_TIMEOUT_MS', ATHENA_MAX_WAIT_MS),
+    ATHENA_MAX_WAIT_MS,
+  ),
+  /** Hard ceiling on bytes actually scanned by the engine (default 1 TiB). */
+  maxScanBytes: positiveIntEnv('ANALYTICS_MAX_SCAN_BYTES', 1024 ** 4),
+  /** Hard ceiling on rows returned to the client. */
+  maxRows: positiveIntEnv('ANALYTICS_MAX_ROWS', 10_000),
+} as const;
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 export type QueryEngine = 'athena' | 'trino';
@@ -36,7 +57,48 @@ export interface QueryRequest {
   engine?: QueryEngine;
   maxScanBytes?: number;
   timeoutMs?: number;
+  /** Optional per-query row cap; clamped to the server budget. */
+  maxRows?: number;
 }
+
+export type AnalyticsBudgetCode = 'QUERY_TIMEOUT' | 'SCAN_BUDGET_EXCEEDED' | 'ROW_BUDGET_EXCEEDED';
+
+/** Raised when an analytics query exceeds its time, scan, or row budget. */
+export class AnalyticsBudgetError extends Error {
+  readonly statusCode: number;
+
+  constructor(
+    readonly code: AnalyticsBudgetCode,
+    message: string,
+    readonly limit: number,
+  ) {
+    super(message);
+    this.name = 'AnalyticsBudgetError';
+    this.statusCode = code === 'QUERY_TIMEOUT' ? 504 : 400;
+  }
+}
+
+export interface ResolvedQueryBudget {
+  timeoutMs: number;
+  maxScanBytes: number;
+  maxRows: number;
+}
+
+/**
+ * Combine caller-requested limits with the server ceilings.  A caller value of
+ * 0 / undefined means "use the server budget"; larger values are clamped down.
+ */
+export function resolveQueryBudget(req: Omit<QueryRequest, 'sql'>): ResolvedQueryBudget {
+  const clamp = (requested: number | undefined, ceiling: number) =>
+    requested && requested > 0 ? Math.min(requested, ceiling) : ceiling;
+  return {
+    timeoutMs: clamp(req.timeoutMs ?? 30_000, ANALYTICS_QUERY_BUDGETS.maxTimeoutMs),
+    maxScanBytes: clamp(req.maxScanBytes, ANALYTICS_QUERY_BUDGETS.maxScanBytes),
+    maxRows: clamp(req.maxRows, ANALYTICS_QUERY_BUDGETS.maxRows),
+  };
+}
+
+const formatGb = (bytes: number) => (bytes / 1024 ** 3).toFixed(1);
 
 export interface QueryCostEstimate {
   estimatedScanBytes: number;
@@ -147,7 +209,18 @@ async function athenaPost<T>(action: string, body: Record<string, unknown>): Pro
   return resp.json() as Promise<T>;
 }
 
-async function runAthenaQuery(sql: string, timeoutMs: number): Promise<QueryResult> {
+async function stopAthenaQuery(queryId: string): Promise<void> {
+  try {
+    await athenaPost('StopQueryExecution', { QueryExecutionId: queryId });
+  } catch (err) {
+    logger.warn('Failed to cancel over-budget Athena query', {
+      queryId,
+      error: (err as Error).message,
+    });
+  }
+}
+
+async function runAthenaQuery(sql: string, budget: ResolvedQueryBudget): Promise<QueryResult> {
   const start = Date.now();
 
   const startResp = await athenaPost<AthenaStartResponse>('StartQueryExecution', {
@@ -163,23 +236,45 @@ async function runAthenaQuery(sql: string, timeoutMs: number): Promise<QueryResu
   const queryId = startResp.QueryExecutionId;
   if (!queryId) throw new Error('Athena did not return a QueryExecutionId');
 
-  const deadline = start + Math.min(timeoutMs, ATHENA_MAX_WAIT_MS);
+  const deadline = start + budget.timeoutMs;
   let scanBytes = 0;
+  let succeeded = false;
 
   while (Date.now() < deadline) {
-    await new Promise<void>((r) => setTimeout(r, ATHENA_POLL_INTERVAL_MS));
+    const wait = Math.max(0, Math.min(ATHENA_POLL_INTERVAL_MS, deadline - Date.now()));
+    await new Promise<void>((r) => setTimeout(r, wait));
     const statusResp = await athenaPost<AthenaStatusResponse>('GetQueryExecution', {
       QueryExecutionId: queryId,
     });
     const state = statusResp.QueryExecution?.Status?.State;
     scanBytes = statusResp.QueryExecution?.Statistics?.DataScannedInBytes ?? 0;
 
-    if (state === 'SUCCEEDED') break;
+    if (state === 'SUCCEEDED') {
+      succeeded = true;
+      break;
+    }
     if (state === 'FAILED' || state === 'CANCELLED') {
       throw new Error(
         `Athena query ${queryId} ${state}: ${statusResp.QueryExecution?.Status?.StateChangeReason}`,
       );
     }
+    if (scanBytes > budget.maxScanBytes) {
+      await stopAthenaQuery(queryId);
+      throw new AnalyticsBudgetError(
+        'SCAN_BUDGET_EXCEEDED',
+        `Query scanned ${formatGb(scanBytes)} GB, exceeding budget of ${formatGb(budget.maxScanBytes)} GB`,
+        budget.maxScanBytes,
+      );
+    }
+  }
+
+  if (!succeeded) {
+    await stopAthenaQuery(queryId);
+    throw new AnalyticsBudgetError(
+      'QUERY_TIMEOUT',
+      `Query exceeded timeout of ${budget.timeoutMs}ms`,
+      budget.timeoutMs,
+    );
   }
 
   const resultsResp = await athenaPost<AthenaResultsResponse>('GetQueryResults', {
@@ -200,6 +295,14 @@ async function runAthenaQuery(sql: string, timeoutMs: number): Promise<QueryResu
   }
 
   const header = (rs.Rows[0].Data ?? []).map((c) => c.VarCharValue ?? '');
+  if (rs.Rows.length - 1 > budget.maxRows) {
+    throw new AnalyticsBudgetError(
+      'ROW_BUDGET_EXCEEDED',
+      `Query returned more than ${budget.maxRows} rows; add a LIMIT or narrow filters`,
+      budget.maxRows,
+    );
+  }
+
   const rows = rs.Rows.slice(1).map((row) => {
     const record: Record<string, string | null> = {};
     (row.Data ?? []).forEach((cell, i) => {
@@ -229,8 +332,21 @@ interface TrinoState {
   error?: { message: string };
 }
 
-async function runTrinoQuery(sql: string, timeoutMs: number): Promise<QueryResult> {
+async function cancelTrinoQuery(nextUri: string): Promise<void> {
+  try {
+    await fetch(nextUri, {
+      method: 'DELETE',
+      headers: { 'X-Trino-User': TRINO_USER },
+      signal: AbortSignal.timeout(5_000),
+    });
+  } catch (err) {
+    logger.warn('Failed to cancel over-budget Trino query', { error: (err as Error).message });
+  }
+}
+
+async function runTrinoQuery(sql: string, budget: ResolvedQueryBudget): Promise<QueryResult> {
   const start = Date.now();
+  const { timeoutMs, maxRows } = budget;
 
   const initResp = await fetch(`${TRINO_BASE_URL}/v1/statement`, {
     method: 'POST',
@@ -252,9 +368,18 @@ async function runTrinoQuery(sql: string, timeoutMs: number): Promise<QueryResul
   const allData: Array<Array<string | null>> = [];
   let columns: string[] = [];
 
-  while (state.nextUri && Date.now() - start < timeoutMs) {
-    await new Promise<void>((r) => setTimeout(r, 200));
+  while (state.nextUri) {
+    const beforeWait = timeoutMs - (Date.now() - start);
+    await new Promise<void>((r) => setTimeout(r, Math.max(0, Math.min(200, beforeWait))));
     const remaining = timeoutMs - (Date.now() - start);
+    if (remaining <= 0) {
+      await cancelTrinoQuery(state.nextUri);
+      throw new AnalyticsBudgetError(
+        'QUERY_TIMEOUT',
+        `Query exceeded timeout of ${timeoutMs}ms`,
+        timeoutMs,
+      );
+    }
     const resp = await fetch(state.nextUri, {
       headers: { 'X-Trino-User': TRINO_USER },
       signal: AbortSignal.timeout(remaining),
@@ -266,6 +391,14 @@ async function runTrinoQuery(sql: string, timeoutMs: number): Promise<QueryResul
       columns = state.columns.map((c) => c.name);
     }
     if (state.data) allData.push(...state.data);
+    if (allData.length > maxRows) {
+      if (state.nextUri) await cancelTrinoQuery(state.nextUri);
+      throw new AnalyticsBudgetError(
+        'ROW_BUDGET_EXCEEDED',
+        `Query returned more than ${maxRows} rows; add a LIMIT or narrow filters`,
+        maxRows,
+      );
+    }
   }
 
   const rows = allData.map((row) => {
@@ -295,12 +428,16 @@ export async function executeQuery(req: QueryRequest): Promise<{
 }> {
   const estimate = estimateQueryCost(req.sql);
   const engine = req.engine ?? estimate.recommendedEngine;
-  const timeoutMs = req.timeoutMs ?? 30_000;
+  const budget = resolveQueryBudget(req);
 
-  if (req.maxScanBytes && estimate.estimatedScanBytes > req.maxScanBytes) {
-    throw new Error(
-      `Query would scan ~${(estimate.estimatedScanBytes / 1024 ** 3).toFixed(1)} GB, ` +
-        `exceeding limit of ${(req.maxScanBytes / 1024 ** 3).toFixed(1)} GB`,
+  // Pre-flight rejection uses the heuristic estimate only when the caller set an
+  // explicit limit; the server ceiling is enforced against actual scan stats.
+  if (req.maxScanBytes && estimate.estimatedScanBytes > budget.maxScanBytes) {
+    throw new AnalyticsBudgetError(
+      'SCAN_BUDGET_EXCEEDED',
+      `Query would scan ~${formatGb(estimate.estimatedScanBytes)} GB, ` +
+        `exceeding limit of ${formatGb(budget.maxScanBytes)} GB`,
+      budget.maxScanBytes,
     );
   }
 
@@ -308,12 +445,13 @@ export async function executeQuery(req: QueryRequest): Promise<{
     engine,
     estimatedScanGb: (estimate.estimatedScanBytes / 1024 ** 3).toFixed(1),
     estimatedCostUsd: estimate.estimatedCostUsd.toFixed(4),
+    budget,
   });
 
   const result =
     engine === 'trino'
-      ? await runTrinoQuery(req.sql, timeoutMs)
-      : await runAthenaQuery(req.sql, timeoutMs);
+      ? await runTrinoQuery(req.sql, budget)
+      : await runAthenaQuery(req.sql, budget);
 
   return { result, estimate };
 }

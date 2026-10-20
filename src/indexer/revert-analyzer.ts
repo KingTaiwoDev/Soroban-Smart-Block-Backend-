@@ -113,9 +113,9 @@ function extractCallStack(events: xdr.DiagnosticEvent[]): CallStackFrame[] {
     let fnName = '';
     try {
       const first = rawTopics[0];
-      if (first) topic = String((first as any).sym?.() ?? (first as any).str?.() ?? '');
+      if (first) topic = String((first as Record<string, () => unknown>).sym?.() ?? (first as Record<string, () => unknown>).str?.() ?? '');
       const second = rawTopics[1];
-      if (second) fnName = String((second as any).sym?.() ?? (second as any).str?.() ?? '');
+      if (second) fnName = String((second as Record<string, () => unknown>).sym?.() ?? (second as Record<string, () => unknown>).str?.() ?? '');
     } catch {
       /* ignore */
     }

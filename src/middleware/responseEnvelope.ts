@@ -55,7 +55,7 @@ function responseEnvelopeMiddleware(req: Request, res: Response, next: NextFunct
    */
   res.sendEnveloped = function <T>(data: T, statusCode?: number): Response {
     const ctx = traceStorage.getStore();
-    const requestId = ctx?.requestId ?? (req as any).requestId ?? 'unknown';
+    const requestId = ctx?.requestId ?? req.requestId ?? 'unknown';
 
     const envelope: ResponseEnvelope<T> = {
       success: true,
@@ -101,7 +101,7 @@ function responseEnvelopeMiddleware(req: Request, res: Response, next: NextFunct
     pagination: { total: number; page: number; limit: number },
   ): Response {
     const ctx = traceStorage.getStore();
-    const requestId = ctx?.requestId ?? (req as any).requestId ?? 'unknown';
+    const requestId = ctx?.requestId ?? req.requestId ?? 'unknown';
 
     const pages = Math.ceil(pagination.total / pagination.limit);
 
@@ -148,7 +148,7 @@ function responseEnvelopeMiddleware(req: Request, res: Response, next: NextFunct
     cursor: { next?: string | null; hasMore: boolean },
   ): Response {
     const ctx = traceStorage.getStore();
-    const requestId = ctx?.requestId ?? (req as any).requestId ?? 'unknown';
+    const requestId = ctx?.requestId ?? req.requestId ?? 'unknown';
 
     const envelope: ResponseEnvelope<T> & { meta: { cursor: any } } = {
       success: true,

@@ -1,6 +1,6 @@
 {
   "specVersion": "1.0.0",
-  "operationCount": 388,
+  "operationCount": 383,
   "operations": {
     "deleteEventsAdvancedSubscriptionsById": {
       "method": "DELETE",
@@ -3417,18 +3417,6 @@
       "body": "none",
       "deprecated": false
     },
-    "patchScheduleCronByIdToggle": {
-      "method": "PATCH",
-      "path": "/schedule/cron/{id}/toggle",
-      "params": {
-        "path:id": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
     "patchWebhooksById": {
       "method": "PATCH",
       "path": "/webhooks/{id}",
@@ -3732,6 +3720,20 @@
     "postContractsAbiSubmissions": {
       "method": "POST",
       "path": "/contracts/abi-submissions",
+      "params": {},
+      "body": "required",
+      "deprecated": false
+    },
+    "postEventsAdvancedQuery": {
+      "method": "POST",
+      "path": "/events/advanced/query",
+      "params": {},
+      "body": "required",
+      "deprecated": false
+    },
+    "postEventsAdvancedSubscriptions": {
+      "method": "POST",
+      "path": "/events/advanced/subscriptions",
       "params": {},
       "body": "required",
       "deprecated": false
@@ -4472,50 +4474,6 @@
       "path": "/webhooks/{id}/ping",
       "params": {
         "path:id": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "postWebhooksByIdReplay": {
-      "method": "POST",
-      "path": "/webhooks/{id}/replay",
-      "params": {
-        "path:id": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "required",
-      "deprecated": false
-    },
-    "postWebhooksByIdReplayByJobIdCancel": {
-      "method": "POST",
-      "path": "/webhooks/{id}/replay/{jobId}/cancel",
-      "params": {
-        "path:id": {
-          "type": "string",
-          "required": true
-        },
-        "path:jobId": {
-          "type": "string",
-          "required": true
-        }
-      },
-      "body": "none",
-      "deprecated": false
-    },
-    "postWebhooksByIdReplayByJobIdResume": {
-      "method": "POST",
-      "path": "/webhooks/{id}/replay/{jobId}/resume",
-      "params": {
-        "path:id": {
-          "type": "string",
-          "required": true
-        },
-        "path:jobId": {
           "type": "string",
           "required": true
         }

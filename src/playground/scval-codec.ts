@@ -139,7 +139,7 @@ export function encodeScVal(input: ScValInput): xdr.ScVal {
 
     default: {
       const _exhaustive: never = input;
-      throw new ScValValidationError(`Unknown ScVal type: ${(_exhaustive as any).type}`);
+      throw new ScValValidationError(`Unknown ScVal type: ${(_exhaustive as Record<string, unknown>).type}`);
     }
   }
 }

@@ -8,7 +8,7 @@
       "@typescript-eslint/no-non-null-assertion": 3
     },
     "src/api/agents.ts": {
-      "@typescript-eslint/no-explicit-any": 3,
+      "@typescript-eslint/no-explicit-any": 0,
       "@typescript-eslint/no-non-null-assertion": 13
     },
     "src/api/audit-auditors.ts": {
@@ -19,9 +19,6 @@
     },
     "src/api/audit-bot-router.ts": {
       "unused-imports/no-unused-vars": 1
-    },
-    "src/api/audit-report.ts": {
-      "@typescript-eslint/no-explicit-any": 4
     },
     "src/api/backfill.ts": {
       "@typescript-eslint/no-explicit-any": 1
@@ -35,7 +32,7 @@
     },
     "src/api/bridge-tracker.ts": {
       "error-handling/no-phantom-prisma-field": 3,
-      "@typescript-eslint/no-explicit-any": 5
+      "@typescript-eslint/no-explicit-any": 0
     },
     "src/api/checked-arithmetic.ts": {
       "@typescript-eslint/no-explicit-any": 1
@@ -46,11 +43,8 @@
     "src/api/compiler.ts": {
       "@typescript-eslint/no-explicit-any": 1
     },
-    "src/api/compliance.ts": {
-      "@typescript-eslint/no-explicit-any": 2
-    },
     "src/api/composability.ts": {
-      "@typescript-eslint/no-explicit-any": 10,
+      "@typescript-eslint/no-explicit-any": 0,
       "error-handling/no-phantom-prisma-field": 16,
       "@typescript-eslint/no-non-null-assertion": 2
     },
@@ -59,14 +53,14 @@
       "@typescript-eslint/no-non-null-assertion": 2
     },
     "src/api/contracts.ts": {
-      "@typescript-eslint/no-explicit-any": 1,
+      "@typescript-eslint/no-explicit-any": 0,
       "@typescript-eslint/no-non-null-assertion": 1
     },
     "src/api/developer/keys-lifecycle.ts": {
       "error-handling/no-phantom-prisma-field": 1
     },
     "src/api/developer/keys.ts": {
-      "@typescript-eslint/no-explicit-any": 2,
+      "@typescript-eslint/no-explicit-any": 0,
       "error-handling/no-phantom-prisma-field": 6,
       "unused-imports/no-unused-vars": 1,
       "@typescript-eslint/no-non-null-assertion": 1
@@ -82,11 +76,8 @@
       "@typescript-eslint/no-explicit-any": 1,
       "@typescript-eslint/no-non-null-assertion": 1
     },
-    "src/api/events.ts": {
-      "@typescript-eslint/no-explicit-any": 2
-    },
     "src/api/examples/validation-samples.ts": {
-      "@typescript-eslint/no-explicit-any": 12,
+      "@typescript-eslint/no-explicit-any": 0,
       "unused-imports/no-unused-vars": 3
     },
     "src/api/feed.ts": {
@@ -125,30 +116,15 @@
       "error-handling/no-phantom-prisma-field": 2,
       "@typescript-eslint/no-non-null-assertion": 5
     },
-    "src/api/rate-limits.ts": {
-      "@typescript-eslint/no-explicit-any": 3
-    },
     "src/api/realtimeSSE.ts": {
       "error-handling/no-phantom-prisma-field": 1
-    },
-    "src/api/reentrancy.ts": {
-      "@typescript-eslint/no-explicit-any": 10
-    },
-    "src/api/reputation.ts": {
-      "@typescript-eslint/no-explicit-any": 6
     },
     "src/api/sac-trustlines.ts": {
       "@typescript-eslint/no-explicit-any": 1
     },
-    "src/api/search.ts": {
-      "@typescript-eslint/no-explicit-any": 10
-    },
     "src/api/tip.ts": {
       "@typescript-eslint/no-explicit-any": 1,
       "@typescript-eslint/no-non-null-assertion": 2
-    },
-    "src/api/tokens.ts": {
-      "@typescript-eslint/no-explicit-any": 3
     },
     "src/api/users-tenant-aware.ts": {
       "@typescript-eslint/no-explicit-any": 2,
@@ -158,7 +134,7 @@
       "@typescript-eslint/no-explicit-any": 1
     },
     "src/api/verify.ts": {
-      "@typescript-eslint/no-explicit-any": 4,
+      "@typescript-eslint/no-explicit-any": 0,
       "error-handling/no-phantom-prisma-field": 1,
       "@typescript-eslint/no-non-null-assertion": 1
     },
@@ -167,15 +143,15 @@
       "@typescript-eslint/no-non-null-assertion": 8
     },
     "src/archival/s3Client.ts": {
-      "@typescript-eslint/no-explicit-any": 1,
+      "@typescript-eslint/no-explicit-any": 0,
       "@typescript-eslint/no-non-null-assertion": 1
     },
     "src/archive/archiver.ts": {
-      "@typescript-eslint/no-explicit-any": 1,
+      "@typescript-eslint/no-explicit-any": 0,
       "unused-imports/no-unused-vars": 1
     },
     "src/archive/query-engine.ts": {
-      "@typescript-eslint/no-explicit-any": 1,
+      "@typescript-eslint/no-explicit-any": 0,
       "@typescript-eslint/no-non-null-assertion": 1
     },
     "src/auth/enhanced-middleware.ts": {
@@ -188,14 +164,14 @@
       "@typescript-eslint/no-explicit-any": 1
     },
     "src/benchmarks/rpc-calls.bench.ts": {
-      "@typescript-eslint/no-explicit-any": 3,
+      "@typescript-eslint/no-explicit-any": 0,
       "unused-imports/no-unused-vars": 2
     },
     "src/benchmarks/sdk-generation.bench.ts": {
       "@typescript-eslint/no-explicit-any": 3
     },
     "src/bridge-tracker/alerts.ts": {
-      "@typescript-eslint/no-explicit-any": 1,
+      "@typescript-eslint/no-explicit-any": 0,
       "error-handling/no-phantom-prisma-field": 10
     },
     "src/bridge-tracker/chain-providers/index.ts": {
@@ -229,7 +205,7 @@
       "unused-imports/no-unused-vars": 1
     },
     "src/feed/deliveryService.ts": {
-      "@typescript-eslint/no-explicit-any": 20,
+      "@typescript-eslint/no-explicit-any": 0,
       "@typescript-eslint/no-non-null-assertion": 2
     },
     "src/feed/orchestrator.ts": {
@@ -245,27 +221,15 @@
     "src/feed/subscriptionManager.ts": {
       "@typescript-eslint/no-explicit-any": 4
     },
-    "src/fuzzing/fuzzer.ts": {
-      "@typescript-eslint/no-explicit-any": 1
-    },
     "src/graphql/loaders.ts": {
       "@typescript-eslint/no-explicit-any": 9,
       "@typescript-eslint/no-non-null-assertion": 3
     },
-    "src/graphql/plugins.ts": {
-      "@typescript-eslint/no-explicit-any": 7
-    },
-    "src/graphql/resolvers.ts": {
-      "@typescript-eslint/no-explicit-any": 21
-    },
     "src/health.ts": {
       "@typescript-eslint/no-explicit-any": 3
     },
-    "src/indexer/aa-classifier.ts": {
-      "@typescript-eslint/no-explicit-any": 1
-    },
     "src/indexer/aa-indexer.ts": {
-      "@typescript-eslint/no-explicit-any": 1,
+      "@typescript-eslint/no-explicit-any": 0,
       "@typescript-eslint/no-non-null-assertion": 6
     },
     "src/indexer/adaptive-polling.ts": {
@@ -276,10 +240,7 @@
     },
     "src/indexer/bn254-tracker.ts": {
       "unused-imports/no-unused-vars": 1,
-      "@typescript-eslint/no-explicit-any": 1
-    },
-    "src/indexer/bridge-route-mapper.ts": {
-      "@typescript-eslint/no-explicit-any": 1
+      "@typescript-eslint/no-explicit-any": 0
     },
     "src/indexer/call-graph.ts": {
       "@typescript-eslint/no-explicit-any": 4
@@ -289,41 +250,35 @@
       "unused-imports/no-unused-vars": 1
     },
     "src/indexer/composability-engine.ts": {
-      "@typescript-eslint/no-explicit-any": 2,
+      "@typescript-eslint/no-explicit-any": 0,
       "@typescript-eslint/no-non-null-assertion": 2
     },
     "src/indexer/composability-indexer.ts": {
-      "@typescript-eslint/no-explicit-any": 1,
+      "@typescript-eslint/no-explicit-any": 0,
       "@typescript-eslint/no-non-null-assertion": 2
     },
     "src/indexer/contention.ts": {
       "unused-imports/no-unused-vars": 2,
-      "@typescript-eslint/no-explicit-any": 2,
+      "@typescript-eslint/no-explicit-any": 0,
       "@typescript-eslint/no-non-null-assertion": 1
     },
     "src/indexer/control-plane.ts": {
       "unused-imports/no-unused-vars": 1
     },
     "src/indexer/csv-exporter.ts": {
-      "@typescript-eslint/no-explicit-any": 3,
+      "@typescript-eslint/no-explicit-any": 0,
       "unused-imports/no-unused-vars": 1
-    },
-    "src/indexer/customAccountInspector.ts": {
-      "@typescript-eslint/no-explicit-any": 3
     },
     "src/indexer/decoder.ts": {
       "unused-imports/no-unused-vars": 2,
       "@typescript-eslint/no-non-null-assertion": 1
     },
-    "src/indexer/failure-parser.ts": {
-      "@typescript-eslint/no-explicit-any": 1
-    },
     "src/indexer/fee-aggregator.ts": {
-      "@typescript-eslint/no-explicit-any": 4,
+      "@typescript-eslint/no-explicit-any": 0,
       "unused-imports/no-unused-vars": 1
     },
     "src/indexer/fee-classifier.ts": {
-      "@typescript-eslint/no-explicit-any": 5,
+      "@typescript-eslint/no-explicit-any": 0,
       "error-handling/no-phantom-prisma-field": 6
     },
     "src/indexer/flashLoanDetector.ts": {
@@ -350,13 +305,13 @@
     },
     "src/indexer/indexer.ts": {
       "error-handling/no-phantom-prisma-field": 12,
-      "@typescript-eslint/no-explicit-any": 7
+      "@typescript-eslint/no-explicit-any": 0
     },
     "src/indexer/mev-predictor.ts": {
       "error-handling/no-phantom-prisma-field": 9
     },
     "src/indexer/nats-queue.ts": {
-      "@typescript-eslint/no-explicit-any": 5,
+      "@typescript-eslint/no-explicit-any": 0,
       "unused-imports/no-unused-vars": 1
     },
     "src/indexer/network-indexer.ts": {
@@ -367,9 +322,6 @@
     "src/indexer/nft-scraper.ts": {
       "unused-imports/no-unused-vars": 1
     },
-    "src/indexer/oracle-ingest-processor.ts": {
-      "@typescript-eslint/no-explicit-any": 4
-    },
     "src/indexer/predictive-model.ts": {
       "unused-imports/no-unused-vars": 2
     },
@@ -377,24 +329,12 @@
       "error-handling/no-phantom-prisma-field": 4,
       "@typescript-eslint/no-non-null-assertion": 4
     },
-    "src/indexer/protocol-guard.ts": {
-      "@typescript-eslint/no-explicit-any": 3
-    },
     "src/indexer/reconciliation.ts": {
       "unused-imports/no-unused-vars": 1
     },
-    "src/indexer/reentrancy-fortress/background.ts": {
-      "@typescript-eslint/no-explicit-any": 2
-    },
     "src/indexer/resource-tracker.ts": {
-      "@typescript-eslint/no-explicit-any": 5,
+      "@typescript-eslint/no-explicit-any": 0,
       "unused-imports/no-unused-vars": 1
-    },
-    "src/indexer/revert-analyzer.ts": {
-      "@typescript-eslint/no-explicit-any": 4
-    },
-    "src/indexer/rpc.ts": {
-      "@typescript-eslint/no-explicit-any": 2
     },
     "src/indexer/sac-trustline-mapper.ts": {
       "unused-imports/no-unused-vars": 1,
@@ -427,25 +367,19 @@
     },
     "src/indexer/token-metadata.ts": {
       "unused-imports/no-unused-vars": 1,
-      "@typescript-eslint/no-explicit-any": 3,
+      "@typescript-eslint/no-explicit-any": 0,
       "@typescript-eslint/no-non-null-assertion": 1
     },
     "src/indexer/topology-analyzer.ts": {
       "@typescript-eslint/no-explicit-any": 2,
       "@typescript-eslint/no-non-null-assertion": 1
     },
-    "src/indexer/trace-engine.ts": {
-      "@typescript-eslint/no-explicit-any": 1
-    },
     "src/indexer/ttl-tracker.ts": {
       "error-handling/no-phantom-prisma-field": 2,
-      "@typescript-eslint/no-explicit-any": 1
+      "@typescript-eslint/no-explicit-any": 0
     },
     "src/indexer/upgrade-detector.ts": {
       "unused-imports/no-unused-vars": 1
-    },
-    "src/indexer/upgrade-trace-engine.ts": {
-      "@typescript-eslint/no-explicit-any": 1
     },
     "src/indexer/wasm-decompiler.ts": {
       "unused-imports/no-unused-vars": 1
@@ -458,24 +392,15 @@
       "error-handling/no-phantom-prisma-field": 1
     },
     "src/indexer/yield-distribution.ts": {
-      "@typescript-eslint/no-explicit-any": 1,
+      "@typescript-eslint/no-explicit-any": 0,
       "error-handling/no-phantom-prisma-field": 2
     },
     "src/indexer/yield-optimizer.ts": {
-      "@typescript-eslint/no-explicit-any": 16,
+      "@typescript-eslint/no-explicit-any": 0,
       "error-handling/no-phantom-prisma-field": 1
     },
     "src/indexer/zkp-verifier.ts": {
       "unused-imports/no-unused-vars": 1
-    },
-    "src/intelligence/anomaly-detector.ts": {
-      "@typescript-eslint/no-explicit-any": 1
-    },
-    "src/intelligence/intelligence-service.ts": {
-      "@typescript-eslint/no-explicit-any": 2
-    },
-    "src/intelligence/wasm-analyzer.ts": {
-      "@typescript-eslint/no-explicit-any": 7
     },
     "src/lib/anchor-service.ts": {
       "unused-imports/no-unused-vars": 1,
@@ -489,38 +414,23 @@
       "unused-imports/no-unused-vars": 1
     },
     "src/middleware/coldStorageRouter.ts": {
-      "@typescript-eslint/no-explicit-any": 22,
+      "@typescript-eslint/no-explicit-any": 0,
       "@typescript-eslint/no-non-null-assertion": 2
-    },
-    "src/middleware/compression.ts": {
-      "@typescript-eslint/no-explicit-any": 8
     },
     "src/middleware/cookieAuth.test.ts": {
       "@typescript-eslint/no-explicit-any": 46,
       "@typescript-eslint/no-non-null-assertion": 2
     },
     "src/middleware/errorHandler.ts": {
-      "@typescript-eslint/no-explicit-any": 4,
+      "@typescript-eslint/no-explicit-any": 0,
       "unused-imports/no-unused-vars": 1
     },
     "src/middleware/queryRouter.ts": {
       "@typescript-eslint/no-explicit-any": 1
     },
-    "src/middleware/rateLimit.ts": {
-      "@typescript-eslint/no-explicit-any": 6
-    },
     "src/middleware/requestTimeout.test.ts": {
       "@typescript-eslint/no-explicit-any": 9,
       "@typescript-eslint/no-non-null-assertion": 1
-    },
-    "src/middleware/requestTimeout.ts": {
-      "@typescript-eslint/no-explicit-any": 1
-    },
-    "src/middleware/responseEnvelope.ts": {
-      "@typescript-eslint/no-explicit-any": 5
-    },
-    "src/middleware/validation.ts": {
-      "@typescript-eslint/no-explicit-any": 5
     },
     "src/notifications/notificationService.ts": {
       "unused-imports/no-unused-vars": 3
@@ -531,15 +441,6 @@
     "src/notifications/subscriptionMatcher.ts": {
       "error-handling/no-phantom-prisma-field": 8,
       "@typescript-eslint/no-non-null-assertion": 1
-    },
-    "src/playground/abi-resolver.ts": {
-      "@typescript-eslint/no-explicit-any": 4
-    },
-    "src/playground/scval-codec.ts": {
-      "@typescript-eslint/no-explicit-any": 1
-    },
-    "src/playground/tx-builder.ts": {
-      "@typescript-eslint/no-explicit-any": 4
     },
     "src/predictive/fraud-models.ts": {
       "unused-imports/no-unused-vars": 1
@@ -591,23 +492,20 @@
     },
     "src/reputation/score.ts": {
       "unused-imports/no-unused-vars": 1,
-      "@typescript-eslint/no-explicit-any": 2,
+      "@typescript-eslint/no-explicit-any": 0,
       "@typescript-eslint/no-non-null-assertion": 5
     },
     "src/sandbox/replay-oracle.ts": {
       "error-handling/no-phantom-prisma-field": 1,
-      "@typescript-eslint/no-explicit-any": 1,
+      "@typescript-eslint/no-explicit-any": 0,
       "unused-imports/no-unused-vars": 1
     },
     "src/sandbox/runtime.ts": {
       "unused-imports/no-unused-vars": 8,
-      "@typescript-eslint/no-explicit-any": 65,
+      "@typescript-eslint/no-explicit-any": 0,
       "error-handling/no-phantom-prisma-field": 51
     },
     "src/sandbox/template-engine.ts": {
-      "@typescript-eslint/no-explicit-any": 1
-    },
-    "src/scheduler/cron-scheduler.ts": {
       "@typescript-eslint/no-explicit-any": 1
     },
     "src/schemas/common.ts": {
@@ -627,9 +525,6 @@
     "src/services/compliance/pep-adverse-media.ts": {
       "unused-imports/no-unused-vars": 2
     },
-    "src/services/compliance/report-generator.ts": {
-      "@typescript-eslint/no-explicit-any": 11
-    },
     "src/services/compliance/risk-scoring.ts": {
       "unused-imports/no-unused-vars": 1,
       "@typescript-eslint/no-explicit-any": 1
@@ -637,14 +532,8 @@
     "src/services/compliance/sanctions-fetcher.ts": {
       "unused-imports/no-unused-vars": 1
     },
-    "src/services/compliance/screening-engine.ts": {
-      "@typescript-eslint/no-explicit-any": 6
-    },
     "src/services/compliance/travel-rule.ts": {
       "@typescript-eslint/no-explicit-any": 3
-    },
-    "src/services/container.ts": {
-      "@typescript-eslint/no-explicit-any": 5
     },
     "src/services/contract-abi-submissions.ts": {
       "error-handling/no-phantom-prisma-field": 13
@@ -652,17 +541,11 @@
     "src/services/event.service.ts": {
       "@typescript-eslint/no-explicit-any": 3
     },
-    "src/services/fraudAlertSystem.ts": {
-      "@typescript-eslint/no-explicit-any": 4
-    },
-    "src/services/fraudFeatureStore.ts": {
-      "@typescript-eslint/no-explicit-any": 1
-    },
     "src/services/gasFeeAlertDelivery.ts": {
       "error-handling/no-phantom-prisma-field": 8
     },
     "src/services/graphAnalytics.ts": {
-      "@typescript-eslint/no-explicit-any": 3,
+      "@typescript-eslint/no-explicit-any": 0,
       "unused-imports/no-unused-vars": 2
     },
     "src/services/graphCache.ts": {
@@ -676,9 +559,6 @@
     },
     "src/services/graphTemplates.ts": {
       "@typescript-eslint/no-explicit-any": 7
-    },
-    "src/services/mlops.ts": {
-      "@typescript-eslint/no-explicit-any": 9
     },
     "src/services/nft-portfolio-service.ts": {
       "unused-imports/no-unused-vars": 1
@@ -701,11 +581,8 @@
       "unused-imports/no-unused-vars": 1
     },
     "src/services/test-helpers.ts": {
-      "@typescript-eslint/no-explicit-any": 9,
+      "@typescript-eslint/no-explicit-any": 0,
       "unused-imports/no-unused-vars": 1
-    },
-    "src/services/transaction.service.ts": {
-      "@typescript-eslint/no-explicit-any": 6
     },
     "src/stellar/account-aggregator.ts": {
       "error-handling/no-phantom-prisma-field": 2
@@ -716,12 +593,6 @@
     },
     "src/stellar/payment-analyzer.ts": {
       "error-handling/no-phantom-prisma-field": 4
-    },
-    "src/tip/collectors.ts": {
-      "@typescript-eslint/no-explicit-any": 4
-    },
-    "src/tip/notifier.ts": {
-      "@typescript-eslint/no-explicit-any": 1
     },
     "src/types/fraud.ts": {
       "@typescript-eslint/no-explicit-any": 1
@@ -736,7 +607,7 @@
       "unused-imports/no-unused-vars": 3
     },
     "src/verification/dsl.ts": {
-      "@typescript-eslint/no-explicit-any": 1,
+      "@typescript-eslint/no-explicit-any": 0,
       "unused-imports/no-unused-vars": 1
     },
     "src/verification/exploit-trace-generator.ts": {
@@ -747,24 +618,21 @@
       "@typescript-eslint/no-non-null-assertion": 1
     },
     "src/verification/smt-solver.ts": {
-      "@typescript-eslint/no-explicit-any": 8,
+      "@typescript-eslint/no-explicit-any": 0,
       "unused-imports/no-unused-vars": 3
     },
     "src/verification/symbolic-executor.ts": {
-      "@typescript-eslint/no-explicit-any": 2,
+      "@typescript-eslint/no-explicit-any": 0,
       "unused-imports/no-unused-vars": 1,
       "@typescript-eslint/no-non-null-assertion": 3
     },
     "src/verification/verifier.ts": {
       "unused-imports/no-unused-vars": 4,
-      "@typescript-eslint/no-explicit-any": 3
+      "@typescript-eslint/no-explicit-any": 0
     },
     "src/webhooks/dispatcher.ts": {
       "error-handling/no-phantom-prisma-field": 22,
       "@typescript-eslint/no-non-null-assertion": 1
-    },
-    "src/webhooks/ssrf-guard.ts": {
-      "@typescript-eslint/no-explicit-any": 2
     },
     "src/ws/websocketServer.ts": {
       "@typescript-eslint/no-explicit-any": 3

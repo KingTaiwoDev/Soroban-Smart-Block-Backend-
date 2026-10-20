@@ -179,7 +179,7 @@ async function storeAlert(alert: BridgeAlertEntry): Promise<string> {
       asset: alert.asset ?? null,
       amount: alert.amount ?? null,
       message: alert.message,
-      data: (alert.data ?? undefined) as any,
+      data: alert.data as Record<string, unknown> | null ?? undefined,
     },
   });
   return created.id;

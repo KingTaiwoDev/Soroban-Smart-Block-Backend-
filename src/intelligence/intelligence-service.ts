@@ -66,7 +66,7 @@ export async function findSimilarContracts(
 
   return others
     .map((c) => {
-      const abi = c.abi as any;
+      const abi = c.abi as Record<string, unknown>;
       const otherFns: string[] = Array.isArray(abi?.functions)
         ? abi.functions.map((f: any) => f.name).filter(Boolean)
         : [];

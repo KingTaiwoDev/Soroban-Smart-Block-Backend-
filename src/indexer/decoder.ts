@@ -87,39 +87,57 @@ export function decodeEvent(
   contractName?: string | null,
 ): { eventType: string; topicSymbol: string | null; decoded: Record<string, unknown> } {
   try {
-    const topicVals = topics.map((t) => xdr.ScVal.fromXDR(t, 'base64'));
-
-    // First topic is usually the event name symbol
-    const rawSymbol = topicVals[0] ? String(scValToNative(topicVals[0])) : 'unknown';
-
-    // ── SEP-41 fast path ────────────────────────────────────────────────────
-    if (isSep41Event(rawSymbol)) {
-      const parsed = parseSep41Event(topics, data);
-      if (parsed) {
-        // Flatten { raw, formatted } entries to their formatted strings for
-        // storage compatibility, and keep the full structured fields too.
-        const decoded: Record<string, unknown> = {
-          event: rawSymbol,
-          humanReadable: parsed.humanReadable,
-          ...Object.fromEntries(Object.entries(parsed.fields).map(([k, v]) => [k, v.formatted])),
-        };
-        return { eventType: normalizeEventType(rawSymbol), topicSymbol: rawSymbol, decoded };
-      }
-    }
-
-    // ── Generic fallback ────────────────────────────────────────────────────
-    const dataVal = xdr.ScVal.fromXDR(data, 'base64');
-    const decoded: Record<string, unknown> = {
-      event: rawSymbol,
-      topics: topicVals.map((t) => scValToNative(t)),
-      data: scValToNative(dataVal),
-      raw: { topics, data },
-    };
-
-    return { eventType: normalizeEventType(rawSymbol), topicSymbol: rawSymbol, decoded };
+    return decodeEventStrict(topics, data, contractName);
   } catch {
+    // The public decoder remains backwards-compatible for API consumers and
+    // tooling that need a best-effort representation. The indexer uses the
+    // strict variant below so a malformed event is recorded and isolated.
     return { eventType: 'unknown', topicSymbol: null, decoded: { raw: { topics, data } } };
   }
+}
+
+/**
+ * Decode an event, surfacing malformed XDR to the caller.
+ *
+ * Indexing must distinguish an unknown-but-valid event from malformed input:
+ * the former is safely stored as a custom event, while the latter is recorded
+ * in the per-ledger error log and sent to the dead-letter workflow.
+ */
+export function decodeEventStrict(
+  topics: string[],
+  data: string,
+  contractName?: string | null,
+): { eventType: string; topicSymbol: string | null; decoded: Record<string, unknown> } {
+  const topicVals = topics.map((t) => xdr.ScVal.fromXDR(t, 'base64'));
+
+  // First topic is usually the event name symbol
+  const rawSymbol = topicVals[0] ? String(scValToNative(topicVals[0])) : 'unknown';
+
+  // ── SEP-41 fast path ────────────────────────────────────────────────────
+  if (isSep41Event(rawSymbol)) {
+    const parsed = parseSep41Event(topics, data);
+    if (parsed) {
+      // Flatten { raw, formatted } entries to their formatted strings for
+      // storage compatibility, and keep the full structured fields too.
+      const decoded: Record<string, unknown> = {
+        event: rawSymbol,
+        humanReadable: parsed.humanReadable,
+        ...Object.fromEntries(Object.entries(parsed.fields).map(([k, v]) => [k, v.formatted])),
+      };
+      return { eventType: normalizeEventType(rawSymbol), topicSymbol: rawSymbol, decoded };
+    }
+  }
+
+  // ── Generic fallback ────────────────────────────────────────────────────
+  const dataVal = xdr.ScVal.fromXDR(data, 'base64');
+  const decoded: Record<string, unknown> = {
+    event: rawSymbol,
+    topics: topicVals.map((t) => scValToNative(t)),
+    data: scValToNative(dataVal),
+    raw: { topics, data },
+  };
+
+  return { eventType: normalizeEventType(rawSymbol), topicSymbol: rawSymbol, decoded };
 }
 
 function normalizeEventType(raw: string): string {

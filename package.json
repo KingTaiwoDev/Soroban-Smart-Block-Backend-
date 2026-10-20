@@ -29,6 +29,7 @@
     "repair:testnet": "STELLAR_NETWORK=testnet ts-node src/indexer/repair.ts",
     "repair:mainnet": "STELLAR_NETWORK=mainnet ts-node src/indexer/repair.ts",
     "repair:devnet": "STELLAR_NETWORK=devnet ts-node src/indexer/repair.ts",
+    "admin:dead-letter-replay": "ts-node scripts/replay-dead-letter.ts",
     "archive": "ts-node src/archival/run.ts",
     "seed": "ts-node prisma/seed.ts",
     "test": "vitest run",
@@ -79,9 +80,12 @@
     "sdk:build": "npm run build -w @soroban-explorer/client",
     "sdk:test:chaos": "vitest run tests/sdk-chaos.test.ts",
     "sdk:test:load": "vitest run tests/sdk-load.test.ts",
+    "sdk:bench": "vitest run src/benchmarks/sdk-generation.bench.ts",
     "sdk:audit:security": "ts-node --transpile-only scripts/sdk/security-audit.ts",
-    "sdk:quality": "ts-node --transpile-only scripts/sdk/quality-report.ts",
-    "sdk:quality:check": "ts-node --transpile-only scripts/sdk/quality-report.ts --check"
+    "sdk:cache:clean": "ts-node --transpile-only scripts/sdk/cache.ts --clean",
+    "sandbox:wasmtime:verify": "ts-node --transpile-only scripts/verify-wasmtime-addon.ts",
+    "sandbox:calibrate": "ts-node --transpile-only scripts/sandbox/calibrate-fuel.ts",
+    "sandbox:calibrate:check": "ts-node --transpile-only scripts/sandbox/calibrate-fuel.ts --check --threshold 5.0"
   },
   "overrides": {
     "@libp2p/interface": "2.11.0"

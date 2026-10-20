@@ -92,6 +92,7 @@ import { statusRouter } from './status';
 // ── Admin ─────────────────────────────────────────────────────────────────────
 import { adminErrorsRouter } from './admin/errors';
 import { deadLetterAdminRouter } from './admin/dead-letter';
+import { auditIntegrityAdminRouter } from './admin/audit-integrity';
 import { featureFlagsAdminRouter } from './feature-flags';
 // ── CSV Exports ───────────────────────────────────────────────────────────────
 import { requireApiKey, requireKeyTier } from '../middleware/apiKeyAuth';
@@ -200,6 +201,7 @@ router.use('/sac-trustlines', sacTrustlinesRouter);
 // ── Admin Dashboards ──────────────────────────────────────────────────────────
 router.use('/admin/errors', adminErrorsRouter);
 router.use('/admin/dead-letter', deadLetterAdminRouter);
+router.use('/admin/audit-integrity', auditIntegrityAdminRouter);
 router.use('/admin/feature-flags', featureFlagsAdminRouter);
 // ── Bridge Tracker ─────────────────────────────────────────────────────────────
 import { bridgeTrackerRouter } from './bridge-tracker';
@@ -311,8 +313,11 @@ router.use('/graph', graphRouter);
 // ABI management and advanced event filtering for Soroban contracts.
 import { abiRouter } from './abi';
 import { advancedEventsRouter } from './advanced-events';
+import { abiMarketplaceRouter } from './abi-marketplace';
 router.use('/abi', abiRouter);
 router.use('/events/advanced', advancedEventsRouter);
+router.use('/abi-marketplace', abiMarketplaceRouter);
+
 
 // ── Factory Tracker & Upgrade Trace (#844) ────────────────────────────────────
 // Contract factory patterns and wasm upgrade history.
@@ -329,12 +334,15 @@ import { authMultisigRouter } from './authMultisig';
 import { authProfileRouter } from './authProfile';
 import { authSecurityRouter } from './authSecurity';
 import { authWebhooksRouter } from './authWebhooks';
+// Enterprise SSO / OIDC login (PLT09 / #1030)
+import { authSsoRouter } from './authSso';
 router.use('/auth', authRouter);
 router.use('/auth/oauth2', authOAuth2Router);
 router.use('/auth/multisig', authMultisigRouter);
 router.use('/auth/profile', authProfileRouter);
 router.use('/auth/security', authSecurityRouter);
 router.use('/auth/webhooks', authWebhooksRouter);
+router.use('/auth/sso', authSsoRouter);
 
 // ── Compliance Extension Routers (#846) ────────────────────────────────────────
 // Commodity, RWA, DTCC settlement, and settlement-batch compliance.

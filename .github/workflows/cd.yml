@@ -123,6 +123,7 @@ jobs:
     env:
       SOURCE_DATABASE_URL: ${{ secrets.DATABASE_URL }}
       RESTORE_DATABASE_URL: postgresql://restore:restore@localhost:5432/drill_restore
+      BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
     steps:
       - uses: actions/checkout@v5
 
@@ -131,6 +132,13 @@ jobs:
           if [ -z "${SOURCE_DATABASE_URL:-}" ]; then
             echo "::error::Set DATABASE_URL on the staging GitHub Environment to enable the release restore drill."
             exit 1
+          fi
+          if [ -z "${BACKUP_ENCRYPTION_KEY:-}" ]; then
+            # The drill archive is temporary, so a per-run key still proves the
+            # encrypt -> decrypt -> restore path; set the secret to use the real key.
+            BACKUP_ENCRYPTION_KEY="$(openssl rand -hex 32)"
+            echo "::add-mask::$BACKUP_ENCRYPTION_KEY"
+            export BACKUP_ENCRYPTION_KEY
           fi
           bash scripts/postgres-backup-restore-drill.sh "$SOURCE_DATABASE_URL" "$RESTORE_DATABASE_URL"
 

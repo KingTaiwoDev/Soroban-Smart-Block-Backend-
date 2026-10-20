@@ -24,7 +24,13 @@ function checkQuery(spec: QueryParamSpec, value: unknown): string | null {
       return `${spec.name} must be a number`;
     }
     if (itemType === 'boolean' && typeof v !== 'boolean') return `${spec.name} must be a boolean`;
-    if (itemType === 'string' && typeof v !== 'string') return `${spec.name} must be a string`;
+    if (itemType === 'string' && typeof v !== 'string') {
+      if (spec.name === 'cursor' && typeof v === 'number') {
+        // Cursors can be numeric ledger sequences or opaque tokens; both serialize cleanly into query strings
+        continue;
+      }
+      return `${spec.name} must be a string`;
+    }
     if (typeof v === 'number') {
       if (spec.minimum !== undefined && v < spec.minimum)
         return `${spec.name} must be >= ${spec.minimum}`;

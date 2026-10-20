@@ -77,7 +77,28 @@ describe('transaction and event API response schemas', () => {
     const response = await request(makeApp()).get('/transactions');
 
     expect(response.status).toBe(200);
+    // Offset pagination is the original public response contract. Keep this
+    // assertion explicit so a cursor-pagination refactor cannot quietly
+    // remove fields used by existing SDKs.
+    expect(Object.keys(response.body).sort()).toEqual(['data', 'limit', 'page', 'pages', 'total']);
     expect(response.body.data[0].hash).toBe(transaction.hash);
+    expect(response.body).toMatchObject({ total: 1, page: 1, limit: 20, pages: 1 });
+  });
+
+  it('rejects a transaction response that drops a legacy pagination field', async () => {
+    vi.mocked(transactionService.listTransactions).mockResolvedValue({
+      data: [transaction],
+      total: 1,
+      page: 1,
+      limit: 20,
+      // `pages` is intentionally absent: clients rely on it to render the
+      // final offset page and it must remain part of the v1 contract.
+    } as never);
+
+    const response = await request(makeApp()).get('/transactions');
+
+    expect(response.status).toBe(500);
+    expect(response.body.code).toBe('RESPONSE_SCHEMA_VALIDATION_FAILED');
   });
 
   it('returns a server error for an invalid transaction list response', async () => {
@@ -120,7 +141,25 @@ describe('transaction and event API response schemas', () => {
     const response = await request(makeApp()).get('/events');
 
     expect(response.status).toBe(200);
+    // Event offset pagination predates opaque cursors and remains stable for
+    // integrations that have not opted into `pagination=cursor`.
+    expect(Object.keys(response.body).sort()).toEqual(['data', 'limit', 'nextCursor', 'page', 'total']);
     expect(response.body.data[0].eventType).toBe('transfer');
+    expect(response.body).toMatchObject({ total: 1, page: 1, limit: 20, nextCursor: null });
+  });
+
+  it('rejects an event response that drops the legacy nextCursor field', async () => {
+    vi.mocked(eventService.listEvents).mockResolvedValue({
+      data: [eventSummary],
+      total: 1,
+      page: 1,
+      limit: 20,
+    } as never);
+
+    const response = await request(makeApp()).get('/events');
+
+    expect(response.status).toBe(500);
+    expect(response.body.code).toBe('RESPONSE_SCHEMA_VALIDATION_FAILED');
   });
 
   it('returns a server error for an invalid event list response', async () => {

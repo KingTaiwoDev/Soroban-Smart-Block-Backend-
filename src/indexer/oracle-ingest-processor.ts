@@ -72,7 +72,7 @@ export async function extractOraclePriceUpdate(
 
   if (!transaction) return null;
 
-  const args = transaction.functionArgs as any;
+  const args = transaction.functionArgs as Record<string, unknown> | null;
   const source = detectOracleSource(transaction.contractAddress || '');
 
   // Extract price data from function args
@@ -85,7 +85,7 @@ export async function extractOraclePriceUpdate(
 
   // Try to extract from events
   for (const event of transaction.events) {
-    const decoded = event.decoded as any;
+    const decoded = event.decoded as Record<string, unknown> | null;
     if (decoded?.price) price = String(decoded.price);
     if (decoded?.asset_pair) assetPair = String(decoded.asset_pair);
   }

@@ -349,7 +349,7 @@ export async function getScreeningSummary(): Promise<{
   const sourceCounts = new Map<string, number>();
   for (const r of matchesBySourceRaw) {
     if (r.matchedEntries) {
-      const entries = r.matchedEntries as any[];
+      const entries = r.matchedEntries as unknown[];
       for (const e of entries) {
         sourceCounts.set(e.source, (sourceCounts.get(e.source) ?? 0) + 1);
       }

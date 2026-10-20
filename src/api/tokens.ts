@@ -263,9 +263,9 @@ tokenRouter.get(
       // Build the balance(address) call
       const invokeHostFn = xdr.HostFunction.hostFunctionTypeInvokeContract(
         new xdr.InvokeContractArgs({
-          contractAddress: new Address(address).toScAddress() as any,
+          contractAddress: new Address(address).toScAddress() as unknown,
           functionName: 'balance',
-          args: [new Address(account).toScAddress() as any],
+          args: [new Address(account).toScAddress() as unknown],
         }),
       );
 
@@ -301,7 +301,7 @@ tokenRouter.get(
         });
       }
 
-      const retVal = (result.result as any).retval as xdr.ScVal | undefined;
+      const retVal = (result.result as Record<string, unknown>)?.retval as xdr.ScVal | undefined;
       if (!retVal) {
         return res.status(502).json({
           error: 'Invalid RPC response',

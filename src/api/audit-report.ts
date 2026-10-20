@@ -47,8 +47,8 @@ interface AbiFn {
 function extractFunctions(abi: unknown): AbiFn[] {
   const list = Array.isArray(abi)
     ? abi
-    : abi && typeof abi === 'object' && Array.isArray((abi as any).functions)
-      ? (abi as any).functions
+    : abi && typeof abi === 'object' && Array.isArray((abi as Record<string, unknown>).functions)
+      ? (abi as Record<string, unknown[]>).functions
       : [];
   return list
     .filter((f: any) => f && typeof f.name === 'string')

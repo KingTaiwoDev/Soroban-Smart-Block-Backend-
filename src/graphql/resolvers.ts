@@ -63,7 +63,7 @@ async function paginateTransactions(
   }
 
   const rows = await ctx.prisma.transaction.findMany({
-    where: finalWhere as any,
+    where: finalWhere as Record<string, unknown>,
     orderBy,
     take: limit + 1,
   });
@@ -100,7 +100,7 @@ async function paginateEvents(ctx: GraphQLContext, where: Record<string, unknown
   }
 
   const rows = await ctx.prisma.event.findMany({
-    where: finalWhere as any,
+    where: finalWhere as Record<string, unknown>,
     orderBy: [{ ledgerSequence: 'desc' }, { id: 'desc' }],
     take: limit + 1,
   });
@@ -313,8 +313,8 @@ export const resolvers = {
       if (args.status) where.status = args.status;
       if (args.ledgerMin !== undefined || args.ledgerMax !== undefined) {
         where.ledgerSequence = {};
-        if (args.ledgerMin !== undefined) (where.ledgerSequence as any).gte = args.ledgerMin;
-        if (args.ledgerMax !== undefined) (where.ledgerSequence as any).lte = args.ledgerMax;
+        if (args.ledgerMin !== undefined) (where.ledgerSequence as Record<string, unknown>).gte = args.ledgerMin;
+        if (args.ledgerMax !== undefined) (where.ledgerSequence as Record<string, unknown>).lte = args.ledgerMax;
       }
       return paginateTransactions(ctx, where, args);
     },

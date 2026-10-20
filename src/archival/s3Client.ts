@@ -14,7 +14,7 @@ export async function uploadToS3(key: string, body: string): Promise<void> {
       Key: key,
       Body: body,
       ContentType: 'application/json',
-      StorageClass: (process.env.ARCHIVE_S3_STORAGE_CLASS as any) ?? 'STANDARD_IA',
+      StorageClass: (process.env.ARCHIVE_S3_STORAGE_CLASS as 'STANDARD_IA' | 'GLACIER' | 'DEEP_ARCHIVE' | undefined) ?? 'STANDARD_IA',
     }),
   );
 }

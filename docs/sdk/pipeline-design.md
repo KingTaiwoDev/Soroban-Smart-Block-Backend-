@@ -258,31 +258,36 @@ npm run sdk:test:load
 npm run sdk:test:chaos
 ```
 
-### 9. OpenAPI Quality Report & Baseline Enforcement (Issue #1294)
+### 9. Content-Addressed Generation Caching
 
-**Implementation**: `scripts/sdk/quality-report.ts`  
-**Artifacts**: `docs/sdk/openapi-quality-report.json`, `scripts/sdk/quality-baseline.json`
+**Implementation**: `scripts/sdk/cache.ts`
 
-Analyzes OpenAPI contracts for quality issues that impair SDK ergonomics and client code generation:
-- **Missing `operationId`** (`critical`): Unnamed operations force emitters to synthesize brittle names from HTTP path/method.
-- **Undocumented Errors** (`warning`): Missing 4xx/5xx/default response schemas prevent typed exception handling in SDKs.
-- **Incomplete / Dangling Schemas** (`critical`): Dangling `$ref` pointers or array schemas lacking `items` yield unresolved types or compilation errors in strongly typed SDK targets.
-- **Ambiguous Pagination Metadata** (`warning`): Incompatible query parameter bounds (e.g. non-integer `limit`) or missing pagination cursor tokens prevent automated iterator and pager generation.
+**Overview**:
+To avoid repeated code generation in local development and CI pipelines, generated SDK artifacts are cached using content-addressed hashing.
 
-**Baseline Mode**:
-Supports gradual adoption by comparing findings against `scripts/sdk/quality-baseline.json`. Known issues recorded in the baseline are tolerated, while newly introduced `critical` contract defects fail CI checks immediately.
+**Cache Key Composition**:
+Cache keys are computed deterministically as the SHA-256 digest of:
+1. **Canonical OpenAPI specification content**: canonical JSON serialization of the OpenAPI document (`sha256(canonicalDoc)`)
+2. **Generator & toolchain versions**: generator version (`GENERATOR_VERSION`), Node.js runtime version (`process.version`)
+3. **Emitter source code**: content hashes of `scripts/sdk/generate.ts`, `emit-typescript.ts`, `emit-python.ts`, `emit-java.ts`, `surface.ts`, `parity.ts`
+4. **Configuration & feature flags**: active flag set
 
-**Commands**:
-```bash
-# Generate report artifact
-npm run sdk:quality
+**Byte-Identical Output Guarantee**:
+Every cached file entry stores its SHA-256 checksum in a manifest. A cache hit restores files whose hashes match clean generation byte-for-byte.
 
-# Check for newly introduced critical findings against baseline (CI gate)
-npm run sdk:quality:check
+**Corruption and Absence Diagnostics**:
+- **Cache Absence**: Emits `Diagnostic: Cache entry absent for key <key>; executing clean generation.`
+- **Cache Corruption** (checksum mismatch or malformed JSON): Emits `Diagnostic: Cache corruption detected: ... Falling back to clean run.` and executes a clean generation without halting the build.
 
-# Update baseline after deliberate contract remediation
-npx ts-node --transpile-only scripts/sdk/quality-report.ts --update-baseline
-```
+**Cache Invalidation & Local Cleanup**:
+- **Automatic Invalidation**: Any change to OpenAPI endpoints, models, parameters, emitter source code, or generator version changes the cache key, automatically invalidating stale cache entries.
+- **Manual Cleanup**:
+  ```bash
+  # Delete local cache directory
+  npm run sdk:cache:clean
+  # Or run generation bypassing cache
+  npm run sdk:generate -- --no-cache
+  ```
 
 ## SLO and Error Budgets
 
@@ -546,15 +551,15 @@ npx ts-node --transpile-only scripts/sdk/quality-report.ts --update-baseline
 ## Future Enhancements
 
 ### Planned Features
-- [x] Go client emitter (`packages/go-client`)
-- [ ] Additional language emitters (Java, C#)
+- [x] Java language emitter (`packages/java-client`) with parity against OpenAPI contract
+- [ ] Additional language emitters (Go, C#)
 - [ ] Real-time spec monitoring and auto-generation
-- [ ] Advanced caching strategies
+- [x] Advanced caching strategies (content-addressed caching by OpenAPI content hash)
 - [ ] Distributed generation for large specs
 - [ ] Machine learning for spec quality analysis
 
 ### Performance Improvements
-- [ ] Parallel file generation
+- [x] Parallel file generation (bounded worker pool in `scripts/sdk/parallel-generator.ts`)
 - [ ] Incremental generation (only changed operations)
 - [ ] Spec compilation and caching
 - [ ] Optimized normalization algorithms

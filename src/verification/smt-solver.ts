@@ -240,8 +240,8 @@ export class SmtSolver {
     if (result.sat !== true || !result.model) return null;
 
     const model: Record<string, string> = {};
-    for (const [k, v] of Object.entries(result.model as any)) {
-      model[k] = (v as any).value;
+    for (const [k, v] of Object.entries(result.model as Record<string, unknown>)) {
+      model[k] = (v as Record<string, unknown>).value;
     }
     return model;
   }
@@ -293,7 +293,7 @@ export class SmtSolver {
       const child: ChildProcess = spawn(binary, args, {
         stdio: ['ignore', 'pipe', 'pipe'],
         timeout: timeoutMs + 5000,
-      } as any);
+      } as unknown);
 
       let stdout = '';
       let stderr = '';

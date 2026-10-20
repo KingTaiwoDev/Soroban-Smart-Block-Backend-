@@ -132,7 +132,7 @@ function checkMemoryBucket(
 
 // ─── Public interface ─────────────────────────────────────────────────────────
 
-interface TokenBucketRedisClient {
+export interface TokenBucketRedisClient {
   eval(script: string, options: { keys: string[]; arguments: string[] }): Promise<unknown>;
 }
 

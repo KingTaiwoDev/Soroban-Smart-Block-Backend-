@@ -5,6 +5,7 @@ import {
   httpRequestDuration,
   httpRequestTotal,
 } from '../metrics';
+import { normaliseRouteLabel } from '../lib/metric-labels';
 
 export type ApiEndpointClass = 'read' | 'write' | 'compute' | 'graphql';
 export type ApiSloOutcome = 'good' | 'bad' | 'excluded';
@@ -34,8 +35,9 @@ export function metricsMiddleware(req: Request, res: Response, next: NextFunctio
 
   res.on('finish', () => {
     const durationSeconds: number = Number(process.hrtime.bigint() - start) / 1e9;
-    // Normalise dynamic path segments to avoid high-cardinality label explosion
-    const route: string = normaliseRoute(req.route?.path ?? req.path);
+    // Normalise dynamic path segments and strip account/contract identifiers so
+    // they never become label values (high cardinality + data leak, #1241).
+    const route: string = normaliseRouteLabel(req.route?.path ?? req.path);
     const labels = {
       method: req.method,
       route,
@@ -54,12 +56,4 @@ export function metricsMiddleware(req: Request, res: Response, next: NextFunctio
   });
 
   next();
-}
-
-/** Replace UUIDs, cuid-like IDs, and numeric IDs with :id placeholder. */
-function normaliseRoute(path: string): string {
-  return path
-    .replace(/\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi, '/:id')
-    .replace(/\/c[a-z0-9]{20,}/g, '/:id')
-    .replace(/\/\d+/g, '/:id');
 }

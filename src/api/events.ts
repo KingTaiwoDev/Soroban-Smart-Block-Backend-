@@ -164,27 +164,9 @@ eventRouter.get(
   '/',
   validateQuery(eventListQuerySchema),
   asyncHandler(async (req: Request, res: Response) => {
-    const query = (req as any).validatedQuery as z.infer<typeof eventListQuerySchema>;
-    const scope = createCursorScope('events', {
-      limit: query.limit,
-      contract: query.contract,
-      type: query.type,
-      topic: query.topic,
-    });
-    let cursor: string | undefined;
-    if (query.cursor !== undefined) {
-      const decoded = decodeOpaqueCursor(query.cursor, scope);
-      if (typeof decoded !== 'string') {
-        throw new AppError(400, 'Invalid or mismatched cursor', 'INVALID_CURSOR');
-      }
-      cursor = decoded;
-    }
-
-    const result = await eventService.listEvents({ ...query, cursor });
-    res.json({
-      ...result,
-      nextCursor: result.nextCursor ? encodeOpaqueCursor(result.nextCursor, scope) : null,
-    });
+    const query = req.validatedQuery as z.infer<typeof eventListQuerySchema>;
+    const result = await eventService.listEvents(query);
+    res.json(result);
   }),
 );
 
@@ -223,7 +205,7 @@ eventRouter.get(
   validateParams(z.object({ id: z.string() })),
   conditionalCache,
   asyncHandler(async (req: Request, res: Response) => {
-    const params = (req as any).validatedParams as { id: string };
+    const params = req.validatedParams as { id: string };
     const event = await eventService.getEventById(params.id);
     if (!event) return res.status(404).json({ error: 'Event not found' });
     sendValidatedResponse(res, eventResponseSchema, event, 'GET /events/:id');

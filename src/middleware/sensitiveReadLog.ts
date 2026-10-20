@@ -65,7 +65,7 @@ export function sensitiveReadLog(
       // test double that only stubs prismaRead) degrades to a warn log.
       try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const auditModel = (prismaWrite as any)?.sensitiveReadAudit;
+        const auditModel = (prismaWrite as unknown as Record<string, unknown>)?.sensitiveReadAudit as { create?: (args: unknown) => Promise<unknown> } | undefined;
         if (!auditModel?.create) {
           logger.warn('[sensitive-read-audit] Skipped: audit client unavailable');
           return;

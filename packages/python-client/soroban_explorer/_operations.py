@@ -5,8 +5,8 @@
 from typing import Dict
 
 SPEC_VERSION = "1.0.0"
-SPEC_FINGERPRINT = "4c126e23b9a2d4e1"
-OPERATION_COUNT = 388
+SPEC_FINGERPRINT = "4c0ba0fdc2224255"
+OPERATION_COUNT = 383
 
 OPERATIONS: Dict[str, Dict[str, object]] = {
     "getAdminContractAbiSubmissions": {
@@ -3817,6 +3817,7 @@ OPERATIONS: Dict[str, Dict[str, object]] = {
             "name": "type",
             "type": "string",
             "required": False,
+            "minimum": 1,
         },),
         "body": "none",
         "deprecated": False,

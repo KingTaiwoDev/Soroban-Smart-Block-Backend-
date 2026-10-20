@@ -106,7 +106,7 @@ async function fetchRecentUpgradeHashes(
   nearLedger: number,
 ): Promise<Set<string>> {
   if (wasmHashes.length === 0) return new Set();
-  const db = prismaRead as any;
+  const db = prismaRead as unknown as Record<string, { findMany: Function; count: Function }>;
   try {
     const rows: Array<{ newWasmHash: string }> = await db.wasmUpgradeHistory.findMany({
       where: {

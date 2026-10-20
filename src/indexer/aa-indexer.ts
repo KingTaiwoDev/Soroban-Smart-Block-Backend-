@@ -45,7 +45,7 @@ async function fetchWasmIndicators(
 
   let wasm: Buffer;
   try {
-    wasm = await (rpc as any).getContractWasmByContractId(contractAddress);
+    wasm = await (rpc as unknown as { getContractWasmByContractId(id: string): Promise<Buffer> }).getContractWasmByContractId(contractAddress);
   } catch {
     return null;
   }

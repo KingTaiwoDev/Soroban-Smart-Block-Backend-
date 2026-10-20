@@ -23,10 +23,13 @@ import { emitModels, emitOperations } from './emit-typescript';
 import { buildSurface } from './surface';
 import { emitParityMatrix } from './parity';
 import { EXTRA_EMITTERS } from './emitters';
+import { pythonEmitter } from './emit-python';
+import { javaEmitter } from './emit-java';
 import { logger } from './sdk-logger';
 import { metrics, METRIC_NAMES } from './sdk-metrics';
 import { featureFlags, FLAG_NAMES } from './feature-flags';
 import { gracefulDegradation, fallbacks, type ComponentHandler } from './graceful-degradation';
+import { computeCacheKey, sdkCache } from './cache';
 
 const ROOT = path.join(__dirname, '..', '..');
 
@@ -50,10 +53,32 @@ function generateCoreFiles(doc: OpenApiDocument, ops: NormalizedOperation[], fin
   ];
 }
 
-export function generateAll(doc: OpenApiDocument): GeneratedFile[] {
+export interface GenerateOptions {
+  useCache?: boolean;
+  noCache?: boolean;
+}
+
+export function generateAll(doc: OpenApiDocument, options: GenerateOptions = {}): GeneratedFile[] {
   const startTime = Date.now();
   const context = { correlationId: logger.getCorrelationId() };
   
+  const cachingEnabled = !options.noCache && (
+    options.useCache === true ||
+    featureFlags.isEnabled(FLAG_NAMES.CACHE_OPTIMIZATION, context) ||
+    process.env.SDK_CACHE_ENABLED === 'true' ||
+    process.argv.includes('--cache')
+  );
+
+  let cacheData: ReturnType<typeof computeCacheKey> | null = null;
+  if (cachingEnabled) {
+    cacheData = computeCacheKey(doc, featureFlags.getEnabledFlags());
+    const cached = sdkCache.get(cacheData.cacheKey);
+    if (cached.hit && cached.files) {
+      metrics.incrementCounter(METRIC_NAMES.GENERATION_SUCCESS);
+      return cached.files;
+    }
+  }
+
   logger.info('Starting SDK generation', { 
     spec_version: doc.info?.version,
     enabled_flags: featureFlags.getEnabledFlags(),
@@ -91,49 +116,68 @@ export function generateAll(doc: OpenApiDocument): GeneratedFile[] {
   // Python generation (core feature)
   if (featureFlags.isEnabled(FLAG_NAMES.PYTHON_GENERATION, context)) {
     logger.debug('Generating Python SDK');
-    for (const emitter of EXTRA_EMITTERS) {
-      try {
-        const emitterFiles = emitter({ doc, ops, fingerprint });
-        files.push(...emitterFiles);
-        logger.debug('Emitter completed', { emitter_files: emitterFiles.length });
-      } catch (error) {
-        logger.error('Emitter failed', { error: String(error) });
-        if (featureFlags.isEnabled(FLAG_NAMES.STRICT_VALIDATION, context)) {
-          throw error;
-        }
+    try {
+      const emitterFiles = pythonEmitter({ doc, ops, fingerprint });
+      files.push(...emitterFiles);
+      logger.debug('Python emitter completed', { emitter_files: emitterFiles.length });
+    } catch (error) {
+      logger.error('Python emitter failed', { error: String(error) });
+      if (featureFlags.isEnabled(FLAG_NAMES.STRICT_VALIDATION, context)) {
+        throw error;
       }
     }
   } else {
     logger.warn('Python generation disabled by feature flag');
   }
-  
+
+  // Java generation
+  if (featureFlags.isEnabled(FLAG_NAMES.JAVA_GENERATION, context)) {
+    logger.debug('Generating Java SDK');
+    try {
+      const emitterFiles = javaEmitter({ doc, ops, fingerprint });
+      files.push(...emitterFiles);
+      logger.debug('Java emitter completed', { emitter_files: emitterFiles.length });
+    } catch (error) {
+      logger.error('Java emitter failed', { error: String(error) });
+      if (featureFlags.isEnabled(FLAG_NAMES.STRICT_VALIDATION, context)) {
+        throw error;
+      }
+    }
+  } else {
+    logger.warn('Java generation disabled by feature flag');
+  }
+
   // Parity matrix (always generated for documentation)
   files.push({ path: 'docs/sdk/parity-matrix.md', content: emitParityMatrix(ops, files) });
-  
+
   const duration = (Date.now() - startTime) / 1000;
   logger.info('SDK generation completed', { 
     file_count: files.length, 
     duration_ms: duration * 1000,
     correlation_id: context.correlationId
   });
-  
+
   metrics.recordHistogram(METRIC_NAMES.GENERATION_DURATION, duration);
   metrics.incrementCounter(METRIC_NAMES.FILES_GENERATED, files.length);
   metrics.incrementCounter(METRIC_NAMES.GENERATION_SUCCESS);
-  
+
+  if (cachingEnabled && cacheData) {
+    sdkCache.set(cacheData.metadata, files);
+  }
+
   return files;
 }
 
 // Legacy function for backward compatibility - now uses graceful degradation internally
 export async function generateAllWithDegradation(doc: OpenApiDocument): Promise<GeneratedFile[]> {
   const context = { correlationId: logger.getCorrelationId() };
-  
+
   const ops = normalizeOperations(doc);
   const specVersion = doc.info?.version ?? '0.0.0';
   const surface = buildSurface(specVersion, ops);
   const surfaceJson = `${JSON.stringify(surface, null, 2)}\n`;
   const fingerprint = createHash('sha256').update(surfaceJson).digest('hex').slice(0, 16);
-  
+
   const handlers: ComponentHandler[] = [
     {
       name: 'typescript-core',
@@ -143,14 +187,14 @@ export async function generateAllWithDegradation(doc: OpenApiDocument): Promise<
     {
       name: 'python-sdk',
       critical: false,
-      execute: () => {
-        const files: GeneratedFile[] = [];
-        for (const emitter of EXTRA_EMITTERS) {
-          files.push(...emitter({ doc, ops, fingerprint }));
-        }
-        return files;
-      },
-      fallback: () => [], // No fallback for Python - just skip it
+      execute: () => pythonEmitter({ doc, ops, fingerprint }),
+      fallback: () => [],
+    },
+    {
+      name: 'java-sdk',
+      critical: false,
+      execute: () => javaEmitter({ doc, ops, fingerprint }),
+      fallback: () => [],
     },
     {
       name: 'parity-matrix',
@@ -175,11 +219,15 @@ export async function generateAllWithDegradation(doc: OpenApiDocument): Promise<
 async function main(): Promise<void> {
   const startTime = Date.now();
   const check = process.argv.includes('--check');
+  const noCache = process.argv.includes('--no-cache');
+  const useCache = process.argv.includes('--cache');
   const context = { correlationId: logger.getCorrelationId() };
   
   logger.info('SDK generation started', { 
     mode: check ? 'check' : 'generate',
-    correlation_id: context.correlationId
+    correlation_id: context.correlationId,
+    no_cache: noCache,
+    cache: useCache
   });
   
   try {
@@ -189,7 +237,7 @@ async function main(): Promise<void> {
       swaggerSpec: OpenApiDocument;
     };
     
-    const files = generateAll(swaggerSpec);
+    const files = generateAll(swaggerSpec, { noCache, useCache });
     
     // Handle drift check and file writing
     const drift: string[] = [];

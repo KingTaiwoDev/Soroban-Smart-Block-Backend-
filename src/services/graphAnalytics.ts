@@ -346,7 +346,7 @@ export class GraphAnalyticsPipeline {
         ORDER BY sync_start_time DESC
         LIMIT ${limit}
       `;
-      return history as any[];
+      return history as unknown[];
     } catch (error) {
       logger.error('Failed to get analytics history', { error });
       return [];

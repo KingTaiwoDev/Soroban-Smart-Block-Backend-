@@ -295,7 +295,7 @@ keysRouter.post(
         // Chain the audit trail: new key records which key it replaced (#888)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         rotatedFromKeyId: existing.id,
-      } as any,
+      } as Record<string, unknown>,
       select: { id: true, name: true, keyPrefix: true, status: true, createdAt: true },
     });
 
@@ -405,7 +405,7 @@ keysRouter.post(
             // Chain the audit trail: new key records which key it replaced (#888)
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             rotatedFromKeyId: existingKey.id,
-          } as any,
+          } as Record<string, unknown>,
           select: { id: true, name: true, keyPrefix: true, status: true, createdAt: true },
         });
 

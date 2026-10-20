@@ -123,7 +123,7 @@ export async function backfillYieldDistributions(
     try {
       const scVal = xdr.ScVal.fromXDR(topics[0], 'base64');
       if (scVal.switch().name === 'scvSymbol') {
-        topicSymbol = (scVal as any).sym()?.toString() ?? null;
+        topicSymbol = (scVal as Record<string, () => unknown>).sym?.()?.toString() ?? null;
       }
     } catch {
       continue;

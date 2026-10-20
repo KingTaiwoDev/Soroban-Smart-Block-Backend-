@@ -39,6 +39,8 @@ export interface StructuredErrorResponse {
   meta: {
     requestId: string;
     timestamp: string;
+    fingerprint?: string;
+    errorId?: string;
   };
 }
 

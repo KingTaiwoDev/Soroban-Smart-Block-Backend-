@@ -331,7 +331,7 @@ export async function bootstrapOlap(store: OlapStore): Promise<void> {
   if (store instanceof ClickHouseOlapStore) {
     for (const mv of MATERIALIZED_VIEWS) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (store as any).exec(mv.ddl);
+      await (store as unknown as { exec(ddl: string): Promise<unknown> }).exec(mv.ddl);
     }
   }
   logger.info('OLAP store bootstrapped', {

@@ -81,7 +81,7 @@ async function checkImpersonation(
     for (const known of knownContracts) {
       const knownFns: string[] = [];
       if (known.abi && typeof known.abi === 'object') {
-        const abi = known.abi as any;
+        const abi = known.abi as Record<string, unknown>;
         if (Array.isArray(abi.functions)) {
           for (const f of abi.functions) {
             if (f.name) knownFns.push(f.name);

@@ -8,8 +8,8 @@
 import { prismaRead, prismaWrite } from '../db';
 
 type RevenuePeriod = 'HOUR' | 'DAY' | 'WEEK' | 'MONTH';
-const feeRead = prismaRead as any;
-const feeWrite = prismaWrite as any;
+const feeRead = prismaRead as unknown as Record<string, { findMany: Function; create: Function; updateMany: Function; count: Function; aggregate: Function }>;
+const feeWrite = prismaWrite as unknown as Record<string, { findMany: Function; create: Function; updateMany: Function; count: Function; upsert: Function }>;
 import { computeLpApr, computeStakingApr, detectAnomalies } from './fee-classifier';
 import { logger } from '../logger';
 import { parseDecimalToBigInt, formatBigIntToDecimal } from './precision';

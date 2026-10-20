@@ -153,7 +153,7 @@ export function parseFailureReason(resultXdr: string): ParsedFailureReason | nul
 function extractHostErrorDetail(ihfResult: xdr.InvokeHostFunctionResult): string | null {
   try {
     // The error is embedded as an ScError in the result
-    const errorVal = (ihfResult as any).code?.();
+    const errorVal = (ihfResult as Record<string, () => unknown>).code?.();
     if (!errorVal) return null;
 
     const scError = errorVal.error?.();

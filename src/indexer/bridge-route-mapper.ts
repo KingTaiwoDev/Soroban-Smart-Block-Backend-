@@ -69,7 +69,7 @@ export async function analyzeBridgeRoute(transactionHash: string): Promise<Bridg
   let recipientAddress = '';
 
   for (const event of events) {
-    const decoded = event.decoded as any;
+    const decoded = event.decoded as Record<string, unknown> | null;
     const topicSymbol = event.topicSymbol?.toLowerCase() || '';
 
     if (topicSymbol.includes('transfer')) {

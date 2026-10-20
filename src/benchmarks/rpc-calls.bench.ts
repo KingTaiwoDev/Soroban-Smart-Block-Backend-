@@ -172,7 +172,7 @@ describe('RPC Call Benchmarks', () => {
       });
 
       // Simulate processing each event
-      (batch as any).events.forEach((evt: any) => {
+      (batch as Record<string, unknown[]>).events?.forEach((evt: unknown) => {
         const topics = [evt.topics[0]];
         const data = evt.data;
         // Minimal processing to simulate real workload

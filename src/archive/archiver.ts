@@ -1,6 +1,6 @@
 import { prismaWrite } from '../db';
 
-const prisma = prismaWrite as any;
+const prisma = prismaWrite as unknown as Record<string, { findMany: Function; create: Function; upsert: Function; count: Function }>;
 import { decodeScValXdr } from './scval-decoder';
 
 export type StateOperation = 'create' | 'update' | 'delete';

@@ -1,0 +1,16 @@
+{
+  "protocolVersion": 20,
+  "source": "Synthetic SDK-generated Soroban event fixture; no production addresses or payloads.",
+  "cases": [
+    {
+      "id": "p20-sep41-transfer-i128",
+      "topics": [
+        "AAAADwAAAAh0cmFuc2Zlcg==",
+        "AAAAEgAAAAAAAAAAAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+        "AAAAEgAAAAAAAAAAAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI="
+      ],
+      "data": "AAAACgAAAAAAAAAAAAAAAAF9eEA=",
+      "expected": { "eventType": "transfer", "topicSymbol": "transfer" }
+    }
+  ]
+}

@@ -18,6 +18,7 @@ All numeric environment variables are validated at startup using Zod schemas. In
 - **Validation**: Must be a positive integer within valid port range
 
 **Examples**:
+
 ```bash
 # Valid
 PORT=3000
@@ -42,6 +43,7 @@ PORT=-1           # Negative
 - **Validation**: Must be a non-negative integer
 
 **Examples**:
+
 ```bash
 # Valid
 INDEXER_START_LEDGER=0
@@ -62,6 +64,7 @@ INDEXER_START_LEDGER=abc      # Not a number
 - **Validation**: Must be at least 100ms to prevent excessive polling
 
 **Examples**:
+
 ```bash
 # Valid
 INDEXER_POLL_INTERVAL_MS=5000
@@ -83,6 +86,7 @@ INDEXER_POLL_INTERVAL_MS=abc  # Not a number
 - **Validation**: Must be between 1 and 1000 to prevent memory issues
 
 **Examples**:
+
 ```bash
 # Valid
 INDEXER_BATCH_SIZE=100
@@ -106,6 +110,7 @@ INDEXER_BATCH_SIZE=-50        # Negative
 Optional `INDEXER_CATCHUP_WORKERS_TESTNET`, `INDEXER_CATCHUP_WORKERS_MAINNET`, and `INDEXER_CATCHUP_WORKERS_DEVNET` values override the default for the matching network. Each override has the same 1-32 validation. Use a lower mainnet cap, for example, to keep a busy production indexer from competing with a testnet or devnet process. These settings do not impose a shared machine-wide cap; deploy and size each network process independently.
 
 **Examples**:
+
 ```bash
 # Valid
 INDEXER_CATCHUP_WORKERS=4
@@ -128,6 +133,7 @@ INDEXER_CATCHUP_WORKERS=abc   # Not a number
 - **Validation**: Must be at least 100ms
 
 **Examples**:
+
 ```bash
 # Valid
 MICRO_BLOCK_POLL_INTERVAL_MS=2500
@@ -150,6 +156,7 @@ MICRO_BLOCK_POLL_INTERVAL_MS=0    # Not positive
 - **Validation**: Must be at least 1000ms (1 second)
 
 **Examples**:
+
 ```bash
 # Valid
 RATE_LIMIT_WINDOW_MS=60000
@@ -170,6 +177,7 @@ RATE_LIMIT_WINDOW_MS=0        # Not positive
 - **Validation**: Must be at least 1
 
 **Examples**:
+
 ```bash
 # Valid
 RATE_LIMIT_MAX=100
@@ -197,7 +205,7 @@ When an invalid configuration value is detected, the application will:
 ❌ CONFIGURATION ERROR: Invalid environment variable
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Invalid value for PORT: "abc" cannot be parsed as a number. 
+Invalid value for PORT: "abc" cannot be parsed as a number.
 Expected a valid integer. Using default value 3000 is recommended.
 
 📋 Action required:
@@ -220,12 +228,14 @@ PORT=abc
 ```
 
 **Error**:
+
 ```
 Invalid value for PORT: "abc" cannot be parsed as a number.
 Expected a valid integer.
 ```
 
 **Solution**: Set a valid numeric value
+
 ```bash
 PORT=3000
 ```
@@ -239,11 +249,13 @@ PORT=70000
 ```
 
 **Error**:
+
 ```
 Invalid value for PORT: 70000. Port must be between 1 and 65535.
 ```
 
 **Solution**: Use a value within the valid range
+
 ```bash
 PORT=8080
 ```
@@ -257,11 +269,13 @@ INDEXER_BATCH_SIZE=-50
 ```
 
 **Error**:
+
 ```
 Invalid value for INDEXER_BATCH_SIZE: -50. Number must be greater than 0.
 ```
 
 **Solution**: Use a positive value
+
 ```bash
 INDEXER_BATCH_SIZE=100
 ```
@@ -275,11 +289,13 @@ RATE_LIMIT_MAX=0
 ```
 
 **Error**:
+
 ```
 Invalid value for RATE_LIMIT_MAX: 0. Rate limit max must be at least 1.
 ```
 
 **Solution**: Use a positive value
+
 ```bash
 RATE_LIMIT_MAX=100
 ```
@@ -288,16 +304,16 @@ RATE_LIMIT_MAX=100
 
 All numeric environment variables have sensible defaults. If an environment variable is **not set** or is **empty**, the default value is used without error.
 
-| Variable | Default | Notes |
-|----------|---------|-------|
-| `PORT` | 3000 | Standard development port |
-| `INDEXER_START_LEDGER` | 0 | Start from genesis |
-| `INDEXER_POLL_INTERVAL_MS` | 5000 | 5 seconds |
-| `INDEXER_BATCH_SIZE` | 100 | Balanced batch size |
-| `INDEXER_CATCHUP_WORKERS` | 4 | Parallel workers |
-| `MICRO_BLOCK_POLL_INTERVAL_MS` | 2500 | 2.5 seconds (Stellar block time) |
-| `RATE_LIMIT_WINDOW_MS` | 60000 | 1 minute window |
-| `RATE_LIMIT_MAX` | 100 | 100 requests per window |
+| Variable                       | Default | Notes                            |
+| ------------------------------ | ------- | -------------------------------- |
+| `PORT`                         | 3000    | Standard development port        |
+| `INDEXER_START_LEDGER`         | 0       | Start from genesis               |
+| `INDEXER_POLL_INTERVAL_MS`     | 5000    | 5 seconds                        |
+| `INDEXER_BATCH_SIZE`           | 100     | Balanced batch size              |
+| `INDEXER_CATCHUP_WORKERS`      | 4       | Parallel workers                 |
+| `MICRO_BLOCK_POLL_INTERVAL_MS` | 2500    | 2.5 seconds (Stellar block time) |
+| `RATE_LIMIT_WINDOW_MS`         | 60000   | 1 minute window                  |
+| `RATE_LIMIT_MAX`               | 100     | 100 requests per window          |
 
 ### Using Defaults
 
@@ -308,6 +324,7 @@ To use default values, either:
 3. **Comment it out**: `# PORT=3000`
 
 **Example .env using defaults**:
+
 ```bash
 # Using default PORT=3000
 # PORT=
@@ -324,16 +341,18 @@ INDEXER_BATCH_SIZE=200
 ### Development
 
 1. **Start with .env.example**: Copy and customize
+
    ```bash
    cp .env.example .env
    ```
 
 2. **Leave defaults where appropriate**: Only override what you need
+
    ```bash
    # Good - only override what's needed
    PORT=3001
    INDEXER_BATCH_SIZE=200
-   
+
    # Avoid - unnecessary overrides of defaults
    # INDEXER_POLL_INTERVAL_MS=5000  # This is the default anyway
    ```
@@ -348,6 +367,7 @@ INDEXER_BATCH_SIZE=200
 1. **Validate before deployment**: Test configuration in staging environment
 
 2. **Use explicit values**: Don't rely on defaults in production
+
    ```bash
    # Production .env should be explicit
    PORT=8080
@@ -362,7 +382,7 @@ INDEXER_BATCH_SIZE=200
    ```bash
    # Increased for high-traffic production environment
    RATE_LIMIT_MAX=5000
-   
+
    # Reduced for slower RPC provider
    INDEXER_BATCH_SIZE=50
    ```
@@ -370,6 +390,7 @@ INDEXER_BATCH_SIZE=200
 ### Docker/Container Environments
 
 1. **Use environment variables**: Override .env with container env vars
+
    ```yaml
    # docker-compose.yml
    environment:
@@ -380,7 +401,7 @@ INDEXER_BATCH_SIZE=200
 2. **Validate in health checks**: Ensure startup succeeds
    ```yaml
    healthcheck:
-     test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+     test: ['CMD', 'curl', '-f', 'http://localhost:8080/health']
      interval: 30s
      timeout: 10s
      retries: 3
@@ -390,15 +411,16 @@ INDEXER_BATCH_SIZE=200
 ### Kubernetes
 
 1. **Use ConfigMaps for non-sensitive config**:
+
    ```yaml
    apiVersion: v1
    kind: ConfigMap
    metadata:
      name: backend-config
    data:
-     PORT: "8080"
-     INDEXER_BATCH_SIZE: "200"
-     RATE_LIMIT_MAX: "1000"
+     PORT: '8080'
+     INDEXER_BATCH_SIZE: '200'
+     RATE_LIMIT_MAX: '1000'
    ```
 
 2. **Use Secrets for sensitive values**:
@@ -418,12 +440,14 @@ INDEXER_BATCH_SIZE=200
 **Symptom**: Application exits immediately with configuration error
 
 **Diagnosis**:
+
 1. Check the error message for the specific variable and value
 2. Verify the `.env` file has valid values
 3. Check for typos in variable names
 4. Ensure numeric values are actually numbers
 
 **Solution**:
+
 1. Fix the problematic value in `.env`
 2. Or remove the variable to use the default
 3. Restart the application
@@ -433,11 +457,13 @@ INDEXER_BATCH_SIZE=200
 **Symptom**: Changes to `.env` don't take effect
 
 **Possible Causes**:
+
 1. **Wrong network**: Check `STELLAR_NETWORK` value
    - Config loads `.env.testnet`, `.env.mainnet`, or `.env.devnet` first
    - Network-specific files override base `.env`
 
 2. **Environment variable precedence**: System env vars override `.env`
+
    ```bash
    # Check for conflicting system env vars
    printenv | grep -i port
@@ -471,14 +497,15 @@ The `parseNumericEnv` function handles all numeric environment variable parsing:
 
 ```typescript
 function parseNumericEnv(
-  name: string,              // Variable name for error messages
-  envValue: string | undefined,  // Raw env value
-  defaultValue: number,      // Fallback if not set
-  schema: z.ZodNumber,       // Zod schema for validation
-): number
+  name: string, // Variable name for error messages
+  envValue: string | undefined, // Raw env value
+  defaultValue: number, // Fallback if not set
+  schema: z.ZodNumber, // Zod schema for validation
+): number;
 ```
 
 **Process**:
+
 1. Check if value is empty → use default
 2. Parse with `parseInt(envValue, 10)`
 3. Check for `NaN` → throw error
@@ -503,6 +530,7 @@ const envSchemas = {
 To add validation for a new numeric environment variable:
 
 1. **Add schema definition**:
+
    ```typescript
    const envSchemas = {
      // ... existing schemas
@@ -511,16 +539,18 @@ To add validation for a new numeric environment variable:
    ```
 
 2. **Parse the value**:
+
    ```typescript
    const myNewValue = parseNumericEnv(
      'MY_NEW_VALUE',
      process.env.MY_NEW_VALUE,
-     100,  // default
+     100, // default
      envSchemas.myNewValue,
    );
    ```
 
 3. **Add to config object**:
+
    ```typescript
    export const config = {
      // ... existing config
@@ -529,12 +559,52 @@ To add validation for a new numeric environment variable:
    ```
 
 4. **Document in .env.example**:
+
    ```bash
    # My new configuration value
    MY_NEW_VALUE=100
    ```
 
 5. **Update this documentation** with the new variable
+
+## Production Configuration Validation Against Unsafe Defaults
+
+When starting up in production (`NODE_ENV=production`), the backend executes strict pre-flight checks via `assertConfig()` and `validateProductionConfig()` before binding to network ports or accepting traffic.
+
+### Required Secrets & Entropy Thresholds
+
+Production deployments require all operational secrets to be explicitly set to unique, high-entropy values.
+
+| Variable         | Requirement | Minimum Length | Disallowed Values                                                                    |
+| ---------------- | ----------- | -------------: | ------------------------------------------------------------------------------------ |
+| `ADMIN_API_KEY`  | Required    |       16 chars | Empty, placeholders (`changeme`, `secret`, `admin`, `password`, `default`, `123456`) |
+| `JWT_SECRET`     | Required    |       32 chars | Empty, placeholders, low-entropy values                                              |
+| `WS_SECRET`      | Required    |       32 chars | Empty, placeholders, low-entropy values                                              |
+| `WEBHOOK_SECRET` | Required    |       32 chars | Empty, placeholders, low-entropy values                                              |
+| `COOKIE_SECRET`  | Required    |       32 chars | Empty, placeholders, low-entropy values                                              |
+
+### Unsafe Defaults Rejection
+
+The following unsafe defaults cause an immediate fail-closed startup abort:
+
+1. **Placeholder Secrets**: Any secret containing known development tokens (`changeme`, `secret`, `password`, `default`, `test`, `123456`, `development`, `soroban`, `placeholder`, `supersecret`, `replace_me`, `your_secret_here`) is rejected.
+2. **Insecure Cookies**: `COOKIE_SECURE=false` is rejected in production to prevent cookie transmission over plaintext HTTP.
+3. **Demo Forecast Mode**: `FORECAST_MODE=demo` is rejected in production. Production workloads must configure `FORECAST_MODE=production`.
+4. **Unprotected Metrics**: The `/metrics` endpoint cannot be left publicly accessible without protection in production. At least one of `METRICS_ALLOWED_IPS` or `METRICS_TOKEN` must be specified.
+5. **In-Memory Cache**: Production services must not use `memory://` cache; a shared Redis or Redis Sentinel instance (`redis://` or `sentinel://`) is required for multi-replica coordination and rate limit synchronization.
+6. **Network Profile Security (Mainnet)**:
+   - Plain HTTP RPC URLs (`http://`) and plain WebSocket URLs (`ws://`) are strictly rejected on mainnet.
+   - Loopback or localhost database URLs (`localhost`, `127.0.0.1`, `::1`) are prohibited.
+   - Default dev database credentials (`:password@`, `:postgres@`) are prohibited.
+
+### Compatibility, Rollout, and Network Implications
+
+- **Compatibility**: Development and test environments remain frictionless with sensible defaults. Production checks only trigger when `NODE_ENV=production` or `STELLAR_NETWORK=mainnet`.
+- **Rollout**: Generate and inject strong random keys (`openssl rand -hex 32`) in your deployment secrets manager before setting `NODE_ENV=production`.
+- **Network Scope**:
+  - `devnet`: Local development allows HTTP RPC URLs, loopback addresses, and in-memory caches.
+  - `testnet`: Requires valid database and HTTPS RPC URLs.
+  - `mainnet`: Requires fully isolated, HTTPS/WSS external infrastructure with Redis caching and non-default credentials.
 
 ## References
 
